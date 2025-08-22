@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Model Viewer</title>
+  <script type="module" crossorigin src="./assets/index-lWMGq-WG.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B7LXlFhA.css">
+</head>
+<body>
+    <div class="app">
+        <canvas id="renderCanvas" touch-action="none"></canvas>
+        
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading model...</div>
+        </div>
+        
+        <div class="controls-panel" id="controlsPanel">
+            <div class="panel-header">
+                <h3>Controls</h3>
+                <button id="togglePanel" class="toggle-btn">×</button>
+            </div>
+            
+            <div class="panel-content">
+                <section class="control-section">
+                    <h4>Load Model</h4>
+                    <div class="drop-zone" id="dropZone">
+                        <p>Drop GLB/GLTF/ZIP files here<br><span style="font-size: 0.85em">For GLTF: drop all files together (.gltf, .bin, textures)</span><br><span class="desktop-only">(Desktop only)</span></p>
+                    </div>
+                    <input type="file" id="fileInput" accept=".glb,.gltf,.zip,.bin,.png,.jpg,.jpeg" multiple style="display: none;">
+                    <button id="fileBtn" class="file-select-btn">Choose File</button>
+                    <div class="url-input">
+                        <input type="text" id="urlInput" placeholder="Enter model URL...">
+                        <button id="loadUrlBtn">Load</button>
+                    </div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Scene</h4>
+                    <button id="frameBtn">Frame Selection</button>
+                    <button id="resetBtn">Reset Scene</button>
+                    <button id="screenshotBtn">Screenshot</button>
+                </section>
+
+                <section class="control-section">
+                    <h4>Animation</h4>
+                    <div id="animationControls" class="animation-controls hidden">
+                        <div id="animationGroups"></div>
+                        <div class="timeline-container">
+                            <div class="timeline" id="timeline">
+                                <div class="playhead" id="playhead"></div>
+                            </div>
+                            <div class="timeline-labels">
+                                <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="noAnimations" class="no-animations">No animations available</div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Environment</h4>
+                    <div class="slider-control">
+                        <label>HDRI Intensity</label>
+                        <input type="range" id="hdriIntensity" min="0" max="2" step="0.1" value="1">
+                        <span id="hdriIntensityValue">1.0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Environment Rotation</label>
+                        <input type="range" id="envRotation" min="0" max="360" step="1" value="0">
+                        <span id="envRotationValue">0°</span>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="showGround" checked> Ground</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="showSkybox" checked> Skybox</label>
+                    </div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Lighting</h4>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="hemisphericLight" checked> Hemispheric Light</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="directionalLight" checked> Directional Light</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="shadows" checked> Shadows</label>
+                    </div>
+                    <div class="slider-control">
+                        <label>Shadow Softness</label>
+                        <input type="range" id="shadowSoftness" min="0" max="1" step="0.1" value="0.3">
+                        <span id="shadowSoftnessValue">0.3</span>
+                    </div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Display</h4>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="wireframe"> Wireframe</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="boundingBoxes"> Bounding Boxes</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="showGrid" checked> Grid</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="showAxes"> Axes</label>
+                    </div>
+                    <div class="checkbox-control">
+                        <label><input type="checkbox" id="showBones"> Bones</label>
+                    </div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Gizmos</h4>
+                    <div class="gizmo-buttons">
+                        <button id="translateGizmo" class="gizmo-btn">T</button>
+                        <button id="rotateGizmo" class="gizmo-btn">R</button>
+                        <button id="scaleGizmo" class="gizmo-btn">S</button>
+                        <button id="noGizmo" class="gizmo-btn active">None</button>
+                    </div>
+                </section>
+
+                <section class="control-section">
+                    <h4>Stats</h4>
+                    <div class="stats">
+                        <div>FPS: <span id="fpsCounter">0</span></div>
+                        <div>Meshes: <span id="meshCount">0</span></div>
+                        <div>Draw Calls: <span id="drawCalls">0</span></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+</body>
+</html>

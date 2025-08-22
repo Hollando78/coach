@@ -1,0 +1,460 @@
+[2025-08-21 16:17:22] Security monitor started
+[2025-08-21 16:17:22] HIGH CPU ALERT: Processes over 80% CPU detected
+605995 150 node
+606002 100 ps
+[2025-08-21 16:17:22] ALERT: 258 failed login attempts in last hour
+[2025-08-21 16:17:22] Security monitor completed
+[2025-08-21 16:30:01] Security monitor started
+[2025-08-21 16:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+615968 400 ps
+[2025-08-21 16:30:01] ALERT: 262 failed login attempts in last hour
+[2025-08-21 16:30:02] Security monitor completed
+[2025-08-21 16:45:01] Security monitor started
+[2025-08-21 16:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+629407 200 ps
+[2025-08-21 16:45:01] ALERT: 346 failed login attempts in last hour
+[2025-08-21 16:45:02] Security monitor completed
+[2025-08-21 17:00:01] Security monitor started
+[2025-08-21 17:00:01] ALERT: 616 failed login attempts in last hour
+[2025-08-21 17:00:02] Security monitor completed
+[2025-08-21 17:15:01] Security monitor started
+[2025-08-21 17:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+653142 200 ps
+[2025-08-21 17:15:02] ALERT: 842 failed login attempts in last hour
+[2025-08-21 17:15:02] Security monitor completed
+[2025-08-21 17:30:01] Security monitor started
+[2025-08-21 17:30:02] ALERT: 1027 failed login attempts in last hour
+[2025-08-21 17:30:02] Security monitor completed
+[2025-08-21 17:45:01] Security monitor started
+[2025-08-21 17:45:02] ALERT: 1152 failed login attempts in last hour
+[2025-08-21 17:45:03] Security monitor completed
+[2025-08-21 18:00:01] Security monitor started
+[2025-08-21 18:00:01] ALERT: 1156 failed login attempts in last hour
+[2025-08-21 18:00:05] Security monitor completed
+[2025-08-21 18:15:01] Security monitor started
+[2025-08-21 18:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+700852 300 ps
+[2025-08-21 18:15:01] ALERT: 1092 failed login attempts in last hour
+[2025-08-21 18:15:02] Security monitor completed
+[2025-08-21 18:30:01] Security monitor started
+[2025-08-21 18:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+712456 300 ps
+[2025-08-21 18:30:01] ALERT: 946 failed login attempts in last hour
+[2025-08-21 18:30:02] Security monitor completed
+[2025-08-21 18:45:01] Security monitor started
+[2025-08-21 18:45:01] ALERT: 862 failed login attempts in last hour
+[2025-08-21 18:45:03] Security monitor completed
+[2025-08-21 19:00:01] Security monitor started
+[2025-08-21 19:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+738056 400 ps
+737560 107 /usr/bin/node
+[2025-08-21 19:00:01] ALERT: 707 failed login attempts in last hour
+[2025-08-21 19:00:02] Security monitor completed
+[2025-08-21 19:15:01] Security monitor started
+[2025-08-21 19:15:01] ALERT: 632 failed login attempts in last hour
+[2025-08-21 19:15:02] Security monitor completed
+[2025-08-21 19:30:01] Security monitor started
+[2025-08-21 19:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+761928 300 ps
+[2025-08-21 19:30:01] ALERT: 634 failed login attempts in last hour
+[2025-08-21 19:30:02] Security monitor completed
+[2025-08-21 19:45:01] Security monitor started
+[2025-08-21 19:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+775358 200 ps
+[2025-08-21 19:45:02] ALERT: 588 failed login attempts in last hour
+[2025-08-21 19:45:02] Security monitor completed
+[2025-08-21 20:00:01] Security monitor started
+[2025-08-21 20:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+789326 300 ps
+[2025-08-21 20:00:01] ALERT: 642 failed login attempts in last hour
+[2025-08-21 20:00:03] Security monitor completed
+[2025-08-21 20:15:01] Security monitor started
+[2025-08-21 20:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+802552 300 ps
+802523 100 node
+802530 85.7 node
+[2025-08-21 20:15:02] ALERT: 644 failed login attempts in last hour
+[2025-08-21 20:15:03] Security monitor completed
+[2025-08-21 20:30:01] Security monitor started
+[2025-08-21 20:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+814138 400 ps
+[2025-08-21 20:30:01] ALERT: 631 failed login attempts in last hour
+[2025-08-21 20:30:02] Security monitor completed
+[2025-08-21 20:45:01] Security monitor started
+[2025-08-21 20:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+828210 300 ps
+[2025-08-21 20:45:01] ALERT: 598 failed login attempts in last hour
+[2025-08-21 20:45:02] Security monitor completed
+[2025-08-21 21:00:01] Security monitor started
+[2025-08-21 21:00:01] ALERT: 505 failed login attempts in last hour
+[2025-08-21 21:00:03] Security monitor completed
+[2025-08-21 21:15:01] Security monitor started
+[2025-08-21 21:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+853768 100 ps
+[2025-08-21 21:15:01] ALERT: 517 failed login attempts in last hour
+[2025-08-21 21:15:02] Security monitor completed
+[2025-08-21 21:30:01] Security monitor started
+[2025-08-21 21:30:02] HIGH CPU ALERT: Processes over 80% CPU detected
+866464 300 ps
+[2025-08-21 21:30:02] ALERT: 652 failed login attempts in last hour
+[2025-08-21 21:30:03] Security monitor completed
+[2025-08-21 21:45:01] Security monitor started
+[2025-08-21 21:45:01] ALERT: 802 failed login attempts in last hour
+[2025-08-21 21:45:02] Security monitor completed
+[2025-08-21 22:00:01] Security monitor started
+[2025-08-21 22:00:01] ALERT: 868 failed login attempts in last hour
+[2025-08-21 22:00:04] Security monitor completed
+[2025-08-21 22:15:01] Security monitor started
+[2025-08-21 22:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+902312 200 ps
+[2025-08-21 22:15:01] ALERT: 803 failed login attempts in last hour
+[2025-08-21 22:15:02] Security monitor completed
+[2025-08-21 22:30:02] Security monitor started
+[2025-08-21 22:30:02] ALERT: 660 failed login attempts in last hour
+[2025-08-21 22:30:03] Security monitor completed
+[2025-08-21 22:45:01] Security monitor started
+[2025-08-21 22:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+928447 300 ps
+[2025-08-21 22:45:01] ALERT: 576 failed login attempts in last hour
+[2025-08-21 22:45:02] Security monitor completed
+[2025-08-21 23:00:01] Security monitor started
+[2025-08-21 23:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+940075 300 ps
+[2025-08-21 23:00:01] ALERT: 750 failed login attempts in last hour
+[2025-08-21 23:00:02] Security monitor completed
+[2025-08-21 23:15:01] Security monitor started
+[2025-08-21 23:15:01] ALERT: 956 failed login attempts in last hour
+[2025-08-21 23:15:02] Security monitor completed
+[2025-08-21 23:30:01] Security monitor started
+[2025-08-21 23:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+963019 200 ps
+[2025-08-21 23:30:01] ALERT: 1027 failed login attempts in last hour
+[2025-08-21 23:30:02] Security monitor completed
+[2025-08-21 23:45:01] Security monitor started
+[2025-08-21 23:45:02] ALERT: 1054 failed login attempts in last hour
+[2025-08-21 23:45:02] Security monitor completed
+[2025-08-22 00:00:01] Security monitor started
+[2025-08-22 00:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+986039 300 ps
+[2025-08-22 00:00:02] ALERT: 998 failed login attempts in last hour
+[2025-08-22 00:00:02] Security monitor completed
+[2025-08-22 00:15:01] Security monitor started
+[2025-08-22 00:15:02] ALERT: 895 failed login attempts in last hour
+[2025-08-22 00:15:02] Security monitor completed
+[2025-08-22 00:30:01] Security monitor started
+[2025-08-22 00:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1009402 300 ps
+[2025-08-22 00:30:02] ALERT: 844 failed login attempts in last hour
+[2025-08-22 00:30:02] Security monitor completed
+[2025-08-22 00:45:01] Security monitor started
+[2025-08-22 00:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1020724 400 ps
+[2025-08-22 00:45:01] ALERT: 758 failed login attempts in last hour
+[2025-08-22 00:45:02] Security monitor completed
+[2025-08-22 01:00:01] Security monitor started
+[2025-08-22 01:00:02] ALERT: 653 failed login attempts in last hour
+[2025-08-22 01:00:03] Security monitor completed
+[2025-08-22 01:15:01] Security monitor started
+[2025-08-22 01:15:01] ALERT: 819 failed login attempts in last hour
+[2025-08-22 01:15:02] Security monitor completed
+[2025-08-22 01:30:02] Security monitor started
+[2025-08-22 01:30:02] HIGH CPU ALERT: Processes over 80% CPU detected
+1055363 400 ps
+[2025-08-22 01:30:02] ALERT: 953 failed login attempts in last hour
+[2025-08-22 01:30:03] Security monitor completed
+[2025-08-22 01:45:01] Security monitor started
+[2025-08-22 01:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1066710 200 ps
+[2025-08-22 01:45:01] ALERT: 977 failed login attempts in last hour
+[2025-08-22 01:45:02] Security monitor completed
+[2025-08-22 02:00:01] Security monitor started
+[2025-08-22 02:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1078011 300 ps
+[2025-08-22 02:00:01] ALERT: 869 failed login attempts in last hour
+[2025-08-22 02:00:02] Security monitor completed
+[2025-08-22 02:15:01] Security monitor started
+[2025-08-22 02:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1089453 300 ps
+1089452 100 runc
+[2025-08-22 02:15:01] ALERT: 672 failed login attempts in last hour
+[2025-08-22 02:15:03] Security monitor completed
+[2025-08-22 02:30:01] Security monitor started
+[2025-08-22 02:30:01] ALERT: 641 failed login attempts in last hour
+[2025-08-22 02:30:02] Security monitor completed
+[2025-08-22 02:45:01] Security monitor started
+[2025-08-22 02:45:01] ALERT: 640 failed login attempts in last hour
+[2025-08-22 02:45:02] Security monitor completed
+[2025-08-22 03:00:01] Security monitor started
+[2025-08-22 03:00:01] ALERT: 633 failed login attempts in last hour
+[2025-08-22 03:00:02] Security monitor completed
+[2025-08-22 03:15:01] Security monitor started
+[2025-08-22 03:15:01] ALERT: 509 failed login attempts in last hour
+[2025-08-22 03:15:02] Security monitor completed
+[2025-08-22 03:30:01] Security monitor started
+[2025-08-22 03:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1146225 200 ps
+[2025-08-22 03:30:01] ALERT: 332 failed login attempts in last hour
+[2025-08-22 03:30:02] Security monitor completed
+[2025-08-22 03:45:01] Security monitor started
+[2025-08-22 03:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1157481 300 ps
+[2025-08-22 03:45:01] ALERT: 265 failed login attempts in last hour
+[2025-08-22 03:45:03] Security monitor completed
+[2025-08-22 04:00:01] Security monitor started
+[2025-08-22 04:00:01] ALERT: 232 failed login attempts in last hour
+[2025-08-22 04:00:04] Security monitor completed
+[2025-08-22 04:15:01] Security monitor started
+[2025-08-22 04:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1179994 300 ps
+[2025-08-22 04:15:01] ALERT: 223 failed login attempts in last hour
+[2025-08-22 04:15:02] Security monitor completed
+[2025-08-22 04:30:01] Security monitor started
+[2025-08-22 04:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1191245 400 ps
+[2025-08-22 04:30:01] ALERT: 199 failed login attempts in last hour
+[2025-08-22 04:30:02] Security monitor completed
+[2025-08-22 04:45:01] Security monitor started
+[2025-08-22 04:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1202538 400 ps
+1202536 300 /usr/bin/perl
+[2025-08-22 04:45:01] ALERT: 157 failed login attempts in last hour
+[2025-08-22 04:45:02] Security monitor completed
+[2025-08-22 05:00:01] Security monitor started
+[2025-08-22 05:00:01] ALERT: 210 failed login attempts in last hour
+[2025-08-22 05:00:03] Security monitor completed
+[2025-08-22 05:15:01] Security monitor started
+[2025-08-22 05:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1225116 100 runc
+[2025-08-22 05:15:01] ALERT: 212 failed login attempts in last hour
+[2025-08-22 05:15:02] Security monitor completed
+[2025-08-22 05:30:01] Security monitor started
+[2025-08-22 05:30:01] ALERT: 258 failed login attempts in last hour
+[2025-08-22 05:30:03] Security monitor completed
+[2025-08-22 05:45:01] Security monitor started
+[2025-08-22 05:45:01] ALERT: 314 failed login attempts in last hour
+[2025-08-22 05:45:02] Security monitor completed
+[2025-08-22 06:00:01] Security monitor started
+[2025-08-22 06:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1258979 300 ps
+[2025-08-22 06:00:01] ALERT: 271 failed login attempts in last hour
+[2025-08-22 06:00:03] Security monitor completed
+[2025-08-22 06:15:01] Security monitor started
+[2025-08-22 06:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1270252 200 ps
+[2025-08-22 06:15:01] ALERT: 256 failed login attempts in last hour
+[2025-08-22 06:15:01] Security monitor completed
+[2025-08-22 06:30:01] Security monitor started
+[2025-08-22 06:30:02] HIGH CPU ALERT: Processes over 80% CPU detected
+1281506 200 ps
+[2025-08-22 06:30:02] ALERT: 200 failed login attempts in last hour
+[2025-08-22 06:30:02] Security monitor completed
+[2025-08-22 06:45:01] Security monitor started
+[2025-08-22 06:45:01] ALERT: 110 failed login attempts in last hour
+[2025-08-22 06:45:02] Security monitor completed
+[2025-08-22 07:00:01] Security monitor started
+[2025-08-22 07:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1304092 200 ps
+[2025-08-22 07:00:01] ALERT: 71 failed login attempts in last hour
+[2025-08-22 07:00:03] Security monitor completed
+[2025-08-22 07:15:01] Security monitor started
+[2025-08-22 07:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1316190 100 runc
+[2025-08-22 07:15:01] ALERT: 64 failed login attempts in last hour
+[2025-08-22 07:15:02] Security monitor completed
+[2025-08-22 07:30:01] Security monitor started
+[2025-08-22 07:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1328243 200 ps
+[2025-08-22 07:30:01] ALERT: 77 failed login attempts in last hour
+[2025-08-22 07:30:02] Security monitor completed
+[2025-08-22 07:45:01] Security monitor started
+[2025-08-22 07:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1340942 300 ps
+[2025-08-22 07:45:01] ALERT: 91 failed login attempts in last hour
+[2025-08-22 07:45:02] Security monitor completed
+[2025-08-22 08:00:02] Security monitor started
+[2025-08-22 08:00:02] HIGH CPU ALERT: Processes over 80% CPU detected
+1352895 300 ps
+[2025-08-22 08:00:02] ALERT: 104 failed login attempts in last hour
+[2025-08-22 08:00:04] Security monitor completed
+[2025-08-22 08:15:01] Security monitor started
+[2025-08-22 08:15:01] ALERT: 133 failed login attempts in last hour
+[2025-08-22 08:15:03] Security monitor completed
+[2025-08-22 08:30:01] Security monitor started
+[2025-08-22 08:30:01] ALERT: 173 failed login attempts in last hour
+[2025-08-22 08:30:02] Security monitor completed
+[2025-08-22 08:45:01] Security monitor started
+[2025-08-22 08:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1388006 200 ps
+[2025-08-22 08:45:01] ALERT: 216 failed login attempts in last hour
+[2025-08-22 08:45:02] Security monitor completed
+[2025-08-22 09:00:01] Security monitor started
+[2025-08-22 09:00:01] ALERT: 258 failed login attempts in last hour
+[2025-08-22 09:00:03] Security monitor completed
+[2025-08-22 09:15:01] Security monitor started
+[2025-08-22 09:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1411838 300 ps
+[2025-08-22 09:15:01] ALERT: 252 failed login attempts in last hour
+[2025-08-22 09:15:02] Security monitor completed
+[2025-08-22 09:30:01] Security monitor started
+[2025-08-22 09:30:01] ALERT: 264 failed login attempts in last hour
+[2025-08-22 09:30:02] Security monitor completed
+[2025-08-22 09:45:01] Security monitor started
+[2025-08-22 09:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1434374 300 ps
+[2025-08-22 09:45:01] ALERT: 223 failed login attempts in last hour
+[2025-08-22 09:45:02] Security monitor completed
+[2025-08-22 10:00:01] Security monitor started
+[2025-08-22 10:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1445688 200 ps
+[2025-08-22 10:00:01] ALERT: 171 failed login attempts in last hour
+[2025-08-22 10:00:03] Security monitor completed
+[2025-08-22 10:15:01] Security monitor started
+[2025-08-22 10:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1456927 300 ps
+[2025-08-22 10:15:01] ALERT: 155 failed login attempts in last hour
+[2025-08-22 10:15:02] Security monitor completed
+[2025-08-22 10:30:01] Security monitor started
+[2025-08-22 10:30:01] ALERT: 111 failed login attempts in last hour
+[2025-08-22 10:30:02] Security monitor completed
+[2025-08-22 10:45:01] Security monitor started
+[2025-08-22 10:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1480874 300 ps
+1480864 150 /bin/sh
+[2025-08-22 10:45:01] ALERT: 221 failed login attempts in last hour
+[2025-08-22 10:45:02] Security monitor completed
+[2025-08-22 11:00:01] Security monitor started
+[2025-08-22 11:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1492886 400 ps
+[2025-08-22 11:00:01] ALERT: 422 failed login attempts in last hour
+[2025-08-22 11:00:03] Security monitor completed
+[2025-08-22 11:15:01] Security monitor started
+[2025-08-22 11:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1505327 200 docker-compose
+[2025-08-22 11:15:01] ALERT: 657 failed login attempts in last hour
+[2025-08-22 11:15:02] Security monitor completed
+[2025-08-22 11:30:01] Security monitor started
+[2025-08-22 11:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1518144 101 node
+[2025-08-22 11:30:01] ALERT: 728 failed login attempts in last hour
+[2025-08-22 11:30:03] Security monitor completed
+[2025-08-22 11:45:01] Security monitor started
+[2025-08-22 11:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1529806 300 ps
+[2025-08-22 11:45:01] ALERT: 638 failed login attempts in last hour
+[2025-08-22 11:45:02] Security monitor completed
+[2025-08-22 12:00:01] Security monitor started
+[2025-08-22 12:00:01] ALERT: 540 failed login attempts in last hour
+[2025-08-22 12:00:02] Security monitor completed
+[2025-08-22 12:15:01] Security monitor started
+[2025-08-22 12:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1563521 100 ps
+[2025-08-22 12:15:01] ALERT: 377 failed login attempts in last hour
+[2025-08-22 12:15:02] Security monitor completed
+[2025-08-22 12:30:01] Security monitor started
+[2025-08-22 12:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1574922 300 ps
+[2025-08-22 12:30:01] ALERT: 356 failed login attempts in last hour
+[2025-08-22 12:30:02] Security monitor completed
+[2025-08-22 12:45:01] Security monitor started
+[2025-08-22 12:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1586208 300 ps
+[2025-08-22 12:45:01] ALERT: 385 failed login attempts in last hour
+[2025-08-22 12:45:02] Security monitor completed
+[2025-08-22 13:00:01] Security monitor started
+[2025-08-22 13:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1597927 400 ps
+[2025-08-22 13:00:01] ALERT: 311 failed login attempts in last hour
+[2025-08-22 13:00:02] Security monitor completed
+[2025-08-22 13:15:01] Security monitor started
+[2025-08-22 13:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1611507 200 ps
+[2025-08-22 13:15:01] ALERT: 237 failed login attempts in last hour
+[2025-08-22 13:15:02] Security monitor completed
+[2025-08-22 13:30:01] Security monitor started
+[2025-08-22 13:30:01] ALERT: 202 failed login attempts in last hour
+[2025-08-22 13:30:02] Security monitor completed
+[2025-08-22 13:45:01] Security monitor started
+[2025-08-22 13:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1634049 100 ps
+[2025-08-22 13:45:01] ALERT: 166 failed login attempts in last hour
+[2025-08-22 13:45:02] Security monitor completed
+[2025-08-22 14:00:01] Security monitor started
+[2025-08-22 14:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1645609 200 ps
+[2025-08-22 14:00:01] ALERT: 144 failed login attempts in last hour
+[2025-08-22 14:00:03] Security monitor completed
+[2025-08-22 14:15:01] Security monitor started
+[2025-08-22 14:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1658038 300 ps
+[2025-08-22 14:15:01] ALERT: 272 failed login attempts in last hour
+[2025-08-22 14:15:02] Security monitor completed
+[2025-08-22 14:30:01] Security monitor started
+[2025-08-22 14:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1674455 300 ps
+[2025-08-22 14:30:01] ALERT: 422 failed login attempts in last hour
+[2025-08-22 14:30:02] Security monitor completed
+[2025-08-22 14:45:01] Security monitor started
+[2025-08-22 14:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1688434 300 ps
+[2025-08-22 14:45:02] ALERT: 567 failed login attempts in last hour
+[2025-08-22 14:45:03] Security monitor completed
+[2025-08-22 15:00:01] Security monitor started
+[2025-08-22 15:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1701608 200 ps
+[2025-08-22 15:00:01] ALERT: 688 failed login attempts in last hour
+[2025-08-22 15:00:03] Security monitor completed
+[2025-08-22 15:15:01] Security monitor started
+[2025-08-22 15:15:02] HIGH CPU ALERT: Processes over 80% CPU detected
+1715124 300 ps
+[2025-08-22 15:15:02] ALERT: 763 failed login attempts in last hour
+[2025-08-22 15:15:03] Security monitor completed
+[2025-08-22 15:30:01] Security monitor started
+[2025-08-22 15:30:01] ALERT: 872 failed login attempts in last hour
+[2025-08-22 15:30:02] Security monitor completed
+[2025-08-22 15:45:01] Security monitor started
+[2025-08-22 15:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1742207 300 ps
+[2025-08-22 15:45:01] ALERT: 902 failed login attempts in last hour
+[2025-08-22 15:45:02] Security monitor completed
+[2025-08-22 16:00:01] Security monitor started
+[2025-08-22 16:00:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1755682 300 ps
+[2025-08-22 16:00:01] ALERT: 884 failed login attempts in last hour
+[2025-08-22 16:00:04] Security monitor completed
+[2025-08-22 16:15:01] Security monitor started
+[2025-08-22 16:15:01] ALERT: 843 failed login attempts in last hour
+[2025-08-22 16:15:02] Security monitor completed
+[2025-08-22 16:30:01] Security monitor started
+[2025-08-22 16:30:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1783780 200 ps
+[2025-08-22 16:30:01] ALERT: 729 failed login attempts in last hour
+[2025-08-22 16:30:02] Security monitor completed
+[2025-08-22 16:45:01] Security monitor started
+[2025-08-22 16:45:01] ALERT: 612 failed login attempts in last hour
+[2025-08-22 16:45:02] Security monitor completed
+[2025-08-22 17:00:01] Security monitor started
+[2025-08-22 17:00:02] HIGH CPU ALERT: Processes over 80% CPU detected
+1813002 300 ps
+[2025-08-22 17:00:02] ALERT: 594 failed login attempts in last hour
+[2025-08-22 17:00:04] Security monitor completed
+[2025-08-22 17:15:01] Security monitor started
+[2025-08-22 17:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1826217 300 ps
+[2025-08-22 17:15:01] ALERT: 573 failed login attempts in last hour
+[2025-08-22 17:15:02] Security monitor completed
+[2025-08-22 17:30:01] Security monitor started
+[2025-08-22 17:30:01] ALERT: 718 failed login attempts in last hour
+[2025-08-22 17:30:02] Security monitor completed
+[2025-08-22 17:45:01] Security monitor started
+[2025-08-22 17:45:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1853376 150 ps
+[2025-08-22 17:45:01] ALERT: 1006 failed login attempts in last hour
+[2025-08-22 17:45:02] Security monitor completed
+[2025-08-22 18:00:01] Security monitor started
+[2025-08-22 18:00:02] ALERT: 1047 failed login attempts in last hour
+[2025-08-22 18:00:16] Security monitor completed
+[2025-08-22 18:15:01] Security monitor started
+[2025-08-22 18:15:01] HIGH CPU ALERT: Processes over 80% CPU detected
+1884162 200 ps
+[2025-08-22 18:15:02] ALERT: 963 failed login attempts in last hour
+[2025-08-22 18:15:02] Security monitor completed

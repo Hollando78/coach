@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders</title>
+    <link rel="stylesheet" href="space-invaders.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="gameHeader">
+            <h1>Space Invaders</h1>
+            <div id="gameStats">
+                <div>Score: <span id="score">0</span></div>
+                <div>Lives: <span id="lives">3</span></div>
+                <div>Level: <span id="level">1</span></div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="gameControls">
+            <div id="controlsText">Use A/D or Arrow Keys to move, Space to shoot</div>
+            <button id="startBtn">Start Game</button>
+            <button id="pauseBtn" disabled>Pause</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        
+        <div id="touchControls" class="hidden">
+            <div class="touch-control-row">
+                <button id="touchLeftBtn" class="touch-btn touch-move">◀</button>
+                <button id="touchShootBtn" class="touch-btn touch-shoot">🚀</button>
+                <button id="touchRightBtn" class="touch-btn touch-move">▶</button>
+            </div>
+        </div>
+        
+        <div id="gameOver" class="hidden">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="playAgainBtn">Play Again</button>
+        </div>
+    </div>
+    
+    <script src="space-invaders.js"></script>
+</body>
+</html>

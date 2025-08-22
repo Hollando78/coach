@@ -1,0 +1,183 @@
+{
+  "system_context": "The Universal Hex Taxonomy is a 32-bit classification system with 4 layers of 8 traits each. Each layer represents a different aspect of entities: Physical (1-8), Functional (9-16), Abstract (17-24), and Social (25-32).",
+  
+  "trait_definitions": {
+    "1": {
+      "name": "Physical Object",
+      "description": "A discrete, bounded physical entity with tangible form that occupies space",
+      "keywords": ["tangible", "physical", "matter", "solid", "object", "thing"],
+      "examples": ["bicycle", "smartphone", "tree", "building", "rock"],
+      "anti_examples": ["love", "democracy", "software", "idea", "concept"]
+    },
+    "2": {
+      "name": "Synthetic",
+      "description": "Created or manufactured by humans through artificial processes",
+      "keywords": ["manufactured", "artificial", "man-made", "created", "produced"],
+      "examples": ["smartphone", "bicycle", "plastic", "computer", "medicine"],
+      "anti_examples": ["tree", "mountain", "water", "DNA", "natural diamond"]
+    },
+    "3": {
+      "name": "Biological/Biomimetic",
+      "description": "Has biological origin or structure inspired by biological processes",
+      "keywords": ["living", "organic", "biological", "biomimetic", "natural"],
+      "examples": ["tree", "human", "DNA", "enzyme", "velcro"],
+      "anti_examples": ["rock", "computer", "plastic", "metal", "glass"]
+    },
+    "9": {
+      "name": "Intentionally Designed",
+      "description": "Designed or intended for a specific function or purpose",
+      "keywords": ["designed", "purposeful", "intentional", "engineered", "planned"],
+      "examples": ["smartphone", "bicycle", "software", "bridge", "chair"],
+      "anti_examples": ["rock", "cloud", "random noise", "accident", "coincidence"]
+    },
+    "10": {
+      "name": "Outputs Effect",
+      "description": "Actively produces signals, energy, effects, or outcomes",
+      "keywords": ["produces", "outputs", "generates", "emits", "creates"],
+      "examples": ["smartphone", "lightbulb", "engine", "speaker", "heater"],
+      "anti_examples": ["rock", "passive mirror", "storage box", "statue", "dead battery"]
+    },
+    "11": {
+      "name": "Processes Signals/Logic",
+      "description": "Performs information processing, computation, or logical control",
+      "keywords": ["processes", "computes", "analyzes", "logic", "information"],
+      "examples": ["smartphone", "computer", "brain", "calculator", "algorithm"],
+      "anti_examples": ["rock", "simple mirror", "passive storage", "dead object", "static image"]
+    },
+    "17": {
+      "name": "Symbolic",
+      "description": "Represents ideas, concepts, or other entities through symbols or meaning",
+      "keywords": ["symbolic", "represents", "signifies", "meaning", "symbol"],
+      "examples": ["flag", "word", "logo", "money", "religious symbol"],
+      "anti_examples": ["rock", "pure function", "raw material", "meaningless object", "random pattern"]
+    },
+    "21": {
+      "name": "Normative",
+      "description": "Directs or constrains behavior, actions, or decision-making",
+      "keywords": ["directs", "constrains", "guides", "rules", "norms"],
+      "examples": ["law", "moral principle", "regulation", "guideline", "standard"],
+      "anti_examples": ["pure fact", "observation", "raw data", "description", "measurement"]
+    },
+    "25": {
+      "name": "Social Construct",
+      "description": "Exists by virtue of social agreement, cultural meaning, or collective understanding",
+      "keywords": ["social", "cultural", "collective", "agreed", "conventional"],
+      "examples": ["money", "marriage", "democracy", "nationality", "corporation"],
+      "anti_examples": ["rock", "DNA", "physics law", "chemical element", "mathematical constant"]
+    },
+    "29": {
+      "name": "Economically Significant",
+      "description": "Functions as a unit of economic value, exchange, or market activity",
+      "keywords": ["economic", "value", "exchange", "market", "trade"],
+      "examples": ["money", "stock", "commodity", "product", "service"],
+      "anti_examples": ["free air", "friendship", "sunset", "personal thought", "natural beauty"]
+    }
+  },
+
+  "classification_examples": {
+    "smartphone": {
+      "explanation": "A smartphone is a complex technological device",
+      "selected_traits": [1, 2, 9, 10, 11, 13],
+      "reasoning": {
+        "1": "Physical object - tangible device that occupies space",
+        "2": "Synthetic - manufactured by humans using artificial processes",
+        "9": "Intentionally designed - engineered for communication and computing",
+        "10": "Outputs effect - displays, sounds, signals, data transmission",
+        "11": "Processes signals/logic - runs software, processes information",
+        "13": "Human-interactive - designed for direct human interface"
+      }
+    },
+    "bicycle": {
+      "explanation": "A bicycle is a mechanical transportation device",
+      "selected_traits": [1, 2, 9, 10],
+      "reasoning": {
+        "1": "Physical object - tangible mechanical device",
+        "2": "Synthetic - manufactured by humans",
+        "9": "Intentionally designed - engineered for transportation",
+        "10": "Outputs effect - converts human energy into motion"
+      }
+    },
+    "democracy": {
+      "explanation": "Democracy is a political and social system",
+      "selected_traits": [17, 19, 21, 25, 26, 27, 28],
+      "reasoning": {
+        "17": "Symbolic - represents ideals of equality and participation",
+        "19": "Rule-governed - operates according to constitutional principles",
+        "21": "Normative - prescribes how political decisions should be made",
+        "25": "Social construct - exists through collective agreement",
+        "26": "Institutionally defined - requires formal governmental structures",
+        "27": "Identity-linked - tied to citizenship and political identity",
+        "28": "Regulated - subject to constitutional and legal frameworks"
+      }
+    },
+    "love": {
+      "explanation": "Love is an emotional and psychological phenomenon",
+      "selected_traits": [21, 30, 31, 32],
+      "reasoning": {
+        "21": "Normative - influences behavior and moral decisions",
+        "30": "Communicatively significant - expressed through language and symbols",
+        "31": "Contextually dependent - meaning varies by relationship and culture",
+        "32": "Collectively meaningful - understood through shared human experience"
+      }
+    }
+  },
+
+  "layer_analysis_strategies": {
+    "Physical": {
+      "key_questions": [
+        "Is this a tangible, physical entity that occupies space?",
+        "Is it made of matter that can be touched or measured?",
+        "Is it created/manufactured or naturally occurring?",
+        "Does it have biological origins or characteristics?"
+      ],
+      "common_patterns": {
+        "manufactured_objects": [1, 2, 9],
+        "biological_entities": [1, 3, 6, 7],
+        "natural_phenomena": [6, 7],
+        "abstract_concepts": []
+      }
+    },
+    "Functional": {
+      "key_questions": [
+        "Was this designed for a specific purpose?",
+        "Does it produce outputs, effects, or signals?",
+        "Does it process information or perform logic?",
+        "Does it interact with humans or other systems?"
+      ],
+      "common_patterns": {
+        "tools_devices": [9, 10, 13],
+        "information_systems": [9, 11, 14],
+        "autonomous_systems": [15, 16],
+        "passive_objects": []
+      }
+    },
+    "Abstract": {
+      "key_questions": [
+        "Does this represent or symbolize something else?",
+        "Is it governed by abstract rules or principles?",
+        "Does it exist in conceptual or digital space?",
+        "Is it structured in layers or components?"
+      ],
+      "common_patterns": {
+        "symbols_representations": [17, 18, 30],
+        "conceptual_systems": [19, 20, 22],
+        "digital_entities": [24],
+        "temporal_processes": [23]
+      }
+    },
+    "Social": {
+      "key_questions": [
+        "Does this exist through social agreement or cultural meaning?",
+        "Is it defined by institutions or collective understanding?",
+        "Does it have economic value or significance?",
+        "Is its meaning dependent on social context?"
+      ],
+      "common_patterns": {
+        "social_institutions": [25, 26, 27, 28],
+        "economic_entities": [25, 29, 31],
+        "cultural_constructs": [25, 30, 31, 32],
+        "communication_systems": [30, 31, 32]
+      }
+    }
+  }
+}

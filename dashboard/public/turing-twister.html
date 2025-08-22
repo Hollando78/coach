@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Twister - Political Debate Challenge</title>
+    <link rel="stylesheet" href="turing-twister.css">
+</head>
+<body>
+    <div class="twister-app">
+        <header class="app-header">
+            <h1>🌪️ Turing Twister</h1>
+            <p class="subtitle">Master the Art of Political Debate</p>
+        </header>
+
+        <div class="container">
+            <!-- Home Screen -->
+            <div id="homeScreen" class="screen active">
+                <div class="home-content">
+                    <div class="app-description">
+                        <h2>Welcome to the Ultimate Debate Challenge!</h2>
+                        <p>Can you argue from any political perspective? Test your critical thinking and debate skills across the political spectrum.</p>
+                        
+                        <div class="political-compass">
+                            <div class="compass-quadrant libertarian">
+                                <div class="quadrant-label">LIBERTARIAN</div>
+                                <div class="quadrant-desc">Individual freedom & minimal government</div>
+                            </div>
+                            <div class="compass-quadrant conservative">
+                                <div class="quadrant-label">CONSERVATIVE</div>
+                                <div class="quadrant-desc">Traditional values & free markets</div>
+                            </div>
+                            <div class="compass-quadrant liberal">
+                                <div class="quadrant-label">LIBERAL</div>
+                                <div class="quadrant-desc">Social progress & government programs</div>
+                            </div>
+                            <div class="compass-quadrant communist">
+                                <div class="quadrant-label">COMMUNIST</div>
+                                <div class="quadrant-desc">Collective ownership & equality</div>
+                            </div>
+                        </div>
+
+                        <div class="game-modes">
+                            <button id="randomChallengeBtn" class="mode-btn primary">
+                                🎲 Random Challenge
+                                <span>Get a random topic, perspective, and argument task</span>
+                            </button>
+                            <button id="browseTopicsBtn" class="mode-btn secondary">
+                                📚 Browse Topics
+                                <span>Explore all topics and existing arguments</span>
+                            </button>
+                            <button id="leaderboardBtn" class="mode-btn secondary">
+                                🏆 Leaderboard
+                                <span>See top-voted arguments and contributors</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenge Screen -->
+            <div id="challengeScreen" class="screen">
+                <div class="challenge-content">
+                    <div class="challenge-header">
+                        <button id="backToHomeBtn" class="back-btn">← Back to Home</button>
+                        <div class="challenge-info">
+                            <h2 id="challengeTopic">Topic Loading...</h2>
+                            <div class="perspective-badge" id="challengePerspective">Perspective</div>
+                            <div class="argument-type" id="argumentType">Argument Type</div>
+                        </div>
+                    </div>
+
+                    <div class="challenge-prompt">
+                        <div class="prompt-section">
+                            <h3>Your Challenge:</h3>
+                            <p id="challengePrompt">Loading challenge...</p>
+                        </div>
+
+                        <div class="context-section">
+                            <h4>Background Context:</h4>
+                            <p id="topicContext">Loading context...</p>
+                        </div>
+
+                        <div class="example-section">
+                            <h4>Example Argument (Different Perspective):</h4>
+                            <div class="example-argument" id="exampleArgument">
+                                <div class="example-perspective"></div>
+                                <div class="example-text"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="response-area">
+                        <h3>Your Response:</h3>
+                        <textarea id="userResponse" placeholder="Write your argument from the assigned perspective... (minimum 100 characters)" maxlength="1000"></textarea>
+                        <div class="response-info">
+                            <span id="charCount">0/1000</span>
+                            <button id="submitResponseBtn" class="submit-btn" disabled>Submit Argument</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grading Screen -->
+            <div id="gradingScreen" class="screen">
+                <div class="grading-content">
+                    <div class="grading-header">
+                        <h2>📊 Argument Analysis</h2>
+                    </div>
+
+                    <div class="user-argument">
+                        <h3>Your Argument:</h3>
+                        <div class="argument-display">
+                            <div class="argument-perspective" id="userPerspective"></div>
+                            <div class="argument-text" id="userArgumentText"></div>
+                        </div>
+                    </div>
+
+                    <div class="grading-results">
+                        <div class="grade-card">
+                            <div class="grade-score" id="overallGrade">?</div>
+                            <div class="grade-label">Overall Grade</div>
+                        </div>
+
+                        <div class="criteria-breakdown">
+                            <div class="criterion">
+                                <span class="criterion-name">Perspective Accuracy:</span>
+                                <span class="criterion-score" id="perspectiveScore">-/10</span>
+                            </div>
+                            <div class="criterion">
+                                <span class="criterion-name">Argument Structure:</span>
+                                <span class="criterion-score" id="structureScore">-/10</span>
+                            </div>
+                            <div class="criterion">
+                                <span class="criterion-name">Evidence Quality:</span>
+                                <span class="criterion-score" id="evidenceScore">-/10</span>
+                            </div>
+                            <div class="criterion">
+                                <span class="criterion-name">Coherence:</span>
+                                <span class="criterion-score" id="coherenceScore">-/10</span>
+                            </div>
+                            <div class="criterion">
+                                <span class="criterion-name">Complexity:</span>
+                                <span class="criterion-score" id="complexityScore">-/10</span>
+                            </div>
+                        </div>
+
+                        <div class="feedback-section">
+                            <h4>Feedback:</h4>
+                            <p id="gradingFeedback">Loading feedback...</p>
+                        </div>
+                    </div>
+
+                    <div class="community-section">
+                        <h3>Community Voting</h3>
+                        <p>Your argument will be added to the community database for voting!</p>
+                        <div class="community-actions">
+                            <button id="viewCommunityBtn" class="action-btn">👥 View Community Arguments</button>
+                            <button id="nextChallengeBtn" class="action-btn primary">🎲 Next Challenge</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browse Topics Screen -->
+            <div id="browseScreen" class="screen">
+                <div class="browse-content">
+                    <div class="browse-header">
+                        <button id="backFromBrowseBtn" class="back-btn">← Back to Home</button>
+                        <h2>📚 Browse Topics & Arguments</h2>
+                    </div>
+
+                    <div class="topic-filters">
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="economics">Economics</option>
+                            <option value="social">Social Issues</option>
+                            <option value="government">Government</option>
+                            <option value="environment">Environment</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="international">International</option>
+                        </select>
+                        <input type="text" id="topicSearch" placeholder="Search topics...">
+                    </div>
+
+                    <div class="topics-grid" id="topicsGrid">
+                        <!-- Topics will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Topic Detail Screen -->
+            <div id="topicDetailScreen" class="screen">
+                <div class="topic-detail-content">
+                    <div class="topic-detail-header">
+                        <button id="backFromTopicBtn" class="back-btn">← Back to Browse</button>
+                        <h2 id="topicDetailTitle">Topic Title</h2>
+                        <div class="topic-category" id="topicDetailCategory">Category</div>
+                    </div>
+
+                    <div class="topic-overview">
+                        <p id="topicDetailDescription">Topic description...</p>
+                    </div>
+
+                    <div class="perspectives-container">
+                        <div class="perspective-section libertarian">
+                            <h3>🟡 Libertarian Perspective</h3>
+                            <div class="official-argument" id="libertarianOfficial"></div>
+                            <div class="community-arguments" id="libertarianCommunity"></div>
+                        </div>
+
+                        <div class="perspective-section conservative">
+                            <h3>🔵 Conservative Perspective</h3>
+                            <div class="official-argument" id="conservativeOfficial"></div>
+                            <div class="community-arguments" id="conservativeCommunity"></div>
+                        </div>
+
+                        <div class="perspective-section liberal">
+                            <h3>🟢 Liberal Perspective</h3>
+                            <div class="official-argument" id="liberalOfficial"></div>
+                            <div class="community-arguments" id="liberalCommunity"></div>
+                        </div>
+
+                        <div class="perspective-section communist">
+                            <h3>🔴 Communist Perspective</h3>
+                            <div class="official-argument" id="communistOfficial"></div>
+                            <div class="community-arguments" id="communistCommunity"></div>
+                        </div>
+                    </div>
+
+                    <div class="topic-actions">
+                        <button id="debateThisTopicBtn" class="action-btn primary">🎯 Debate This Topic</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboardScreen" class="screen">
+                <div class="leaderboard-content">
+                    <div class="leaderboard-header">
+                        <button id="backFromLeaderboardBtn" class="back-btn">← Back to Home</button>
+                        <h2>🏆 Leaderboard</h2>
+                    </div>
+
+                    <div class="leaderboard-tabs">
+                        <button class="tab-btn active" data-tab="top-arguments">Top Arguments</button>
+                        <button class="tab-btn" data-tab="best-debaters">Best Debaters</button>
+                        <button class="tab-btn" data-tab="recent">Recent Activity</button>
+                    </div>
+
+                    <div class="leaderboard-content-area">
+                        <div id="topArgumentsTab" class="tab-content active">
+                            <div class="leaderboard-list" id="topArgumentsList"></div>
+                        </div>
+                        <div id="bestDebatersTab" class="tab-content">
+                            <div class="leaderboard-list" id="bestDebatersList"></div>
+                        </div>
+                        <div id="recentTab" class="tab-content">
+                            <div class="leaderboard-list" id="recentActivityList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="turing-twister.js?v=7"></script>
+</body>
+</html>

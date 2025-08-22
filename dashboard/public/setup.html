@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Setup</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard Initial Setup</h1>
+        <p>Create your admin account to get started</p>
+        <form id="setupForm">
+            <input type="text" id="setupUsername" placeholder="Admin Username" required>
+            <input type="password" id="setupPassword" placeholder="Admin Password" required minlength="8">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required minlength="8">
+            <button type="submit">Create Admin Account</button>
+        </form>
+        <div id="setupMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('setupUsername').value;
+            const password = document.getElementById('setupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageDiv = document.getElementById('setupMessage');
+            
+            if (password !== confirmPassword) {
+                messageDiv.textContent = 'Passwords do not match';
+                messageDiv.className = 'error';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/setup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.textContent = 'Admin account created successfully! Redirecting to login...';
+                    messageDiv.className = 'success';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    messageDiv.textContent = data.error || 'Setup failed';
+                    messageDiv.className = 'error';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Network error. Please try again.';
+                messageDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

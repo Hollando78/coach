@@ -1,0 +1,43 @@
+2.219.204.114 - - [07/Aug/2025 08:36:37] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 08:40:47] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 08:51:30] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 08:59:00] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:06:39] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:11:50] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:13:28] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:16:11] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:19:18] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:24:27] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:26:21] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:26:36] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:28:49] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:31:15] "GET /world.html HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2025 09:32:28] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:32:45] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:38:39] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:44:19] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:50:54] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:57:39] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 09:58:02] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:01:02] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:05:41] "GET /world.html HTTP/1.1" 200 -
+91.148.243.185 - - [07/Aug/2025 10:08:30] code 400, message Bad request syntax ('\\x16\\x03\\x01\\x00{\\x01\\x00\\x00w\\x03\\x03\\x8fè¿\\x86×o')
+91.148.243.185 - - [07/Aug/2025 10:08:30] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x8fè¿\x86×o" 400 -
+2.219.204.114 - - [07/Aug/2025 10:12:42] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:13:21] code 404, message File not found
+2.219.204.114 - - [07/Aug/2025 10:13:21] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+2.219.204.114 - - [07/Aug/2025 10:13:21] code 404, message File not found
+2.219.204.114 - - [07/Aug/2025 10:13:21] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+2.219.204.114 - - [07/Aug/2025 10:13:21] code 404, message File not found
+2.219.204.114 - - [07/Aug/2025 10:13:21] "GET /favicon.ico HTTP/1.1" 404 -
+2.219.204.114 - - [07/Aug/2025 10:13:21] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:13:26] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:13:26] code 404, message File not found
+2.219.204.114 - - [07/Aug/2025 10:13:26] "GET /favicon.ico HTTP/1.1" 404 -
+2.219.204.114 - - [07/Aug/2025 10:13:30] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:13:31] code 404, message File not found
+2.219.204.114 - - [07/Aug/2025 10:13:31] "GET /favicon.ico HTTP/1.1" 404 -
+2.219.204.114 - - [07/Aug/2025 10:13:44] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:15:49] "GET /world.html HTTP/1.1" 200 -
+2.219.204.114 - - [07/Aug/2025 10:16:37] "GET /world.html HTTP/1.1" 200 -
+77.110.113.95 - - [07/Aug/2025 10:18:36] "GET / HTTP/1.1" 200 -

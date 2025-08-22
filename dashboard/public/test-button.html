@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Button Test</title>
+</head>
+<body>
+    <h1>Testing Random Challenge Button</h1>
+    <button id="testBtn">Test Button Click</button>
+    
+    <script>
+        // Load the main app in an iframe
+        const iframe = document.createElement('iframe');
+        iframe.src = '/turing-twister.html';
+        iframe.style.width = '100%';
+        iframe.style.height = '600px';
+        document.body.appendChild(iframe);
+        
+        // Test button to simulate clicks
+        document.getElementById('testBtn').addEventListener('click', () => {
+            console.log('Test button clicked');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const randomBtn = iframeDoc.getElementById('randomChallengeBtn');
+            if (randomBtn) {
+                console.log('Found random challenge button in iframe');
+                randomBtn.click();
+            } else {
+                console.error('Random challenge button not found in iframe');
+            }
+        });
+        
+        // Wait for iframe to load and check for the app instance
+        iframe.onload = () => {
+            console.log('Iframe loaded');
+            setTimeout(() => {
+                const iframeWindow = iframe.contentWindow;
+                if (iframeWindow && iframeWindow.turingTwister) {
+                    console.log('TuringTwister app found:', iframeWindow.turingTwister);
+                    console.log('Topics loaded:', Object.keys(iframeWindow.turingTwister.topics || {}).length);
+                } else {
+                    console.error('TuringTwister app not found in iframe');
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

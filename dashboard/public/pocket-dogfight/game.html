@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pocket Dogfight - HTML5 Multiplayer Arena Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #gameCanvas {
+            background: #2c3e50;
+            border: 2px solid #34495e;
+            flex-grow: 1;
+            width: 100%;
+            max-height: calc(100vh - 120px);
+        }
+
+        #gameUI {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-panel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            pointer-events: auto;
+        }
+
+        #menuPanel {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            min-width: 400px;
+        }
+
+        #gameHUD {
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 80px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        #mobileControls {
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 120px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-stick {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .stick-knob {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        }
+
+        .action-button {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            background: rgba(255, 100, 100, 0.3);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .action-button:active {
+            background: rgba(255, 100, 100, 0.6);
+            transform: scale(0.95);
+        }
+
+        button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 16px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .connection-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin: 5px;
+        }
+
+        .status-connected {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+        }
+
+        .status-connecting {
+            background: rgba(241, 196, 15, 0.3);
+            border: 1px solid #f1c40f;
+        }
+
+        .status-disconnected {
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #e74c3c;
+        }
+
+        .theme-selector {
+            margin: 20px 0;
+        }
+
+        .theme-option {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-option.selected {
+            background: rgba(52, 152, 219, 0.5);
+            border: 2px solid #3498db;
+        }
+
+        .mini-map {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            #menuPanel {
+                min-width: 300px;
+                padding: 20px;
+            }
+            
+            #mobileControls {
+                display: flex !important;
+            }
+        }
+
+        .power-up-indicator {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .power-up-active {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .room-code-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #f39c12;
+            margin: 10px 0;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="gameUI">
+            <!-- Main Menu -->
+            <div id="menuPanel" class="ui-panel">
+                <h1>🛩️ Pocket Dogfight</h1>
+                <p>HTML5 Multiplayer Arena Game</p>
+                
+                <div class="theme-selector">
+                    <h3>Choose Theme:</h3>
+                    <div class="theme-option selected" data-theme="biplanes">
+                        <div>✈️ Biplanes</div>
+                        <small>Thrust-based movement</small>
+                    </div>
+                    <div class="theme-option" data-theme="tanks">
+                        <div>🚗 Tanks</div>
+                        <small>Arcade controls</small>
+                    </div>
+                </div>
+
+                <div id="connectionStatus" class="connection-status status-disconnected">
+                    ⚠️ Connecting to signaling server...
+                </div>
+
+                <div id="menuButtons">
+                    <button id="hostGameBtn">🚀 Host Game</button>
+                    <button id="joinGameBtn">🔗 Join Game</button>
+                </div>
+
+                <div id="joinForm" style="display: none;">
+                    <h3>Enter Room Code:</h3>
+                    <input type="text" id="roomCodeInput" placeholder="ABC123" maxlength="6">
+                    <br>
+                    <button id="connectBtn">Connect</button>
+                    <button id="cancelBtn">Cancel</button>
+                </div>
+
+                <div id="hostingPanel" style="display: none;">
+                    <h3>🎯 Hosting Game</h3>
+                    <p>Room Code:</p>
+                    <div class="room-code-display" id="roomCodeDisplay">------</div>
+                    <p>Waiting for players...</p>
+                    <div id="playersList"></div>
+                    <button id="startGameBtn" disabled>Start Game</button>
+                    <button id="cancelHostBtn">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Game HUD -->
+            <div id="gameHUD" class="ui-panel">
+                <div>
+                    <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+                    <div>KOs: <span id="koDisplay">0</span>/5</div>
+                </div>
+                
+                <div>
+                    <div>Time: <span id="timeDisplay">2:00</span></div>
+                    <div id="gameStatus">Playing</div>
+                </div>
+
+                <div>
+                    <div>Players: <span id="playersDisplay">1/4</span></div>
+                    <button id="exitGameBtn">Exit</button>
+                </div>
+            </div>
+
+            <!-- Power-up Indicator -->
+            <div id="powerUpIndicator" class="power-up-indicator" style="display: none;">
+                <div id="powerUpText">No Power-up</div>
+                <div id="powerUpTimer"></div>
+            </div>
+
+            <!-- Mobile Controls -->
+            <div id="mobileControls" class="ui-panel">
+                <div>
+                    <div class="control-stick" id="moveStick">
+                        <div class="stick-knob" id="moveKnob"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 5px;">Move</div>
+                </div>
+
+                <div style="display: flex; gap: 20px;">
+                    <div>
+                        <div class="action-button" id="fireBtn">🔥</div>
+                        <div style="text-align: center; margin-top: 5px;">Fire</div>
+                    </div>
+                    <div>
+                        <div class="action-button" id="thrustBtn">⚡</div>
+                        <div style="text-align: center; margin-top: 5px;">Thrust</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini-map -->
+            <canvas id="miniMap" class="mini-map" style="display: none;"></canvas>
+        </div>
+    </div>
+
+    <script src="game-engine.js"></script>
+    <script src="networking.js"></script>
+    <script src="game-logic.js"></script>
+</body>
+</html>

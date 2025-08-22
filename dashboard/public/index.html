@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Access - Simple Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .app-card {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        .app-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+        .app-card p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .system-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
+        }
+        .system-toggle {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: underline;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .system-toggle:hover {
+            color: #333;
+        }
+        .system-details {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .system-details.show {
+            display: block;
+        }
+        .health-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 App Dashboard</h1>
+        <p class="subtitle">Simple access to web applications</p>
+        
+        <div class="status-indicator"></div>
+        <span style="color: #666;">All systems operational</span>
+
+        <div class="app-grid">
+            <a href="/god-game/" class="app-card">
+                <h3>🌍 God Game</h3>
+                <p>Multiplayer 3D world simulation</p>
+            </a>
+            
+            <a href="/dragon-flight/" class="app-card">
+                <h3>🐉 Dragon Flight</h3>
+                <p>3D flying adventure game</p>
+            </a>
+            
+            <a href="/game/" class="app-card">
+                <h3>🥚 Dragon Hatchers</h3>
+                <p>Care for your dragon companions</p>
+            </a>
+            
+            <a href="/3d-viewer/" class="app-card">
+                <h3>📦 3D Model Viewer</h3>
+                <p>View GLB/GLTF 3D models</p>
+            </a>
+            
+            <a href="/chess.html" class="app-card">
+                <h3>♟️ Chess Game</h3>
+                <p>Classic chess with AI opponent</p>
+            </a>
+            
+            <a href="/space-invaders.html" class="app-card">
+                <h3>👾 Space Invaders</h3>
+                <p>Retro arcade shooter</p>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><a href="/" style="color: #6366f1; text-decoration: none;">← Back to Main Gallery</a></p>
+            
+            <div class="system-info">
+                <button class="system-toggle" onclick="toggleSystemInfo()">
+                    <span>System Information</span>
+                    <span id="toggleIcon">▼</span>
+                </button>
+                <div class="system-details" id="systemDetails">
+                    <div class="health-indicator">
+                        <div class="status-indicator" id="healthStatus"></div>
+                        <span id="healthText">Checking system status...</span>
+                    </div>
+                    <div id="apiDetails">
+                        <strong>API Health:</strong> <span id="apiStatus">Checking...</span><br>
+                        <strong>Response Time:</strong> <span id="responseTime">-</span><br>
+                        <strong>Last Checked:</strong> <span id="lastChecked">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle system information panel
+        function toggleSystemInfo() {
+            const details = document.getElementById('systemDetails');
+            const icon = document.getElementById('toggleIcon');
+            
+            if (details.classList.contains('show')) {
+                details.classList.remove('show');
+                icon.textContent = '▼';
+            } else {
+                details.classList.add('show');
+                icon.textContent = '▲';
+            }
+        }
+
+        // Enhanced health check with detailed information
+        function performHealthCheck() {
+            const startTime = Date.now();
+            const healthStatus = document.getElementById('healthStatus');
+            const healthText = document.getElementById('healthText');
+            const apiStatus = document.getElementById('apiStatus');
+            const responseTime = document.getElementById('responseTime');
+            const lastChecked = document.getElementById('lastChecked');
+            
+            fetch('/health')
+                .then(response => {
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json().then(data => ({ data, duration }));
+                })
+                .then(({ data, duration }) => {
+                    // Update status indicators
+                    healthStatus.style.background = '#10b981';
+                    healthText.textContent = 'All systems operational';
+                    apiStatus.textContent = 'Healthy';
+                    responseTime.textContent = `${duration}ms`;
+                    lastChecked.textContent = new Date().toLocaleTimeString();
+                    
+                    // Update main status indicator
+                    const mainIndicator = document.querySelector('.status-indicator');
+                    if (mainIndicator) {
+                        mainIndicator.style.background = '#10b981';
+                    }
+                    
+                    console.log('System status:', data.status);
+                })
+                .catch(error => {
+                    // Update status indicators for error
+                    healthStatus.style.background = '#ef4444';
+                    healthText.textContent = 'System issues detected';
+                    apiStatus.textContent = `Error: ${error.message}`;
+                    responseTime.textContent = 'Failed';
+                    lastChecked.textContent = new Date().toLocaleTimeString();
+                    
+                    // Update main status indicator
+                    const mainIndicator = document.querySelector('.status-indicator');
+                    if (mainIndicator) {
+                        mainIndicator.style.background = '#ef4444';
+                    }
+                    
+                    console.log('Health check failed:', error);
+                });
+        }
+
+        // Perform initial health check
+        performHealthCheck();
+        
+        // Perform health check every 30 seconds
+        setInterval(performHealthCheck, 30000);
+    </script>
+</body>
+</html>

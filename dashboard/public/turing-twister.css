@@ -1,0 +1,737 @@
+/* Turing Twister Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+.twister-app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.app-header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.app-header h1 {
+    font-size: 3rem;
+    color: #4a5568;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.4rem;
+    font-weight: 300;
+}
+
+/* Container and Screen Management */
+.container {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.screen {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Home Screen */
+.home-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.app-description h2 {
+    color: #2d3748;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.app-description p {
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Political Compass */
+.political-compass {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.compass-quadrant {
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.compass-quadrant:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.libertarian {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+}
+
+.conservative {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+
+.liberal {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.communist {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.quadrant-label {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.quadrant-desc {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Game Modes */
+.game-modes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.mode-btn {
+    padding: 1.5rem;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.mode-btn.primary {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+}
+
+.mode-btn.secondary {
+    background: rgba(255, 255, 255, 0.8);
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+}
+
+.mode-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.mode-btn span {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: normal;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+}
+
+/* Back Button */
+.back-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.back-btn:hover {
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Challenge Screen */
+.challenge-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.challenge-info h2 {
+    color: #2d3748;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.perspective-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.perspective-badge.libertarian { background: #f59e0b; }
+.perspective-badge.conservative { background: #3b82f6; }
+.perspective-badge.liberal { background: #10b981; }
+.perspective-badge.communist { background: #ef4444; }
+
+.argument-type {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 2rem;
+}
+
+.challenge-prompt {
+    margin-bottom: 2rem;
+}
+
+.prompt-section, .context-section, .example-section {
+    margin-bottom: 1.5rem;
+}
+
+.prompt-section h3 {
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.context-section h4, .example-section h4 {
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.example-argument {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid #8b5cf6;
+}
+
+.example-perspective {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    margin-bottom: 0.5rem;
+}
+
+/* Response Area */
+.response-area {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 2px solid #e2e8f0;
+}
+
+.response-area h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+#userResponse {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+#userResponse:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.response-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+#charCount {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Grading Screen */
+.grading-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.grading-header h2 {
+    color: #2d3748;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.user-argument {
+    margin-bottom: 2rem;
+}
+
+.user-argument h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.argument-display {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #8b5cf6;
+}
+
+.argument-perspective {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    margin-bottom: 0.5rem;
+}
+
+.grading-results {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.grade-card {
+    display: inline-block;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    padding: 2rem;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+.grade-score {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.grade-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.criteria-breakdown {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.criterion {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.criterion:last-child {
+    border-bottom: none;
+}
+
+.criterion-name {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.criterion-score {
+    color: #8b5cf6;
+    font-weight: bold;
+}
+
+.feedback-section {
+    background: #e6fffa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #10b981;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.feedback-section h4 {
+    color: #065f46;
+    margin-bottom: 0.5rem;
+}
+
+.community-section {
+    text-align: center;
+    padding: 1.5rem;
+    background: #fef5e7;
+    border-radius: 15px;
+    border-left: 4px solid #f59e0b;
+}
+
+.community-section h3 {
+    color: #92400e;
+    margin-bottom: 0.5rem;
+}
+
+.community-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.action-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.action-btn:not(.primary) {
+    background: rgba(255, 255, 255, 0.8);
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Browse Screen */
+.browse-content, .topic-detail-content, .leaderboard-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.browse-header h2, .topic-detail-header h2, .leaderboard-header h2 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.topic-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.topic-filters select, .topic-filters input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.topic-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.topic-card h3 {
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.topic-card .category {
+    display: inline-block;
+    background: #8b5cf6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Topic Detail */
+.topic-overview {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.perspectives-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.perspective-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 2px solid #e2e8f0;
+}
+
+.perspective-section h3 {
+    margin-bottom: 1rem;
+}
+
+.official-argument {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #8b5cf6;
+}
+
+.community-arguments {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.community-argument {
+    background: #fefefe;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.argument-vote-score {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+}
+
+/* Leaderboard */
+.leaderboard-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: #f7fafc;
+    padding: 0.5rem;
+    border-radius: 15px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #8b5cf6;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.leaderboard-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rank-badge {
+    background: #8b5cf6;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.rank-badge.gold { background: #f59e0b; }
+.rank-badge.silver { background: #6b7280; }
+.rank-badge.bronze { background: #d97706; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .app-header h1 {
+        font-size: 2rem;
+    }
+    
+    .political-compass {
+        grid-template-columns: 1fr;
+    }
+    
+    .perspectives-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .community-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .topic-filters {
+        flex-direction: column;
+    }
+    
+    .topics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading States */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #8b5cf6;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

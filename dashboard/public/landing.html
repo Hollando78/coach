@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .apps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .app {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .app:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #ddd;
+        }
+
+        .app h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .app p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            color: #333;
+        }
+
+        @media (max-width: 640px) {
+            .apps {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            body {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Apps</h1>
+        <p class="subtitle">Simple web applications</p>
+        
+        <div class="apps">
+            <a href="/god-game/" class="app">
+                <h3>🌍 God Game</h3>
+                <p>Multiplayer 3D world simulation</p>
+            </a>
+            
+            <a href="/territory/" class="app">
+                <h3>🏰 Territory Conquest</h3>
+                <p>Real-time multiplayer strategy game</p>
+            </a>
+            
+            <a href="/dragon-flight/" class="app">
+                <h3>🐉 Dragon Flight</h3>
+                <p>3D flying adventure game</p>
+            </a>
+            
+            <a href="/game/" class="app">
+                <h3>🥚 Dragon Hatchers</h3>
+                <p>Care for your dragon companions</p>
+            </a>
+            
+            <a href="/cat-in-hat/" class="app">
+                <h3>🎩 Cat-in-the-Hat Overflow</h3>
+                <p>Physics-based stacking game with confetti explosions</p>
+            </a>
+            
+            <a href="/3d-viewer/" class="app">
+                <h3>📦 3D Viewer</h3>
+                <p>View 3D models and animations</p>
+            </a>
+            
+            <a href="/chess.html" class="app">
+                <h3>♟️ Chess</h3>
+                <p>Classic chess with AI opponent</p>
+            </a>
+            
+            <a href="/space-invaders.html" class="app">
+                <h3>👾 Space Invaders</h3>
+                <p>Retro arcade shooter</p>
+            </a>
+            
+            <a href="/hiit-timer.html" class="app">
+                <h3>⏱️ HIIT Timer</h3>
+                <p>Interval training timer</p>
+            </a>
+            
+            <a href="/checklist.html" class="app">
+                <h3>📋 Checklist</h3>
+                <p>Simple task management</p>
+            </a>
+            
+            <a href="/photo-to-pdf.html" class="app">
+                <h3>📷 PDF Scanner</h3>
+                <p>Photo to PDF converter</p>
+            </a>
+            
+            <a href="/voice-notes.html" class="app">
+                <h3>🎤 Voice Notes</h3>
+                <p>Record and transcribe audio</p>
+            </a>
+            
+            <a href="/palm-reader.html" class="app">
+                <h3>✋ Palm Reader</h3>
+                <p>Palm analysis tool</p>
+            </a>
+            
+            <a href="/player-time/" class="app">
+                <h3>⚽ Player Time</h3>
+                <p>Sports team rotation manager</p>
+            </a>
+        </div>
+
+        <div class="footer">
+            <a href="/admin">Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

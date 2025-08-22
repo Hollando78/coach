@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: secure-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET}
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - dashboard-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: dashboard-nginx
+    ports:
+      - "8888:80"
+      - "8443:443"
+    volumes:
+      - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+    depends_on:
+      - dashboard
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - dashboard-network
+
+  territory-backend:
+    build:
+      context: ../multiplayer-game/backend
+      dockerfile: Dockerfile.simple
+    container_name: territory-backend
+    ports:
+      - "4003:4003"
+    environment:
+      - NODE_ENV=production
+      - PORT=4003
+      - JWT_ACCESS_SECRET=territory_access_secret_dashboard_2024
+      - JWT_REFRESH_SECRET=territory_refresh_secret_dashboard_2024
+      - ACCESS_TTL=15m
+      - REFRESH_TTL=7d
+      - FRONTEND_ORIGIN=https://stevenhol.land
+      - DATABASE_URL=postgresql://gameuser:gamepass@territory-postgres:5432/territory_game
+      - REDIS_URL=redis://territory-redis:6379
+      - BCRYPT_ROUNDS=12
+      - COOKIE_SECURE=false
+    extra_hosts:
+      - "host.docker.internal:157.180.122.80"
+    restart: unless-stopped
+    depends_on:
+      - dashboard
+    networks:
+      - dashboard-network
+      - multiplayer-game_territory-network
+
+networks:
+  dashboard-network:
+    driver: bridge
+  multiplayer-game_territory-network:
+    external: true

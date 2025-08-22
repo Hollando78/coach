@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIIT Timer - Web App</title>
+    <link rel="stylesheet" href="hiit-timer.css">
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="header">
+            <h1 class="title">HIIT Timer</h1>
+            <a href="/#apps" class="back-link">← Back to Dashboard</a>
+        </div>
+
+        <div class="timer-display">
+            <div class="status-text" id="statusText">READY</div>
+            <div class="timer-text" id="timerText">00:30</div>
+            <div class="round-text" id="roundText">Round 1 of 8</div>
+        </div>
+
+        <div class="controls">
+            <button class="button start-button" id="startButton">START</button>
+            <button class="button reset-button" id="resetButton">RESET</button>
+        </div>
+        
+        <div class="audio-controls">
+            <div>
+                <button class="button test-sound-button" id="testSoundButton">🔊 Test Sound</button>
+                <button class="button voice-toggle-button" id="voiceToggleButton">🎙️ Voice On</button>
+            </div>
+            <div class="audio-status" id="audioStatus">Click "Test Sound" to enable audio</div>
+        </div>
+
+        <div class="settings-container">
+            <div class="setting">
+                <label class="setting-label">Work Time (seconds)</label>
+                <input type="number" class="setting-input" id="workTimeInput" value="30" min="1" max="600">
+            </div>
+            <div class="setting">
+                <label class="setting-label">Rest Time (seconds)</label>
+                <input type="number" class="setting-input" id="restTimeInput" value="10" min="1" max="300">
+            </div>
+            <div class="setting">
+                <label class="setting-label">Number of Rounds</label>
+                <input type="number" class="setting-input" id="roundsInput" value="8" min="1" max="50">
+            </div>
+        </div>
+    </div>
+
+    <script src="hiit-timer.js"></script>
+</body>
+</html>

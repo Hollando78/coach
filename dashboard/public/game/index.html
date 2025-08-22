@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dragon Hatchers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 30%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.02) 50%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.2),
+                0 10px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            text-align: center;
+            max-width: 800px;
+            width: 95%;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .egg {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(45deg, #f4e2b8, #d4af37);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            margin: 30px auto;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 3px solid #b8860b;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .egg:hover {
+            transform: scale(1.05);
+        }
+        
+        .egg::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            top: 30%;
+            left: 30%;
+            opacity: 0.7;
+        }
+        
+        .dragon-display {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #9d50bb 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        /* CSS Dragon Art */
+        .css-dragon {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            transform: scale(0.8);
+        }
+        
+        .dragon-body {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border-radius: 30px 30px 20px 20px;
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
+        }
+        
+        .dragon-head {
+            width: 45px;
+            height: 40px;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border-radius: 50% 50% 30px 30px;
+            position: absolute;
+            top: -15px;
+            left: 37px;
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2);
+        }
+        
+        .dragon-wing {
+            width: 35px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff8c42, #ffa652);
+            border-radius: 20px 5px 5px 20px;
+            position: absolute;
+            top: 25px;
+            transform-origin: bottom center;
+            animation: wingFlap 2s ease-in-out infinite;
+        }
+        
+        .dragon-wing.left {
+            left: -5px;
+            transform: rotate(-20deg);
+        }
+        
+        .dragon-wing.right {
+            right: -5px;
+            transform: rotate(20deg) scaleX(-1);
+        }
+        
+        .dragon-eye {
+            width: 8px;
+            height: 8px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+        }
+        
+        .dragon-eye.left {
+            left: 8px;
+        }
+        
+        .dragon-eye.right {
+            right: 8px;
+        }
+        
+        .dragon-nostril {
+            width: 3px;
+            height: 3px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 18px;
+        }
+        
+        .dragon-nostril.left {
+            left: 12px;
+        }
+        
+        .dragon-nostril.right {
+            right: 12px;
+        }
+        
+        .dragon-tail {
+            width: 25px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border-radius: 50px;
+            position: absolute;
+            top: 40px;
+            left: -15px;
+            transform: rotate(-30deg);
+            transform-origin: top center;
+            animation: tailSway 3s ease-in-out infinite;
+        }
+        
+        .dragon-flame {
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(to top, #ff4444, #ffaa00, #ffff00);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -5px;
+            left: 15px;
+            animation: flameFlicker 0.5s ease-in-out infinite alternate;
+        }
+        
+        /* Dragon Type Variations */
+        .css-dragon.fire .dragon-body,
+        .css-dragon.fire .dragon-head {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+        }
+        
+        .css-dragon.ice .dragon-body,
+        .css-dragon.ice .dragon-head {
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        }
+        
+        .css-dragon.ice .dragon-flame {
+            background: linear-gradient(to top, #3b82f6, #60a5fa, #bfdbfe);
+        }
+        
+        .css-dragon.forest .dragon-body,
+        .css-dragon.forest .dragon-head {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+        }
+        
+        .css-dragon.forest .dragon-flame {
+            background: linear-gradient(to top, #16a34a, #22c55e, #86efac);
+        }
+        
+        .css-dragon.storm .dragon-body,
+        .css-dragon.storm .dragon-head {
+            background: linear-gradient(45deg, #7c3aed, #8b5cf6);
+        }
+        
+        .css-dragon.storm .dragon-flame {
+            background: linear-gradient(to top, #7c3aed, #a855f7, #e9d5ff);
+            animation: lightning 0.3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes wingFlap {
+            0%, 100% { transform: rotate(-20deg) translateY(0px); }
+            50% { transform: rotate(-10deg) translateY(-3px); }
+        }
+        
+        .dragon-wing.right {
+            animation: wingFlapRight 2s ease-in-out infinite;
+        }
+        
+        @keyframes wingFlapRight {
+            0%, 100% { transform: rotate(20deg) scaleX(-1) translateY(0px); }
+            50% { transform: rotate(10deg) scaleX(-1) translateY(-3px); }
+        }
+        
+        @keyframes tailSway {
+            0%, 100% { transform: rotate(-30deg); }
+            50% { transform: rotate(-45deg); }
+        }
+        
+        @keyframes flameFlicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        @keyframes lightning {
+            0% { transform: scale(1) rotate(-1deg); opacity: 0.8; }
+            100% { transform: scale(1.2) rotate(1deg); opacity: 1; }
+        }
+        
+        /* Dragon Stage Evolution Effects */
+        .dragon-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
+            transition: transform 0.3s ease;
+        }
+        
+        .dragon-horn {
+            position: absolute;
+            width: 8px;
+            height: 15px;
+            background: linear-gradient(to top, #8b5a2b, #d4af37);
+            border-radius: 2px 2px 50% 50%;
+            top: -8px;
+        }
+        
+        .dragon-horn.left { left: 8px; transform: rotate(-15deg); }
+        .dragon-horn.right { right: 8px; transform: rotate(15deg); }
+        
+        /* Horns grow with stage */
+        .dragon-horn.juvenile { height: 18px; width: 10px; }
+        .dragon-horn.adult { height: 22px; width: 12px; }
+        .dragon-horn.full-grown { height: 28px; width: 14px; }
+        .dragon-horn.elder { height: 35px; width: 16px; background: linear-gradient(to top, #8b5a2b, #ffd700, #fff); }
+        .dragon-horn.ancient { height: 42px; width: 18px; background: linear-gradient(to top, #8b5a2b, #ffd700, #fff, #e0e7ff); }
+        
+        /* Stage Glows */
+        .stage-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .juvenile-glow {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.3), transparent 70%);
+            animation: gentleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .adult-glow {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 70%);
+            animation: powerGlow 1.5s ease-in-out infinite alternate;
+        }
+        
+        .fullgrown-glow {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.5), transparent 70%);
+            animation: intenseGlow 1s ease-in-out infinite alternate;
+        }
+        
+        .elder-glow {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.6), rgba(236, 72, 153, 0.3), transparent 70%);
+            animation: legendaryGlow 0.8s ease-in-out infinite alternate;
+        }
+        
+        .ancient-glow {
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.8), rgba(255, 255, 255, 0.5), transparent 70%);
+            animation: mythicGlow 0.5s ease-in-out infinite alternate;
+        }
+        
+        /* Power Auras */
+        .power-aura {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: auraRotate 4s linear infinite;
+            z-index: -1;
+        }
+        
+        .power-aura.intense {
+            width: 140px;
+            height: 140px;
+            border-color: rgba(239, 68, 68, 0.7);
+            animation: auraRotate 3s linear infinite, auraPulse 1.5s ease-in-out infinite alternate;
+        }
+        
+        .power-aura.legendary {
+            width: 170px;
+            height: 170px;
+            border-color: rgba(168, 85, 247, 0.8);
+            border-width: 3px;
+            animation: auraRotate 2s linear infinite, auraPulse 1s ease-in-out infinite alternate;
+        }
+        
+        .power-aura.mythic {
+            width: 200px;
+            height: 200px;
+            border: 4px solid rgba(255, 215, 0, 0.9);
+            animation: auraRotate 1s linear infinite, auraPulse 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Level and Stage Indicators */
+        .level-indicator {
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            background: linear-gradient(45deg, #1f2937, #374151);
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: 1px solid #fbbf24;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .stage-badge {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 2px 6px rgba(124, 58, 237, 0.4);
+            white-space: nowrap;
+        }
+        
+        /* Keyframe Animations */
+        @keyframes gentleGlow {
+            0% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        @keyframes powerGlow {
+            0% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.15); }
+        }
+        
+        @keyframes intenseGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        @keyframes legendaryGlow {
+            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.25) rotate(5deg); }
+        }
+        
+        @keyframes mythicGlow {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(10deg); filter: hue-rotate(30deg); }
+        }
+        
+        @keyframes auraRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @keyframes auraPulse {
+            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        /* Battle Animation Effects */
+        @keyframes impactFlash {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        
+        @keyframes shieldPulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes victorySparkle {
+            0% { 
+                transform: translateX(-50%) translateY(0) rotate(0deg); 
+                opacity: 1; 
+                filter: hue-rotate(0deg); 
+            }
+            50% { 
+                transform: translateX(-50%) translateY(-30px) rotate(180deg); 
+                opacity: 0.8; 
+                filter: hue-rotate(90deg); 
+            }
+            100% { 
+                transform: translateX(-50%) translateY(-60px) rotate(360deg); 
+                opacity: 0; 
+                filter: hue-rotate(180deg); 
+            }
+        }
+        
+        /* Enhanced battle screen transitions */
+        .battle-screen {
+            transition: all 0.5s ease;
+        }
+        
+        .battle-dragon-display,
+        .enemy-display {
+            transition: all 0.3s ease;
+        }
+        
+        /* Enhanced Battle Dragons */
+        .battle-dragon-display {
+            font-size: 6em;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 120px;
+        }
+        
+        .battle-css-dragon {
+            transform: scale(0.6);
+        }
+        
+        /* Egg Animation */
+        .dragon-egg {
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(45deg, #d4af37, #f4e2b8);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            margin: 20px auto;
+            border: 3px solid #b8860b;
+            animation: eggWobble 3s ease-in-out infinite;
+        }
+        
+        .dragon-egg::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            top: 25%;
+            left: 30%;
+            opacity: 0.8;
+        }
+        
+        .dragon-egg::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 15px solid #8b4513;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        @keyframes eggWobble {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(2deg); }
+            75% { transform: rotate(-2deg); }
+        }
+        
+        /* Background Patterns */
+        .dragon-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        
+        .dragon-info {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .xp-bar {
+            background: #ddd;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .xp-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .feed-btn {
+            background: linear-gradient(45deg, #dc2626, #b91c1c) !important;
+        }
+        
+        .water-btn {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+        }
+        
+        .timer {
+            font-size: 1.5em;
+            color: #666;
+            margin: 20px 0;
+        }
+        
+        .wild-encounter {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .wild-encounter h2 {
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Overlay System */
+        .overlay-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .overlay-backdrop.active {
+            display: flex;
+        }
+        
+        .overlay-content {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 10px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .overlay-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .close-overlay {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-overlay:hover {
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+            transform: scale(1.1);
+        }
+        
+        .overlay-grid {
+            display: grid;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .action-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #cbd5e1;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-card:hover {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #f1f5f9, #ddd6fe);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #cbd5e1;
+        }
+        
+        .action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .action-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .action-desc {
+            font-size: 0.9em;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .status {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+        
+        /* Dragon Navigation */
+        .dragon-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(45deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            min-width: 60px;
+        }
+        
+        .dragon-counter {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Tabs */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        
+        .tab-btn {
+            background: rgba(0, 0, 0, 0.1);
+            color: #666;
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+            color: white;
+            border-color: #7c3aed;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Stats Display */
+        .dragon-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .stat-item strong {
+            color: #333;
+        }
+        
+        /* Equipment Slots */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .equipment-slot {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .equipment-slot:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: #8b5cf6;
+        }
+        
+        .equipment-slot.equipped {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            border-style: solid;
+        }
+        
+        /* Inventory */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .inventory-item {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .inventory-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            transform: scale(1.05);
+        }
+        
+        .inventory-item.selected {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+        }
+        
+        /* Battle System */
+        .battle-screen {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .battle-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .battle-dragon {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .battle-dragon-display {
+            font-size: 6em;
+            margin: 20px 0;
+        }
+        
+        .hp-bar {
+            background: #475569;
+            border-radius: 10px;
+            height: 15px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .hp-fill {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        .hp-fill.high {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+        
+        .hp-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+        
+        .battle-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .battle-btn {
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .battle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .battle-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐉 Dragon Hatchers</h1>
+        
+        <!-- Navigation Menu -->
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="window.location.href='world.html'" style="background: linear-gradient(45deg, #4caf50, #45a049); color: white; border: none; padding: 15px 30px; margin: 10px; border-radius: 25px; cursor: pointer; font-size: 1.2em; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">🌍 Enter Dragon World</button>
+        </div>
+        
+        <!-- Egg Hatching Screen -->
+        <div class="screen" id="eggScreen">
+            <p>You've received a mysterious dragon egg!</p>
+            <div class="egg" onclick="hatchEgg()"></div>
+            <div class="timer" id="hatchTimer">Click to hatch or wait 3 seconds!</div>
+        </div>
+        
+    </div>
+    
+    <!-- Feeding Overlay -->
+    <div class="overlay-backdrop" id="feedingOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3 class="overlay-title">🍖 Dragon Feeding</h3>
+                <button class="close-overlay" onclick="closeOverlay('feedingOverlay')">✕</button>
+            </div>
+            <div class="care-inventory-status" style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 0.9em;">
+                <h4 style="margin: 0 0 5px 0;">📦 Available Food:</h4>
+                <div id="feedingResourceDisplay">Loading...</div>
+            </div>
+            <div class="overlay-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="action-card" onclick="feedDragon()" id="feedCard">
+                    <span class="action-icon">🍖</span>
+                    <div class="action-title">Feed Dragon</div>
+                    <div class="action-desc">Use berries or food items</div>
+                </div>
+                <div class="action-card" onclick="waterDragon()" id="waterCard">
+                    <span class="action-icon">💧</span>
+                    <div class="action-title">Give Water</div>
+                    <div class="action-desc">Restore HP and happiness</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Overlay -->
+    <div class="overlay-backdrop" id="trainingOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3 class="overlay-title">🏋️ Dragon Training</h3>
+                <button class="close-overlay" onclick="closeOverlay('trainingOverlay')">✕</button>
+            </div>
+            <div class="care-inventory-status" style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 0.9em;">
+                <h4 style="margin: 0 0 5px 0;">🧪 Training Items:</h4>
+                <div id="trainingResourceDisplay">Loading...</div>
+            </div>
+            <div class="overlay-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="action-card" onclick="trainDragon()" id="trainCard">
+                    <span class="action-icon">🏋️</span>
+                    <div class="action-title">Basic Training</div>
+                    <div class="action-desc">Gain XP (costs energy)</div>
+                </div>
+                <div class="action-card" onclick="trainWithItems()" id="trainWithItemsCard">
+                    <span class="action-icon">✨</span>
+                    <div class="action-title">Enhanced Training</div>
+                    <div class="action-desc">Use herbs/crystals for bonus XP</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipment Overlay -->
+    <div class="overlay-backdrop" id="equipmentOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3 class="overlay-title">⚔️ Dragon Equipment</h3>
+                <button class="close-overlay" onclick="closeOverlay('equipmentOverlay')">✕</button>
+            </div>
+            <div class="equipment-grid">
+                <div class="equipment-slot" data-slot="weapon" onclick="openEquipmentSlot('weapon')">
+                    <div>⚔️</div>
+                    <div>Weapon</div>
+                    <div id="weaponSlot">Empty</div>
+                </div>
+                <div class="equipment-slot" data-slot="armor" onclick="openEquipmentSlot('armor')">
+                    <div>🛡️</div>
+                    <div>Armor</div>
+                    <div id="armorSlot">Empty</div>
+                </div>
+                <div class="equipment-slot" data-slot="accessory" onclick="openEquipmentSlot('accessory')">
+                    <div>💎</div>
+                    <div>Accessory</div>
+                    <div id="accessorySlot">Empty</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overlay -->
+    <div class="overlay-backdrop" id="statsOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3 class="overlay-title">📊 Dragon Statistics</h3>
+                <button class="close-overlay" onclick="closeOverlay('statsOverlay')">✕</button>
+            </div>
+            <div class="dragon-stats">
+                <div class="stat-item"><strong>HP:</strong> <span id="dragonHP">50</span> / <span id="dragonMaxHP">50</span></div>
+                <div class="stat-item"><strong>Attack:</strong> <span id="dragonAttack">10</span></div>
+                <div class="stat-item"><strong>Defense:</strong> <span id="dragonDefense">8</span></div>
+                <div class="stat-item"><strong>Speed:</strong> <span id="dragonSpeed">12</span></div>
+                <div class="stat-item"><strong>Happiness:</strong> <span id="dragonHappiness">100</span>%</div>
+                <div class="stat-item"><strong>Energy:</strong> <span id="dragonEnergy">100</span>%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Overlay -->
+    <div class="overlay-backdrop" id="inventoryOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h3 class="overlay-title">🎒 Inventory Management</h3>
+                <button class="close-overlay" onclick="closeOverlay('inventoryOverlay')">✕</button>
+            </div>
+            <div class="inventory-grid" id="inventoryGrid">
+                <!-- Inventory items will be populated by JavaScript -->
+            </div>
+            <button onclick="addSampleItems()" style="margin-top: 20px;">📦 Add Sample Items</button>
+            <button onclick="syncWithWorldInventory()" style="background: linear-gradient(45deg, #4f46e5, #7c3aed); color: white; border: none; padding: 10px 20px; margin: 10px 0; border-radius: 10px; cursor: pointer;">🔄 Sync World Inventory</button>
+        </div>
+    </div>
+
+    <!-- Wild Encounter Popup -->
+    <div class="overlay hidden" id="overlay"></div>
+    <div class="wild-encounter hidden" id="wildEncounter">
+        <h2>🌟 Wild Dragon Spotted!</h2>
+        <div class="dragon-display" id="wildDragonDisplay">🐲</div>
+        <p>A wild <span id="wildDragonType">Dragon</span> has appeared!</p>
+        <button onclick="catchWildDragon()">✨ Try to Catch</button>
+        <button onclick="closeWildEncounter()">❌ Ignore</button>
+    </div>
+    
+    <script>
+        const dragonTypes = ['Fire Dragon', 'Ice Dragon', 'Forest Dragon', 'Storm Dragon'];
+        const dragonEmojis = {
+            'Fire Dragon': '🔥🐲',
+            'Ice Dragon': '❄️🐲', 
+            'Forest Dragon': '🌿🐲',
+            'Storm Dragon': '⚡🐲'
+        };
+        const stageEmojis = {
+            'Hatchling': '🐣',
+            'Child': '🐉',
+            'Full Grown': '🐲'
+        };
+        
+        // Enhanced Game State with multiple dragons and inventory
+        let gameState = {};
+        
+        // Initialize game state with localStorage persistence
+        function initializeGameState() {
+            const savedState = localStorage.getItem('dragonCareSaveData');
+            
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                // Ensure dragons are properly instantiated as Dragon objects
+                gameState.dragons = gameState.dragons.map(dragonData => {
+                    const dragon = new Dragon(dragonData.type, dragonData.name);
+                    Object.assign(dragon, dragonData);
+                    return dragon;
+                });
+            } else {
+                // First time playing - create initial state with egg
+                gameState = {
+                    dragons: [],
+                    currentDragonIndex: 0,
+                    inventory: [],
+                    playerStats: {
+                        gold: 1000,
+                        battles_won: 0,
+                        battles_lost: 0
+                    },
+                    egg: {
+                        hatched: false,
+                        dragonType: dragonTypes[Math.floor(Math.random() * dragonTypes.length)],
+                        hatchTime: 3
+                    },
+                    firstLoad: true
+                };
+            }
+            
+            // Ensure egg state is consistent for first-time users
+            if (!gameState.egg) {
+                gameState.egg = {
+                    hatched: false,
+                    dragonType: dragonTypes[Math.floor(Math.random() * dragonTypes.length)],
+                    hatchTime: 3
+                };
+            }
+            
+            console.log('Game state initialized:', gameState);
+        }
+        
+        // Helper function to reset egg (for testing - call from browser console)
+        function resetEgg() {
+            gameState.egg = {
+                hatched: false,
+                dragonType: dragonTypes[Math.floor(Math.random() * dragonTypes.length)],
+                hatchTime: 3
+            };
+            gameState.firstLoad = true;
+            gameState.dragons = [];
+            saveGameState();
+            console.log('Egg reset! Refresh the page to see the egg screen.');
+        }
+        
+        // Force show egg screen for debugging (call from browser console)
+        function showEggScreenDebug() {
+            console.log('Forcing egg screen display...');
+            document.getElementById('eggScreen').classList.remove('active');
+            document.getElementById('careScreen').classList.remove('active');
+            document.getElementById('eggScreen').classList.add('active');
+            console.log('Egg screen classes:', document.getElementById('eggScreen').classList);
+            setTimeout(() => {
+                console.log('Starting timer...');
+                startHatchTimer();
+            }, 200);
+        }
+        
+        // Debug function to check current state
+        function debugGameState() {
+            console.log('=== GAME STATE DEBUG ===');
+            console.log('gameState:', gameState);
+            console.log('dragons.length:', gameState.dragons ? gameState.dragons.length : 'undefined');
+            console.log('egg.hatched:', gameState.egg ? gameState.egg.hatched : 'undefined');
+            console.log('firstLoad:', gameState.firstLoad);
+            console.log('localStorage data:', localStorage.getItem('dragonCareSaveData'));
+            console.log('Active screen:', document.querySelector('.screen.active'));
+            console.log('Egg screen visible?', document.getElementById('eggScreen').classList.contains('active'));
+            console.log('Timer element exists?', !!document.getElementById('hatchTimer'));
+            console.log('========================');
+        }
+        
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('dragonCareSaveData', JSON.stringify(gameState));
+        }
+        
+        // Overlay Management System
+        function openOverlay(overlayId) {
+            document.getElementById(overlayId).classList.add('active');
+            updateOverlayContent(overlayId);
+        }
+        
+        function closeOverlay(overlayId) {
+            document.getElementById(overlayId).classList.remove('active');
+        }
+        
+        function openFeedingOverlay() {
+            openOverlay('feedingOverlay');
+            updateFeedingResourceDisplay();
+        }
+        
+        function openTrainingOverlay() {
+            openOverlay('trainingOverlay');
+            updateTrainingResourceDisplay();
+        }
+        
+        function openEquipmentOverlay() {
+            openOverlay('equipmentOverlay');
+            updateEquipmentDisplay();
+        }
+        
+        function openStatsOverlay() {
+            openOverlay('statsOverlay');
+            updateStatsDisplay();
+        }
+        
+        function openInventoryOverlay() {
+            openOverlay('inventoryOverlay');
+            updateInventoryDisplay();
+        }
+        
+        function updateOverlayContent(overlayId) {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            switch(overlayId) {
+                case 'feedingOverlay':
+                    updateFeedingResourceDisplay();
+                    break;
+                case 'trainingOverlay':
+                    updateTrainingResourceDisplay();
+                    break;
+                case 'equipmentOverlay':
+                    updateEquipmentDisplay();
+                    break;
+                case 'statsOverlay':
+                    updateStatsDisplay();
+                    break;
+                case 'inventoryOverlay':
+                    updateInventoryDisplay();
+                    break;
+            }
+        }
+        
+        function updateFeedingResourceDisplay() {
+            const display = document.getElementById('feedingResourceDisplay');
+            if (!display) return;
+            
+            const foodItems = gameState.inventory.filter(item => 
+                item.name === 'berries' || item.name === 'supplies' || item.type === 'consumable'
+            );
+            const waterItems = gameState.inventory.filter(item => item.name === 'water');
+            
+            let html = '';
+            if (foodItems.length > 0) {
+                html += '🍖 Food: ';
+                foodItems.forEach(item => {
+                    html += `${item.name} x${item.quantity}, `;
+                });
+                html = html.slice(0, -2) + '<br>';
+            }
+            if (waterItems.length > 0) {
+                html += '💧 Water: ';
+                waterItems.forEach(item => {
+                    html += `${item.name} x${item.quantity}, `;
+                });
+                html = html.slice(0, -2);
+            }
+            
+            if (html === '') {
+                html = '❌ No food or water available. Visit the world to gather resources.';
+            }
+            
+            display.innerHTML = html;
+            
+            // Update card states
+            updateFeedingCardStates();
+        }
+        
+        function updateTrainingResourceDisplay() {
+            const display = document.getElementById('trainingResourceDisplay');
+            if (!display) return;
+            
+            const trainingItems = gameState.inventory.filter(item => 
+                item.name === 'herbs' || item.name === 'crystals' || item.name === 'rare_crystals'
+            );
+            
+            let html = '';
+            if (trainingItems.length > 0) {
+                trainingItems.forEach(item => {
+                    html += `${item.name} x${item.quantity}, `;
+                });
+                html = html.slice(0, -2);
+            } else {
+                html = '📦 No training items. Basic training available without items.';
+            }
+            
+            display.innerHTML = html;
+            
+            // Update card states
+            updateTrainingCardStates();
+        }
+        
+        function updateFeedingCardStates() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            const feedCard = document.getElementById('feedCard');
+            const waterCard = document.getElementById('waterCard');
+            
+            const foodItems = gameState.inventory.filter(item => 
+                item.name === 'berries' || item.name === 'supplies' || item.type === 'consumable'
+            );
+            const waterItems = gameState.inventory.filter(item => item.name === 'water');
+            
+            // Update feed card
+            if (foodItems.length === 0) {
+                feedCard.classList.add('disabled');
+            } else {
+                feedCard.classList.remove('disabled');
+            }
+            
+            // Update water card
+            if (waterItems.length === 0) {
+                waterCard.classList.add('disabled');
+            } else {
+                waterCard.classList.remove('disabled');
+            }
+        }
+        
+        function updateTrainingCardStates() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            const trainCard = document.getElementById('trainCard');
+            const trainWithItemsCard = document.getElementById('trainWithItemsCard');
+            
+            const trainingItems = gameState.inventory.filter(item => 
+                item.name === 'herbs' || item.name === 'crystals' || item.name === 'rare_crystals'
+            );
+            
+            // Basic training - check energy
+            if (dragon.energy < 20) {
+                trainCard.classList.add('disabled');
+                trainCard.querySelector('.action-desc').textContent = 'Dragon too tired (needs 20 energy)';
+            } else {
+                trainCard.classList.remove('disabled');
+                trainCard.querySelector('.action-desc').textContent = 'Gain XP (costs energy)';
+            }
+            
+            // Enhanced training - check energy and items
+            if (dragon.energy < 20 || trainingItems.length === 0) {
+                trainWithItemsCard.classList.add('disabled');
+                if (dragon.energy < 20) {
+                    trainWithItemsCard.querySelector('.action-desc').textContent = 'Dragon too tired';
+                } else {
+                    trainWithItemsCard.querySelector('.action-desc').textContent = 'No training items available';
+                }
+            } else {
+                trainWithItemsCard.classList.remove('disabled');
+                trainWithItemsCard.querySelector('.action-desc').textContent = 'Use herbs/crystals for bonus XP';
+            }
+        }
+        
+        // Enhanced training function
+        function trainWithItems() {
+            const dragon = getCurrentDragon();
+            if (!dragon || dragon.energy < 20) {
+                setStatus('🏋️ Your dragon is too tired to train! Feed them to restore energy.');
+                return;
+            }
+            
+            const trainingItems = gameState.inventory.filter(item => 
+                item.name === 'herbs' || item.name === 'crystals' || item.name === 'rare_crystals'
+            );
+            
+            if (trainingItems.length === 0) {
+                setStatus('🏋️ No training items available! Using basic training instead.');
+                trainDragon();
+                return;
+            }
+            
+            // Use the best available item
+            const item = trainingItems.sort((a, b) => {
+                const values = { 'herbs': 1, 'crystals': 2, 'rare_crystals': 3 };
+                return values[b.name] - values[a.name];
+            })[0];
+            
+            const itemIndex = gameState.inventory.findIndex(i => i.name === item.name);
+            
+            // Consume the item
+            gameState.inventory[itemIndex].quantity--;
+            if (gameState.inventory[itemIndex].quantity <= 0) {
+                gameState.inventory.splice(itemIndex, 1);
+            }
+            
+            let xpGain = 2; // Base
+            if (item.name === 'herbs') xpGain = 6;
+            else if (item.name === 'crystals') xpGain = 10;
+            else if (item.name === 'rare_crystals') xpGain = 15;
+            
+            dragon.energy -= 20;
+            
+            const result = dragon.gainXP(xpGain);
+            if (result.levelUp) {
+                if (result.evolved) {
+                    setStatus(`🏋️ Enhanced training with ${item.name}! +${xpGain} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`);
+                } else {
+                    setStatus(`🏋️ Enhanced training with ${item.name}! +${xpGain} XP - Level Up! 🎉`);
+                }
+            } else {
+                setStatus(`🏋️ Enhanced training with ${item.name}! +${xpGain} XP`);
+            }
+            
+            updateDragonDisplay();
+            updateOverlayContent('trainingOverlay');
+            saveGameState();
+        }
+        
+        // Dragon Class
+        class Dragon {
+            constructor(type, name) {
+                this.id = Date.now() + Math.random();
+                this.name = name || type;
+                this.type = type;
+                this.stage = 'Hatchling';
+                this.level = 1;
+                this.xp = 0;
+                this.hp = 50;
+                this.maxHP = 50;
+                this.attack = 10;
+                this.defense = 8;
+                this.speed = 12;
+                this.happiness = 100;
+                this.energy = 100;
+                this.equipment = {
+                    weapon: null,
+                    armor: null,
+                    accessory: null
+                };
+            }
+            
+            levelUp() {
+                this.level++;
+                this.maxHP += Math.floor(5 + Math.random() * 5);
+                this.hp = this.maxHP;
+                this.attack += Math.floor(2 + Math.random() * 3);
+                this.defense += Math.floor(1 + Math.random() * 3);
+                this.speed += Math.floor(1 + Math.random() * 2);
+                this.xp = 0;
+                
+                // Update dragon stage based on level
+                this.updateStage();
+            }
+            
+            updateStage() {
+                const oldStage = this.stage;
+                
+                if (this.level >= 50) {
+                    this.stage = 'Ancient';
+                } else if (this.level >= 30) {
+                    this.stage = 'Elder';
+                } else if (this.level >= 20) {
+                    this.stage = 'Full Grown';
+                } else if (this.level >= 10) {
+                    this.stage = 'Adult';
+                } else if (this.level >= 5) {
+                    this.stage = 'Juvenile';
+                } else {
+                    this.stage = 'Hatchling';
+                }
+                
+                // Return true if stage changed for evolution notification
+                return oldStage !== this.stage;
+            }
+            
+            getMaxXP() {
+                return this.level * 10 + 5;
+            }
+            
+            gainXP(amount = 1) {
+                this.xp += amount;
+                if (this.xp >= this.getMaxXP()) {
+                    const evolved = this.updateStage();
+                    this.levelUp();
+                    return { levelUp: true, evolved: evolved, newStage: this.stage };
+                }
+                return { levelUp: false, evolved: false };
+            }
+            
+            getTotalAttack() {
+                let bonus = 0;
+                if (this.equipment.weapon) bonus += this.equipment.weapon.attack || 0;
+                return this.attack + bonus;
+            }
+            
+            getTotalDefense() {
+                let bonus = 0;
+                if (this.equipment.armor) bonus += this.equipment.armor.defense || 0;
+                return this.defense + bonus;
+            }
+        }
+        
+        // Equipment and Items
+        const itemDatabase = {
+            // Weapons
+            'Iron Claw': { type: 'weapon', attack: 5, price: 100, emoji: '🗡️' },
+            'Fire Blade': { type: 'weapon', attack: 8, price: 200, emoji: '🔥⚔️' },
+            'Ice Spear': { type: 'weapon', attack: 7, price: 180, emoji: '❄️🗡️' },
+            'Dragon Fang': { type: 'weapon', attack: 12, price: 500, emoji: '🦷' },
+            
+            // Armor
+            'Leather Scale': { type: 'armor', defense: 3, price: 80, emoji: '🛡️' },
+            'Iron Scales': { type: 'armor', defense: 6, price: 150, emoji: '⚙️' },
+            'Dragon Hide': { type: 'armor', defense: 10, price: 400, emoji: '🐉' },
+            
+            // Accessories
+            'Ruby Ring': { type: 'accessory', attack: 2, defense: 1, price: 120, emoji: '💍' },
+            'Sapphire Amulet': { type: 'accessory', speed: 3, price: 150, emoji: '💎' },
+            'Dragon Charm': { type: 'accessory', attack: 3, defense: 2, price: 300, emoji: '🧿' },
+            
+            // Consumables
+            'Health Potion': { type: 'consumable', heal: 25, price: 50, emoji: '🧪' },
+            'Energy Drink': { type: 'consumable', energy: 30, price: 40, emoji: '⚡' },
+            'Dragon Treat': { type: 'consumable', happiness: 20, price: 30, emoji: '🍖' },
+            'XP Boost': { type: 'consumable', xp: 10, price: 80, emoji: '⭐' }
+        };
+        
+        let currentTab = 'care';
+        let battleState = null;
+        let hatchCountdown;
+        
+        function startHatchTimer() {
+            console.log('startHatchTimer called, gameState.egg:', gameState.egg);
+            let timeLeft = gameState.egg.hatchTime;
+            const timerEl = document.getElementById('hatchTimer');
+            
+            console.log('Timer element found:', timerEl);
+            console.log('Timer element display style:', timerEl ? getComputedStyle(timerEl).display : 'element not found');
+            console.log('Egg screen active?', document.getElementById('eggScreen').classList.contains('active'));
+            
+            if (!timerEl) {
+                console.error('Timer element not found!');
+                return;
+            }
+            
+            // Clear any existing timer
+            if (hatchCountdown) {
+                console.log('Clearing existing timer');
+                clearInterval(hatchCountdown);
+            }
+            
+            console.log('Starting hatch timer with time:', timeLeft);
+            
+            // Initial display
+            timerEl.textContent = `Auto-hatch in ${timeLeft} seconds (or click to hatch now!)`;
+            console.log('Set initial timer text:', timerEl.textContent);
+            
+            hatchCountdown = setInterval(() => {
+                try {
+                    timeLeft--;
+                    console.log('Timer tick, time left:', timeLeft);
+                    
+                    const currentTimerEl = document.getElementById('hatchTimer');
+                    if (!currentTimerEl) {
+                        console.error('Timer element disappeared during countdown!');
+                        clearInterval(hatchCountdown);
+                        return;
+                    }
+                    
+                    if (timeLeft > 0) {
+                        currentTimerEl.textContent = `Auto-hatch in ${timeLeft} seconds (or click to hatch now!)`;
+                    } else {
+                        clearInterval(hatchCountdown);
+                        console.log('Timer reached 0, hatching egg...');
+                        hatchEgg();
+                    }
+                } catch (error) {
+                    console.error('Error in timer interval:', error);
+                    clearInterval(hatchCountdown);
+                }
+            }, 1000);
+            
+            console.log('Timer interval set, hatchCountdown:', hatchCountdown);
+        }
+        
+        function hatchEgg() {
+            console.log('hatchEgg called!');
+            console.log('gameState.egg at hatch time:', gameState.egg);
+            
+            if (gameState.egg.hatched) {
+                console.log('Egg already hatched, returning');
+                return;
+            }
+            
+            console.log('Hatching egg...');
+            clearInterval(hatchCountdown);
+            gameState.egg.hatched = true;
+            gameState.firstLoad = false; // No longer first load
+            
+            // Create first dragon
+            const newDragon = new Dragon(gameState.egg.dragonType, gameState.egg.dragonType);
+            gameState.dragons.push(newDragon);
+            gameState.currentDragonIndex = 0;
+            console.log('Created new dragon:', newDragon);
+            
+            // Give starter supplies for new players
+            addItem('berries', 5);
+            addItem('water', 3);
+            addItem('herbs', 2);
+            addItem('Health Potion', 2);
+            
+            setStatus('🎉 Your egg has hatched! Welcome your new dragon!');
+            saveGameState();
+            
+            // Redirect to world with success message
+            setTimeout(() => {
+                window.location.href = 'world.html?hatched=true';
+            }, 2000);
+        }
+        
+        // Function to sync inventory with world game
+        function syncWithWorldInventory() {
+            // Get world inventory from localStorage if available
+            const worldData = localStorage.getItem('worldGameData');
+            if (worldData) {
+                const worldGameState = JSON.parse(worldData);
+                if (worldGameState.inventory) {
+                    let itemsAdded = 0;
+                    let goldAdded = 0;
+                    
+                    // Merge world inventory into dragon care inventory
+                    worldGameState.inventory.forEach(worldItem => {
+                        const existingItem = gameState.inventory.find(item => item.name === worldItem.name);
+                        if (existingItem) {
+                            existingItem.quantity += worldItem.quantity;
+                        } else {
+                            gameState.inventory.push({...worldItem});
+                        }
+                        itemsAdded += worldItem.quantity;
+                    });
+                    
+                    // Sync gold
+                    if (worldGameState.gold > gameState.playerStats.gold) {
+                        goldAdded = worldGameState.gold - gameState.playerStats.gold;
+                        gameState.playerStats.gold = worldGameState.gold;
+                    }
+                    
+                    updateInventoryDisplay();
+                    saveGameState();
+                    
+                    // Show feedback
+                    if (itemsAdded > 0 || goldAdded > 0) {
+                        setStatus(`🔄 Synced! +${itemsAdded} items, +${goldAdded} gold from world inventory`);
+                    } else {
+                        setStatus('🔄 Already synced with world inventory');
+                    }
+                } else {
+                    setStatus('📭 No world inventory found. Play in the open world first!');
+                }
+            } else {
+                setStatus('📭 No world save data found. Play in the open world first!');
+            }
+        }
+        
+        function getCurrentDragon() {
+            return gameState.dragons[gameState.currentDragonIndex];
+        }
+        
+        function updateCareResourceDisplay() {
+            const resourceDisplay = document.getElementById('careResourceDisplay');
+            if (!resourceDisplay) return;
+            
+            const foodItems = gameState.inventory.filter(item => 
+                item.name === 'berries' || item.name === 'supplies' || item.type === 'consumable'
+            );
+            const waterItems = gameState.inventory.filter(item => item.name === 'water');
+            const trainingItems = gameState.inventory.filter(item => 
+                item.name === 'herbs' || item.name === 'crystals' || item.name === 'rare_crystals'
+            );
+            
+            let display = '';
+            
+            // Food display
+            if (foodItems.length > 0) {
+                const totalFood = foodItems.reduce((sum, item) => sum + item.quantity, 0);
+                display += `🍖 Food: ${totalFood} (${foodItems.map(i => `${i.quantity} ${i.name}`).join(', ')})<br>`;
+            } else {
+                display += '🍖 Food: None - <span style="color: #e11d48;">Go collect berries in the world!</span><br>';
+            }
+            
+            // Water display
+            if (waterItems.length > 0) {
+                const totalWater = waterItems.reduce((sum, item) => sum + item.quantity, 0);
+                display += `💧 Water: ${totalWater}<br>`;
+            } else {
+                display += '💧 Water: None - <span style="color: #e11d48;">Go collect water from wells!</span><br>';
+            }
+            
+            // Training items display
+            if (trainingItems.length > 0) {
+                const totalTraining = trainingItems.reduce((sum, item) => sum + item.quantity, 0);
+                display += `🏋️ Training Items: ${totalTraining} (${trainingItems.map(i => `${i.quantity} ${i.name}`).join(', ')})`;
+            } else {
+                display += '🏋️ Training Items: None - <span style="color: #94a3b8;">Optional for enhanced training</span>';
+            }
+            
+            resourceDisplay.innerHTML = display;
+        }
+        
+        function updateDragonDisplay() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            // Create CSS dragon art
+            const display = document.getElementById('dragonDisplay');
+            display.innerHTML = createDragonArt(dragon);
+            
+            document.getElementById('dragonName').textContent = dragon.name;
+            document.getElementById('dragonType').textContent = dragon.type;
+            document.getElementById('dragonStage').textContent = dragon.stage;
+            document.getElementById('dragonLevel').textContent = dragon.level;
+            document.getElementById('currentXP').textContent = dragon.xp;
+            document.getElementById('maxXP').textContent = dragon.getMaxXP();
+            
+            const xpPercent = (dragon.xp / dragon.getMaxXP()) * 100;
+            document.getElementById('xpFill').style.width = xpPercent + '%';
+            
+            // Update stats
+            updateStatsDisplay();
+            updateEquipmentDisplay();
+            updateDragonNeeds();
+        }
+        
+        function updateDragonNeeds() {
+            const dragon = getCurrentDragon();
+            const needsEl = document.getElementById('dragonNeeds');
+            if (!dragon || !needsEl) return;
+            
+            let needs = [];
+            let priority = [];
+            
+            // High priority needs (below 30%)
+            if (dragon.hp < dragon.maxHP * 0.3) priority.push('💔 Critical HP');
+            if (dragon.energy < 30) priority.push('😴 Very tired');
+            if (dragon.happiness < 30) priority.push('😢 Very sad');
+            
+            // Medium priority needs (below 70%)
+            if (dragon.hp < dragon.maxHP * 0.7 && dragon.hp >= dragon.maxHP * 0.3) needs.push('❤️ Low HP');
+            if (dragon.energy < 70 && dragon.energy >= 30) needs.push('⚡ Needs energy');
+            if (dragon.happiness < 70 && dragon.happiness >= 30) needs.push('😐 Could be happier');
+            
+            let message = '';
+            if (priority.length > 0) {
+                message = `🚨 URGENT: ${priority.join(', ')}`;
+            } else if (needs.length > 0) {
+                message = `💡 Needs: ${needs.join(', ')}`;
+            } else {
+                message = `✨ ${dragon.name} is doing great! All stats healthy.`;
+            }
+            
+            needsEl.textContent = message;
+        }
+        
+        function createDragonArt(dragon) {
+            if (dragon.stage === 'Hatchling' && dragon.level === 1 && dragon.xp === 0) {
+                // Show egg for brand new dragons
+                return '<div class="dragon-egg"></div>';
+            }
+            
+            // Determine dragon type class
+            let typeClass = 'fire'; // default
+            if (dragon.type.includes('Ice')) typeClass = 'ice';
+            else if (dragon.type.includes('Forest')) typeClass = 'forest';
+            else if (dragon.type.includes('Storm')) typeClass = 'storm';
+            
+            // Determine stage class for size and power scaling
+            let stageClass = dragon.stage.toLowerCase().replace(' ', '-');
+            let sizeModifier = '';
+            let specialEffects = '';
+            
+            // Stage-based size and effects
+            switch(dragon.stage) {
+                case 'Hatchling':
+                    sizeModifier = 'transform: scale(0.7);';
+                    break;
+                case 'Juvenile':
+                    sizeModifier = 'transform: scale(0.85);';
+                    specialEffects = '<div class="stage-glow juvenile-glow"></div>';
+                    break;
+                case 'Adult':
+                    sizeModifier = 'transform: scale(1.0);';
+                    specialEffects = '<div class="stage-glow adult-glow"></div><div class="power-aura"></div>';
+                    break;
+                case 'Full Grown':
+                    sizeModifier = 'transform: scale(1.2);';
+                    specialEffects = `
+                        <div class="stage-glow fullgrown-glow"></div>
+                        <div class="power-aura intense"></div>
+                        <div class="mastery-rings"></div>
+                    `;
+                    break;
+                case 'Elder':
+                    sizeModifier = 'transform: scale(1.4);';
+                    specialEffects = `
+                        <div class="stage-glow elder-glow"></div>
+                        <div class="power-aura legendary"></div>
+                        <div class="mastery-rings elder"></div>
+                        <div class="wisdom-crystals"></div>
+                    `;
+                    break;
+                case 'Ancient':
+                    sizeModifier = 'transform: scale(1.6);';
+                    specialEffects = `
+                        <div class="stage-glow ancient-glow"></div>
+                        <div class="power-aura mythic"></div>
+                        <div class="mastery-rings ancient"></div>
+                        <div class="wisdom-crystals ancient"></div>
+                        <div class="reality-distortion"></div>
+                    `;
+                    break;
+            }
+            
+            return `
+                <div class="dragon-container" style="${sizeModifier}">
+                    <div class="css-dragon ${typeClass} ${stageClass}" data-level="${dragon.level}">
+                        ${specialEffects}
+                        <div class="dragon-tail ${stageClass}"></div>
+                        <div class="dragon-wing left ${stageClass}"></div>
+                        <div class="dragon-wing right ${stageClass}"></div>
+                        <div class="dragon-body ${stageClass}"></div>
+                        <div class="dragon-head ${stageClass}">
+                            <div class="dragon-eye left ${stageClass}"></div>
+                            <div class="dragon-eye right ${stageClass}"></div>
+                            <div class="dragon-nostril left"></div>
+                            <div class="dragon-nostril right"></div>
+                            <div class="dragon-horn left ${stageClass}"></div>
+                            <div class="dragon-horn right ${stageClass}"></div>
+                        </div>
+                        <div class="dragon-flame ${typeClass} ${stageClass}"></div>
+                        <div class="level-indicator">Lv.${dragon.level}</div>
+                        <div class="stage-badge">${dragon.stage}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateStatsDisplay() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            document.getElementById('dragonHP').textContent = dragon.hp;
+            document.getElementById('dragonMaxHP').textContent = dragon.maxHP;
+            document.getElementById('dragonAttack').textContent = dragon.getTotalAttack();
+            document.getElementById('dragonDefense').textContent = dragon.getTotalDefense();
+            document.getElementById('dragonSpeed').textContent = dragon.speed;
+            document.getElementById('dragonHappiness').textContent = dragon.happiness;
+            document.getElementById('dragonEnergy').textContent = dragon.energy;
+        }
+        
+        function updateEquipmentDisplay() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            document.getElementById('weaponSlot').textContent = 
+                dragon.equipment.weapon ? dragon.equipment.weapon.name : 'Empty';
+            document.getElementById('armorSlot').textContent = 
+                dragon.equipment.armor ? dragon.equipment.armor.name : 'Empty';
+            document.getElementById('accessorySlot').textContent = 
+                dragon.equipment.accessory ? dragon.equipment.accessory.name : 'Empty';
+                
+            // Update care resource display
+            updateCareResourceDisplay();
+        }
+        
+        function updateDragonNavigation() {
+            document.getElementById('currentDragonIndex').textContent = gameState.currentDragonIndex + 1;
+            document.getElementById('totalDragons').textContent = gameState.dragons.length;
+        }
+        
+        // Dragon Navigation
+        function previousDragon() {
+            if (gameState.dragons.length <= 1) return;
+            gameState.currentDragonIndex = (gameState.currentDragonIndex - 1 + gameState.dragons.length) % gameState.dragons.length;
+            updateDragonDisplay();
+            updateDragonNavigation();
+        }
+        
+        function nextDragon() {
+            if (gameState.dragons.length <= 1) return;
+            gameState.currentDragonIndex = (gameState.currentDragonIndex + 1) % gameState.dragons.length;
+            updateDragonDisplay();
+            updateDragonNavigation();
+        }
+        
+        // Legacy function kept for compatibility
+        function switchTab(tabName) {
+            console.log('Legacy switchTab called:', tabName);
+            // Tab system replaced with overlays - this function is kept for compatibility
+        }
+        
+        // Dragon Care Functions
+        function feedDragon() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            // Check if player has food items in inventory
+            const foodItems = gameState.inventory.filter(item => 
+                item.name === 'berries' || item.name === 'supplies' || item.type === 'consumable'
+            );
+            
+            if (foodItems.length === 0) {
+                setStatus('🍖 No food in inventory! Go to the open world to collect berries or supplies.');
+                return;
+            }
+            
+            // Use the first available food item
+            const foodItem = foodItems[0];
+            const itemIndex = gameState.inventory.findIndex(item => item.name === foodItem.name);
+            
+            // Consume the food item
+            gameState.inventory[itemIndex].quantity--;
+            if (gameState.inventory[itemIndex].quantity <= 0) {
+                gameState.inventory.splice(itemIndex, 1);
+            }
+            
+            // Different foods give different benefits
+            let xpGain = 2;
+            let happinessGain = 5;
+            let energyGain = 25; // Increased from 10 to support training (needs 20)
+            
+            if (foodItem.name === 'berries') {
+                xpGain = 3;
+                happinessGain = 8;
+                energyGain = 30; // Berries give more energy
+            } else if (foodItem.name === 'supplies') {
+                xpGain = 4;
+                energyGain = 35; // Supplies give even more energy
+            }
+            
+            const result = dragon.gainXP(xpGain);
+            if (result.levelUp) {
+                if (result.evolved) {
+                    setStatus(`🍖 Fed your dragon ${foodItem.name}! +${xpGain} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`);
+                } else {
+                    setStatus(`🍖 Fed your dragon ${foodItem.name}! +${xpGain} XP - Level Up! 🎉`);
+                }
+            } else {
+                setStatus(`🍖 Fed your dragon ${foodItem.name}! +${xpGain} XP`);
+            }
+            
+            dragon.happiness = Math.min(100, dragon.happiness + happinessGain);
+            dragon.energy = Math.min(100, dragon.energy + energyGain);
+            updateDragonDisplay();
+            updateInventoryDisplay();
+            
+            // Update feeding overlay if open
+            if (document.getElementById('feedingOverlay').classList.contains('active')) {
+                updateFeedingResourceDisplay();
+            }
+            
+            saveGameState();
+            
+            // Check for wild encounter
+            if (Math.random() < 0.03) {
+                setTimeout(() => triggerWildEncounter(), 1000);
+            }
+        }
+        
+        function waterDragon() {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            // Check if player has water in inventory
+            const waterItems = gameState.inventory.filter(item => item.name === 'water');
+            
+            if (waterItems.length === 0) {
+                setStatus('💧 No water in inventory! Go to the open world to collect water from wells or springs.');
+                return;
+            }
+            
+            // Use water from inventory
+            const waterIndex = gameState.inventory.findIndex(item => item.name === 'water');
+            gameState.inventory[waterIndex].quantity--;
+            if (gameState.inventory[waterIndex].quantity <= 0) {
+                gameState.inventory.splice(waterIndex, 1);
+            }
+            
+            const xpGain = 1;
+            const happinessGain = 3;
+            const hpGain = 5;
+            
+            const result = dragon.gainXP(xpGain);
+            if (result.levelUp) {
+                if (result.evolved) {
+                    setStatus(`💧 Gave water to your dragon! +${xpGain} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`);
+                } else {
+                    setStatus(`💧 Gave water to your dragon! +${xpGain} XP - Level Up! 🎉`);
+                }
+            } else {
+                setStatus(`💧 Gave water to your dragon! +${xpGain} XP`);
+            }
+            
+            dragon.happiness = Math.min(100, dragon.happiness + happinessGain);
+            dragon.hp = Math.min(dragon.maxHP, dragon.hp + hpGain);
+            updateDragonDisplay();
+            updateInventoryDisplay();
+            
+            // Update feeding overlay if open
+            if (document.getElementById('feedingOverlay').classList.contains('active')) {
+                updateFeedingResourceDisplay();
+            }
+            
+            saveGameState();
+        }
+        
+        function trainDragon() {
+            const dragon = getCurrentDragon();
+            if (!dragon || dragon.energy < 20) {
+                setStatus('🏋️ Your dragon is too tired to train! Feed them to restore energy.');
+                return;
+            }
+            
+            // Check if player has training items (herbs or crystals for enhanced training)
+            const trainingItems = gameState.inventory.filter(item => 
+                item.name === 'herbs' || item.name === 'crystals' || item.name === 'rare_crystals'
+            );
+            
+            let xpGain = 2; // Base XP without items
+            let itemUsed = false;
+            let itemName = '';
+            
+            // Enhanced training with items
+            if (trainingItems.length > 0) {
+                const item = trainingItems[0];
+                const itemIndex = gameState.inventory.findIndex(i => i.name === item.name);
+                
+                // Consume the training item
+                gameState.inventory[itemIndex].quantity--;
+                if (gameState.inventory[itemIndex].quantity <= 0) {
+                    gameState.inventory.splice(itemIndex, 1);
+                }
+                
+                itemUsed = true;
+                itemName = item.name;
+                
+                // Different items give different XP bonuses
+                if (item.name === 'herbs') {
+                    xpGain = 4; // Regular herbs
+                } else if (item.name === 'crystals') {
+                    xpGain = 6; // Magic crystals
+                } else if (item.name === 'rare_crystals') {
+                    xpGain = 10; // Rare crystals
+                }
+            }
+            
+            dragon.energy -= 20;
+            
+            const result = dragon.gainXP(xpGain);
+            if (result.levelUp) {
+                let message;
+                if (result.evolved) {
+                    message = itemUsed 
+                        ? `🏋️ Enhanced training with ${itemName}! +${xpGain} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`
+                        : `🏋️ Basic training completed! +${xpGain} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`;
+                } else {
+                    message = itemUsed 
+                        ? `🏋️ Enhanced training with ${itemName}! +${xpGain} XP - Level Up! 🎉`
+                        : `🏋️ Basic training completed! +${xpGain} XP - Level Up! 🎉`;
+                }
+                setStatus(message);
+            } else {
+                const message = itemUsed 
+                    ? `🏋️ Enhanced training with ${itemName}! +${xpGain} XP`
+                    : `🏋️ Basic training completed! +${xpGain} XP (Use herbs or crystals for better results!)`;
+                setStatus(message);
+            }
+            
+            // Better chance to boost stats with enhanced training
+            const statBoostChance = itemUsed ? 0.3 : 0.1;
+            if (Math.random() < statBoostChance) {
+                dragon.attack += 1;
+                setStatus('💪 Training increased your dragon\'s attack!');
+            }
+            
+            updateDragonDisplay();
+            updateInventoryDisplay();
+            
+            // Update training overlay if open
+            if (document.getElementById('trainingOverlay').classList.contains('active')) {
+                updateTrainingResourceDisplay();
+            }
+            
+            saveGameState();
+        }
+        
+        // Quality of Life Features
+        function autoCare() {
+            const dragon = getCurrentDragon();
+            if (!dragon) {
+                setStatus('❌ No dragon selected for auto-care');
+                return;
+            }
+            
+            let actions = [];
+            let success = false;
+            
+            // Try to feed if needed
+            if (dragon.energy < 80 || dragon.happiness < 80) {
+                const foodItems = gameState.inventory.filter(item => 
+                    item.name === 'berries' || item.name === 'supplies' || item.type === 'consumable'
+                );
+                if (foodItems.length > 0) {
+                    feedDragon();
+                    actions.push('Fed');
+                    success = true;
+                }
+            }
+            
+            // Try to give water if needed
+            if (dragon.hp < dragon.maxHP || dragon.happiness < 80) {
+                const waterItems = gameState.inventory.filter(item => item.name === 'water');
+                if (waterItems.length > 0) {
+                    waterDragon();
+                    actions.push('Watered');
+                    success = true;
+                }
+            }
+            
+            // Try to train if dragon has energy
+            if (dragon.energy >= 20) {
+                trainDragon();
+                actions.push('Trained');
+                success = true;
+            }
+            
+            if (actions.length > 0) {
+                setStatus(`✨ Auto-care complete: ${actions.join(', ')}!`);
+            } else if (!success) {
+                setStatus('⚠️ Auto-care needs resources: berries/food, water, or more dragon energy');
+            }
+        }
+        
+        // Inventory System
+        function updateInventoryDisplay() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            gameState.inventory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'inventory-item';
+                div.innerHTML = `
+                    <div style="font-size: 1.5em;">${item.emoji}</div>
+                    <div style="font-size: 0.8em;">${item.name}</div>
+                    <div style="font-size: 0.7em;">x${item.quantity}</div>
+                `;
+                div.onclick = () => useItem(index);
+                grid.appendChild(div);
+            });
+        }
+        
+        function addItem(itemName, quantity = 1) {
+            const itemData = itemDatabase[itemName];
+            if (!itemData) return false;
+            
+            const existingItem = gameState.inventory.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                gameState.inventory.push({
+                    name: itemName,
+                    ...itemData,
+                    quantity: quantity
+                });
+            }
+            
+            if (currentTab === 'inventory') {
+                updateInventoryDisplay();
+            }
+            return true;
+        }
+        
+        function useItem(index) {
+            const item = gameState.inventory[index];
+            const dragon = getCurrentDragon();
+            if (!item || !dragon) return;
+            
+            if (item.type === 'consumable') {
+                // Use consumable
+                if (item.heal) {
+                    dragon.hp = Math.min(dragon.maxHP, dragon.hp + item.heal);
+                    setStatus(`Used ${item.name}! Restored ${item.heal} HP`);
+                }
+                if (item.energy) {
+                    dragon.energy = Math.min(100, dragon.energy + item.energy);
+                    setStatus(`Used ${item.name}! Restored ${item.energy} energy`);
+                }
+                if (item.happiness) {
+                    dragon.happiness = Math.min(100, dragon.happiness + item.happiness);
+                    setStatus(`Used ${item.name}! Increased happiness by ${item.happiness}`);
+                }
+                if (item.xp) {
+                    const result = dragon.gainXP(item.xp);
+                    if (result.levelUp) {
+                        if (result.evolved) {
+                            setStatus(`Used ${item.name}! Gained ${item.xp} XP - Level Up & Evolution to ${result.newStage}! 🎉✨`);
+                        } else {
+                            setStatus(`Used ${item.name}! Gained ${item.xp} XP - Level Up! 🎉`);
+                        }
+                    } else {
+                        setStatus(`Used ${item.name}! Gained ${item.xp} XP`);
+                    }
+                }
+                
+                item.quantity--;
+                if (item.quantity <= 0) {
+                    gameState.inventory.splice(index, 1);
+                }
+                
+                updateInventoryDisplay();
+                updateDragonDisplay();
+            } else if (item.type === 'equipment') {
+                // Automatically equip equipment items
+                equipItemFromInventory(index);
+            } else {
+                setStatus(`${item.name} cannot be used directly. Check its type or requirements.`);
+            }
+        }
+        
+        function equipItemFromInventory(index) {
+            const item = gameState.inventory[index];
+            const dragon = getCurrentDragon();
+            if (!item || !dragon || item.type !== 'equipment') return;
+            
+            // Determine equipment slot
+            let slotType = 'accessory'; // default
+            if (item.name.includes('Sword') || item.name.includes('Claw') || item.name.includes('Staff')) {
+                slotType = 'weapon';
+            } else if (item.name.includes('Armor') || item.name.includes('Scale') || item.name.includes('Shield')) {
+                slotType = 'armor';
+            }
+            
+            // Unequip current item if any
+            if (dragon.equipment[slotType]) {
+                addItem(dragon.equipment[slotType].name, 1);
+            }
+            
+            // Equip new item
+            dragon.equipment[slotType] = {...item};
+            setStatus(`⚔️ Equipped ${item.name} to ${slotType} slot!`);
+            
+            // Remove from inventory
+            item.quantity--;
+            if (item.quantity <= 0) {
+                gameState.inventory.splice(index, 1);
+            }
+            
+            updateDragonDisplay();
+            updateInventoryDisplay();
+            updateEquipmentDisplay();
+            saveGameState();
+        }
+        
+        function addSampleItems() {
+            addItem('Health Potion', 3);
+            addItem('Dragon Treat', 5);
+            addItem('Iron Claw', 1);
+            addItem('Leather Scale', 1);
+            addItem('Ruby Ring', 1);
+            addItem('XP Boost', 2);
+            setStatus('📦 Added sample items to inventory!');
+        }
+        
+        // Equipment System
+        function openEquipmentSlot(slotType) {
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            const availableItems = gameState.inventory.filter(item => item.type === slotType);
+            if (availableItems.length === 0) {
+                setStatus(`No ${slotType} items in inventory!`);
+                return;
+            }
+            
+            // For demo, equip first available item
+            const item = availableItems[0];
+            
+            // Unequip current item if any
+            if (dragon.equipment[slotType]) {
+                addItem(dragon.equipment[slotType].name, 1);
+            }
+            
+            // Equip new item
+            dragon.equipment[slotType] = { name: item.name, ...item };
+            
+            // Remove from inventory
+            const invIndex = gameState.inventory.findIndex(invItem => invItem.name === item.name);
+            gameState.inventory[invIndex].quantity--;
+            if (gameState.inventory[invIndex].quantity <= 0) {
+                gameState.inventory.splice(invIndex, 1);
+            }
+            
+            setStatus(`Equipped ${item.name}!`);
+            updateDragonDisplay();
+            if (currentTab === 'inventory') {
+                updateInventoryDisplay();
+            }
+        }
+        
+        // Old battle system completely removed - battles now come from world encounters
+            
+            document.getElementById('playerDragonName').textContent = playerDragon.name;
+            document.getElementById('playerBattleDragon').innerHTML = createBattleDragonArt(playerDragon);
+            document.getElementById('playerBattleHP').textContent = `${playerHP}/${playerDragon.maxHP} HP`;
+            
+            document.getElementById('enemyDragonName').textContent = enemy.name;
+            document.getElementById('enemyBattleDragon').innerHTML = createBattleDragonArt(enemy);
+            document.getElementById('enemyBattleHP').textContent = `${enemyHP}/${enemy.maxHP} HP`;
+            
+            // Update HP bars
+            const playerHPPercent = (playerHP / playerDragon.maxHP) * 100;
+            const enemyHPPercent = (enemyHP / enemy.maxHP) * 100;
+            
+            document.getElementById('playerHPBar').style.width = playerHPPercent + '%';
+            document.getElementById('enemyHPBar').style.width = enemyHPPercent + '%';
+            
+            // Update HP bar colors
+            updateHPBarColor('playerHPBar', playerHPPercent);
+            updateHPBarColor('enemyHPBar', enemyHPPercent);
+            
+            // Update battle log
+            const log = document.getElementById('battleLog');
+            log.innerHTML = battleState.battleLog.map(msg => `<div>${msg}</div>`).join('');
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function createBattleDragonArt(dragon) {
+            // Determine dragon type class
+            let typeClass = 'fire'; // default
+            if (dragon.type.includes('Ice')) typeClass = 'ice';
+            else if (dragon.type.includes('Forest')) typeClass = 'forest';
+            else if (dragon.type.includes('Storm')) typeClass = 'storm';
+            else if (dragon.type.includes('Legendary')) typeClass = 'storm'; // Boss dragon
+            
+            return `
+                <div class="css-dragon battle-css-dragon ${typeClass}">
+                    <div class="dragon-tail"></div>
+                    <div class="dragon-wing left"></div>
+                    <div class="dragon-wing right"></div>
+                    <div class="dragon-body"></div>
+                    <div class="dragon-head">
+                        <div class="dragon-eye left"></div>
+                        <div class="dragon-eye right"></div>
+                        <div class="dragon-nostril left"></div>
+                        <div class="dragon-nostril right"></div>
+                    </div>
+                    <div class="dragon-flame"></div>
+                </div>
+            `;
+        }
+        
+        function updateHPBarColor(barId, percent) {
+            const bar = document.getElementById(barId);
+            bar.classList.remove('high', 'medium');
+            if (percent > 60) {
+                bar.classList.add('high');
+            } else if (percent > 30) {
+                bar.classList.add('medium');
+            }
+        }
+        
+        function battleAction(action) {
+            if (!battleState || battleState.turn !== 'player') return;
+            
+            const { playerDragon, enemy } = battleState;
+            let damage = 0;
+            
+            // Disable buttons during animation
+            const buttons = document.querySelectorAll('#battleActions button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            switch(action) {
+                case 'attack':
+                    damage = Math.max(1, playerDragon.getTotalAttack() - enemy.defense + Math.floor(Math.random() * 5));
+                    battleState.enemyHP = Math.max(0, battleState.enemyHP - damage);
+                    battleState.battleLog.push(`${playerDragon.name} attacks for ${damage} damage!`);
+                    
+                    animateAction('attack', () => {
+                        continuePlayerTurn(action);
+                    });
+                    return;
+                    
+                case 'defend':
+                    battleState.battleLog.push(`${playerDragon.name} defends! Defense increased for this turn.`);
+                    battleState.defending = true;
+                    
+                    animateAction('defend', () => {
+                        continuePlayerTurn(action);
+                    });
+                    return;
+                    
+                case 'special':
+                    if (playerDragon.energy >= 20) {
+                        damage = Math.max(1, Math.floor(playerDragon.getTotalAttack() * 1.5) - enemy.defense);
+                        battleState.enemyHP = Math.max(0, battleState.enemyHP - damage);
+                        playerDragon.energy -= 20;
+                        battleState.battleLog.push(`${playerDragon.name} uses special attack for ${damage} damage!`);
+                    } else {
+                        battleState.battleLog.push(`${playerDragon.name} doesn't have enough energy for special attack!`);
+                    }
+                    break;
+                    
+                case 'flee':
+                    battleState.battleLog.push('You fled from battle!');
+                    setTimeout(() => endBattle(false), 1000);
+                    updateBattleDisplay();
+                    return;
+            }
+            
+            // This is handled by continuePlayerTurn now
+        }
+        
+        function continuePlayerTurn(action) {
+            // Re-enable buttons
+            const buttons = document.querySelectorAll('#battleActions button');
+            buttons.forEach(btn => btn.disabled = false);
+            
+            // Check if enemy defeated
+            if (battleState.enemyHP <= 0) {
+                battleState.battleLog.push(`${battleState.enemy.name} is defeated! You win!`);
+                updateBattleDisplay();
+                animateAction('victory', () => {
+                    endBattle(true);
+                });
+                return;
+            }
+            
+            // Enemy turn with animation
+            battleState.turn = 'enemy';
+            setTimeout(() => {
+                enemyTurnWithAnimation();
+            }, 800);
+            
+            updateBattleDisplay();
+        }
+        
+        function enemyTurnWithAnimation() {
+            if (!battleState) return;
+            
+            const { playerDragon, enemy } = battleState;
+            let damage = Math.max(1, enemy.attack - playerDragon.getTotalDefense() + Math.floor(Math.random() * 3));
+            
+            // Apply defend bonus
+            if (battleState.defending) {
+                damage = Math.floor(damage / 2);
+                battleState.battleLog.push(`${enemy.name} attacks, but ${playerDragon.name}'s defense reduces damage!`);
+                battleState.defending = false;
+            } else {
+                battleState.battleLog.push(`${enemy.name} attacks for ${damage} damage!`);
+            }
+            
+            battleState.playerHP = Math.max(0, battleState.playerHP - damage);
+            playerDragon.hp = battleState.playerHP;
+            
+            animateAction('enemy-attack', () => {
+                updateBattleDisplay();
+                
+                // Check if player dragon is defeated
+                if (battleState.playerHP <= 0) {
+                    battleState.battleLog.push(`${playerDragon.name} is defeated! You lose!`);
+                    updateBattleDisplay();
+                    animateAction('defeat', () => {
+                        endBattle(false);
+                    });
+                    return;
+                }
+                
+                // Continue to player turn
+                battleState.turn = 'player';
+                updateBattleDisplay();
+            });
+        }
+        
+        function endBattle(won) {
+            if (!battleState) return;
+            
+            // Handle world battle rewards
+            if (battleState.fromWorld && battleState.worldRewards) {
+                if (won) {
+                    const result = getCurrentDragon().gainXP(battleState.worldRewards.exp);
+                    gameState.playerStats.gold += battleState.worldRewards.gold;
+                    
+                    if (result.levelUp) {
+                        if (result.evolved) {
+                            setStatus(`🎉 Victory! Gained ${battleState.worldRewards.exp} XP (Level Up & Evolution to ${result.newStage}!), ${battleState.worldRewards.gold} gold! ✨`);
+                        } else {
+                            setStatus(`🎉 Victory! Gained ${battleState.worldRewards.exp} XP (Level Up!), ${battleState.worldRewards.gold} gold!`);
+                        }
+                    } else {
+                        setStatus(`🎉 Victory! Gained ${battleState.worldRewards.exp} XP, ${battleState.worldRewards.gold} gold!`);
+                    }
+                } else {
+                    setStatus(`💀 Defeat! Lost 10 gold...`);
+                    gameState.playerStats.gold = Math.max(0, gameState.playerStats.gold - 10);
+                }
+                
+                updateDragonDisplay();
+                saveGameState();
+                
+                // Show return to world button
+                setTimeout(() => {
+                    const returnBtn = document.createElement('button');
+                    returnBtn.textContent = '🌍 Return to World';
+                    returnBtn.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: linear-gradient(45deg, #16a34a, #22c55e);
+                        color: white;
+                        border: none;
+                        padding: 12px 20px;
+                        border-radius: 25px;
+                        font-size: 1em;
+                        cursor: pointer;
+                        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                        z-index: 1000;
+                        transition: transform 0.2s ease;
+                    `;
+                    returnBtn.onclick = () => window.location.href = 'world.html';
+                    returnBtn.onmouseover = () => returnBtn.style.transform = 'scale(1.05)';
+                    returnBtn.onmouseout = () => returnBtn.style.transform = 'scale(1)';
+                    
+                    document.body.appendChild(returnBtn);
+                }, 1000);
+                
+            } else {
+                // Regular battle handling
+                const dragon = getCurrentDragon();
+            
+            const dragon = getCurrentDragon();
+            dragon.energy -= 30;
+            dragon.hp = battleState.playerHP;
+            
+            if (won) {
+                const xpGain = Math.floor(battleState.enemy.level * 2 + Math.random() * 5);
+                const goldGain = Math.floor(battleState.enemy.level * 10 + Math.random() * 50);
+                
+                const result = dragon.gainXP(xpGain);
+                if (result.levelUp) {
+                    if (result.evolved) {
+                        setStatus(`🎉 Victory! Gained ${xpGain} XP (Level Up & Evolution to ${result.newStage}!), ${goldGain} gold! ✨`);
+                    } else {
+                        setStatus(`🎉 Victory! Gained ${xpGain} XP (Level Up!), ${goldGain} gold!`);
+                    }
+                } else {
+                    setStatus(`🎉 Victory! Gained ${xpGain} XP, ${goldGain} gold!`);
+                }
+                
+                gameState.playerStats.gold += goldGain;
+                gameState.playerStats.battles_won++;
+                
+                // Chance for item reward
+                if (Math.random() < 0.3) {
+                    const items = Object.keys(itemDatabase);
+                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                    addItem(randomItem, 1);
+                    setTimeout(() => setStatus(`Found ${randomItem}!`), 2000);
+                }
+            } else {
+                setStatus('💀 Defeat! Better luck next time.');
+                gameState.playerStats.battles_lost++;
+            }
+            
+            battleState = null;
+            document.getElementById('battleMenu').style.display = 'block';
+            document.getElementById('battleScreen').classList.add('hidden');
+            updateDragonDisplay();
+        }
+        
+        function triggerWildEncounter() {
+            const wildType = dragonTypes[Math.floor(Math.random() * dragonTypes.length)];
+            document.getElementById('wildDragonType').textContent = wildType;
+            
+            // Create CSS dragon art for wild encounter
+            const wildDragon = { type: wildType };
+            document.getElementById('wildDragonDisplay').innerHTML = createWildDragonArt(wildDragon);
+            
+            document.getElementById('overlay').classList.remove('hidden');
+            document.getElementById('wildEncounter').classList.remove('hidden');
+        }
+        
+        function createWildDragonArt(dragon) {
+            let typeClass = 'fire';
+            if (dragon.type.includes('Ice')) typeClass = 'ice';
+            else if (dragon.type.includes('Forest')) typeClass = 'forest';
+            else if (dragon.type.includes('Storm')) typeClass = 'storm';
+            
+            return `
+                <div class="css-dragon battle-css-dragon ${typeClass}">
+                    <div class="dragon-tail"></div>
+                    <div class="dragon-wing left"></div>
+                    <div class="dragon-wing right"></div>
+                    <div class="dragon-body"></div>
+                    <div class="dragon-head">
+                        <div class="dragon-eye left"></div>
+                        <div class="dragon-eye right"></div>
+                        <div class="dragon-nostril left"></div>
+                        <div class="dragon-nostril right"></div>
+                    </div>
+                    <div class="dragon-flame"></div>
+                </div>
+            `;
+        }
+        
+        function catchWildDragon() {
+            const wildType = document.getElementById('wildDragonType').textContent;
+            const newDragon = new Dragon(wildType, wildType);
+            gameState.dragons.push(newDragon);
+            
+            setStatus(`🎉 You caught a ${wildType}! Check your dragon collection!`);
+            closeWildEncounter();
+            updateDragonNavigation();
+        }
+        
+        function closeWildEncounter() {
+            document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('wildEncounter').classList.add('hidden');
+        }
+        
+        function setStatus(message) {
+            document.getElementById('status').textContent = message;
+            setTimeout(() => {
+                document.getElementById('status').textContent = '';
+            }, 4000);
+        }
+        
+        // Removed showDragonCare - functionality moved to world.html
+        
+        // Initialize and start the game
+        function initializeGame() {
+            console.log('=== INITIALIZING GAME ===');
+            initializeGameState();
+            
+            // Auto-sync with world inventory on load
+            syncWithWorldInventory();
+            
+            // Clear egg screen
+            document.getElementById('eggScreen').classList.remove('active');
+            
+            console.log('GameState check:');
+            console.log('- dragons.length:', gameState.dragons ? gameState.dragons.length : 'undefined');
+            console.log('- egg.hatched:', gameState.egg ? gameState.egg.hatched : 'undefined');
+            
+            // Check if we need to show egg screen
+            if (gameState.dragons.length === 0 && !gameState.egg.hatched) {
+                console.log('>>> Showing egg screen - no dragons available');
+                document.getElementById('eggScreen').classList.add('active');
+                setTimeout(() => {
+                    startHatchTimer();
+                }, 100);
+            } else {
+                console.log('>>> Redirecting to world - user has dragons or hatched egg');
+                // Redirect to world if user has dragons or hatched egg
+                setTimeout(() => {
+                    window.location.href = 'world.html';
+                }, 500);
+            }
+        }
+        
+        // World battle integration
+        function startWorldBattleInCare(battleData) {
+            // Set up battle against world enemy
+            const dragon = getCurrentDragon();
+            if (!dragon) return;
+            
+            battleState = {
+                enemy: {
+                    name: battleData.enemy.name,
+                    level: battleData.enemy.level,
+                    hp: battleData.enemy.hp,
+                    maxHP: battleData.enemy.maxHp,
+                    attack: battleData.enemy.attack,
+                    defense: battleData.enemy.defense
+                },
+                playerHP: dragon.hp,
+                enemyHP: battleData.enemy.hp,
+                turn: 'player',
+                fromWorld: true,
+                worldRewards: battleData.rewards
+            };
+            
+            setStatus(`⚔️ ${battleData.enemy.name} appears! Prepare for battle!`);
+            
+            // Switch to battle tab and start the battle
+            setTimeout(() => {
+                switchTab('battle');
+                document.getElementById('battleMenu').style.display = 'none';
+                document.getElementById('battleScreen').classList.remove('hidden');
+                updateBattleDisplay();
+                
+                // Add entry animation
+                const battleScreen = document.getElementById('battleScreen');
+                battleScreen.style.opacity = '0';
+                battleScreen.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    battleScreen.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    battleScreen.style.opacity = '1';
+                    battleScreen.style.transform = 'scale(1)';
+                }, 100);
+                
+            }, 1000);
+        }
+        
+        // Enhanced battle system with animations
+        function animateAction(actionType, callback) {
+            const dragonElement = document.querySelector('.battle-dragon-display');
+            const enemyElement = document.querySelector('.enemy-display');
+            
+            switch(actionType) {
+                case 'attack':
+                    // Dragon attack animation
+                    dragonElement.style.transform = 'translateX(20px) scale(1.1)';
+                    dragonElement.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #ff6b35)';
+                    
+                    setTimeout(() => {
+                        // Create impact effect
+                        createImpactEffect(enemyElement);
+                        enemyElement.style.transform = 'translateX(-10px)';
+                        enemyElement.style.filter = 'brightness(0.7) hue-rotate(45deg)';
+                        
+                        setTimeout(() => {
+                            // Reset animations
+                            dragonElement.style.transform = '';
+                            dragonElement.style.filter = '';
+                            enemyElement.style.transform = '';
+                            enemyElement.style.filter = '';
+                            if (callback) callback();
+                        }, 300);
+                    }, 200);
+                    break;
+                    
+                case 'defend':
+                    // Defensive stance animation
+                    dragonElement.style.transform = 'scale(0.9)';
+                    dragonElement.style.filter = 'brightness(1.2) drop-shadow(0 0 15px #60a5fa)';
+                    
+                    // Create shield effect
+                    createShieldEffect(dragonElement);
+                    
+                    setTimeout(() => {
+                        dragonElement.style.transform = '';
+                        dragonElement.style.filter = '';
+                        if (callback) callback();
+                    }, 800);
+                    break;
+                    
+                case 'enemy-attack':
+                    // Enemy attack animation
+                    enemyElement.style.transform = 'translateX(-20px) scale(1.1)';
+                    enemyElement.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #dc2626)';
+                    
+                    setTimeout(() => {
+                        createImpactEffect(dragonElement);
+                        dragonElement.style.transform = 'translateX(10px)';
+                        dragonElement.style.filter = 'brightness(0.7) hue-rotate(-45deg)';
+                        
+                        setTimeout(() => {
+                            dragonElement.style.transform = '';
+                            dragonElement.style.filter = '';
+                            enemyElement.style.transform = '';
+                            enemyElement.style.filter = '';
+                            if (callback) callback();
+                        }, 300);
+                    }, 200);
+                    break;
+                    
+                case 'victory':
+                    // Victory celebration
+                    dragonElement.style.transform = 'scale(1.2)';
+                    dragonElement.style.filter = 'brightness(1.5) drop-shadow(0 0 20px #ffd700)';
+                    createVictoryEffect(dragonElement);
+                    
+                    setTimeout(() => {
+                        if (callback) callback();
+                    }, 1000);
+                    break;
+                    
+                case 'defeat':
+                    // Defeat animation
+                    dragonElement.style.transform = 'scale(0.8)';
+                    dragonElement.style.filter = 'grayscale(0.8) brightness(0.6)';
+                    
+                    setTimeout(() => {
+                        if (callback) callback();
+                    }, 1000);
+                    break;
+            }
+        }
+        
+        function createImpactEffect(targetElement) {
+            const effect = document.createElement('div');
+            effect.className = 'impact-effect';
+            effect.style.position = 'absolute';
+            effect.style.top = '50%';
+            effect.style.left = '50%';
+            effect.style.transform = 'translate(-50%, -50%)';
+            effect.style.width = '40px';
+            effect.style.height = '40px';
+            effect.style.background = 'radial-gradient(circle, #fff 0%, #ff6b35 50%, transparent 70%)';
+            effect.style.borderRadius = '50%';
+            effect.style.animation = 'impactFlash 0.3s ease-out forwards';
+            effect.style.zIndex = '1000';
+            
+            targetElement.style.position = 'relative';
+            targetElement.appendChild(effect);
+            
+            setTimeout(() => {
+                if (effect.parentNode) {
+                    effect.remove();
+                }
+            }, 300);
+        }
+        
+        function createShieldEffect(targetElement) {
+            const shield = document.createElement('div');
+            shield.className = 'shield-effect';
+            shield.style.position = 'absolute';
+            shield.style.top = '50%';
+            shield.style.left = '50%';
+            shield.style.transform = 'translate(-50%, -50%)';
+            shield.style.width = '120px';
+            shield.style.height = '120px';
+            shield.style.border = '3px solid #60a5fa';
+            shield.style.borderRadius = '50%';
+            shield.style.background = 'radial-gradient(circle, rgba(96, 165, 250, 0.2), transparent 70%)';
+            shield.style.animation = 'shieldPulse 0.8s ease-out forwards';
+            shield.style.zIndex = '999';
+            
+            targetElement.style.position = 'relative';
+            targetElement.appendChild(shield);
+            
+            setTimeout(() => {
+                if (shield.parentNode) {
+                    shield.remove();
+                }
+            }, 800);
+        }
+        
+        function createVictoryEffect(targetElement) {
+            const sparkles = document.createElement('div');
+            sparkles.className = 'victory-sparkles';
+            sparkles.innerHTML = '✨⭐✨🎉✨⭐✨';
+            sparkles.style.position = 'absolute';
+            sparkles.style.top = '-20px';
+            sparkles.style.left = '50%';
+            sparkles.style.transform = 'translateX(-50%)';
+            sparkles.style.animation = 'victorySparkle 1s ease-out forwards';
+            sparkles.style.zIndex = '1001';
+            sparkles.style.fontSize = '1.2em';
+            
+            targetElement.style.position = 'relative';
+            targetElement.appendChild(sparkles);
+            
+            setTimeout(() => {
+                if (sparkles.parentNode) {
+                    sparkles.remove();
+                }
+            }, 1000);
+        }
+        
+        // Passive regeneration system
+        function startPassiveRegeneration() {
+            setInterval(() => {
+                if (gameState.dragons && gameState.dragons.length > 0) {
+                    let anyChanged = false;
+                    gameState.dragons.forEach(dragon => {
+                        // Slow HP regeneration (1 HP every 30 seconds)
+                        if (dragon.hp < dragon.maxHP) {
+                            dragon.hp = Math.min(dragon.maxHP, dragon.hp + 1);
+                            anyChanged = true;
+                        }
+                        
+                        // Very slow energy regeneration (1 energy every 60 seconds)
+                        if (dragon.energy < 100) {
+                            dragon.energy = Math.min(100, dragon.energy + 1);
+                            anyChanged = true;
+                        }
+                        
+                        // Happiness slowly decreases over time (1 point every 5 minutes)
+                        if (dragon.happiness > 0) {
+                            dragon.happiness = Math.max(0, dragon.happiness - 1);
+                            anyChanged = true;
+                        }
+                    });
+                    
+                    if (anyChanged) {
+                        updateDragonDisplay();
+                        saveGameState();
+                    }
+                }
+            }, 30000); // Run every 30 seconds
+        }
+        
+        // Start the game when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGame();
+            startPassiveRegeneration();
+        });
+    </script>
+</body>
+</html>

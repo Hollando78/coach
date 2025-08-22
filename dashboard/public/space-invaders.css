@@ -1,0 +1,220 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+    color: #00ff00;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#gameContainer {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+#gameHeader {
+    margin-bottom: 15px;
+}
+
+#gameHeader h1 {
+    font-size: 2.5em;
+    text-shadow: 0 0 10px #00ff00;
+    margin-bottom: 10px;
+}
+
+#gameStats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    font-weight: bold;
+    background: rgba(0, 255, 0, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#gameCanvas {
+    border: 2px solid #00ff00;
+    background: #000;
+    display: block;
+    margin: 0 auto 15px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+#gameControls {
+    margin-bottom: 15px;
+}
+
+#gameControls div {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #88ff88;
+}
+
+button {
+    background: linear-gradient(45deg, #00aa00, #00ff00);
+    border: none;
+    color: #000;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #00ff00, #88ff88);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    transform: scale(1.05);
+}
+
+button:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.95);
+    border: 3px solid #ff0000;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+#gameOver h2 {
+    color: #ff0000;
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+#gameOver p {
+    font-size: 1.3em;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#touchControls {
+    margin-top: 15px;
+    padding: 20px;
+    background: rgba(0, 255, 0, 0.1);
+    border-radius: 10px;
+    border: 1px solid #00aa00;
+}
+
+.touch-control-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.touch-btn {
+    width: 70px;
+    height: 70px;
+    border: 3px solid #00ff00;
+    background: linear-gradient(45deg, #002200, #004400);
+    color: #00ff00;
+    font-size: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.touch-btn:active {
+    transform: scale(0.95);
+    background: linear-gradient(45deg, #004400, #006600);
+    box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.touch-shoot {
+    width: 90px;
+    height: 90px;
+    font-size: 30px;
+    background: linear-gradient(45deg, #220000, #440000);
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.touch-shoot:active {
+    background: linear-gradient(45deg, #440000, #660000);
+    box-shadow: inset 0 0 20px rgba(255, 68, 68, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 850px) {
+    #gameCanvas {
+        width: 90vw;
+        height: auto;
+    }
+    
+    #gameContainer {
+        padding: 10px;
+        margin: 10px;
+    }
+    
+    #gameHeader h1 {
+        font-size: 1.8em;
+    }
+    
+    #gameStats {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    #touchControls {
+        display: block !important;
+    }
+    
+    #controlsText {
+        font-size: 0.8em;
+        color: #666;
+    }
+}
+
+@media (min-width: 851px) {
+    #touchControls {
+        display: none;
+    }
+}
+
+/* Touch device detection */
+@media (hover: none) and (pointer: coarse) {
+    #touchControls {
+        display: block !important;
+    }
+    
+    #controlsText {
+        display: none;
+    }
+}

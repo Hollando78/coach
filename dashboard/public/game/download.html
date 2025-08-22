@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Game - File Downloads</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .file-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .archive-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+        .file-info {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .features {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .features li:before {
+            content: "🐲 ";
+            margin-right: 8px;
+        }
+        .game-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .preview-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        .size {
+            color: #FFD700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐲 Dragon Game - Enhanced Edition</h1>
+        
+        <div class="game-preview">
+            <p><strong>Play the game directly:</strong></p>
+            <a href="world.html" class="download-btn preview-btn" target="_blank">▶️ Play Dragon Game</a>
+            <a href="index.html" class="download-btn preview-btn" target="_blank">📋 Game Index</a>
+        </div>
+
+        <div class="file-section">
+            <h2>📦 Complete Game Archive (Recommended)</h2>
+            <div class="file-info">
+                <strong>dragon-game.tar.gz</strong> - <span class="size">Complete game package</span><br>
+                Contains all files needed to run the game locally in VSCode
+            </div>
+            <a href="dragon-game.tar.gz" download class="download-btn archive-btn">⬇️ Download Complete Game (TAR.GZ)</a>
+        </div>
+
+        <div class="file-section">
+            <h2>📄 Individual Game Files</h2>
+            
+            <div class="file-info">
+                <strong>world.html</strong> - <span class="size">Main game file (~6,150 lines)</span><br>
+                Complete game with enhanced beast sprites, animations, and all features
+            </div>
+            <a href="world.html" download class="download-btn">⬇️ Download world.html</a>
+            
+            <div class="file-info">
+                <strong>index.html</strong> - <span class="size">Entry point</span><br>
+                Simple landing page for the game
+            </div>
+            <a href="index.html" download class="download-btn">⬇️ Download index.html</a>
+            
+            <div class="file-info">
+                <strong>README.md</strong> - <span class="size">Documentation</span><br>
+                Game information and setup instructions
+            </div>
+            <a href="README.md" download class="download-btn">⬇️ Download README.md</a>
+        </div>
+
+        <div class="file-section">
+            <h2>🎨 Enhanced Beast Features</h2>
+            <ul class="features">
+                <li><strong>Hierarchical Anatomy:</strong> Head owns eyes/ears/mouth, Torso owns front legs, Hips own back legs/tail</li>
+                <li><strong>Midsection/Spine:</strong> Connecting segment between torso and hips for realistic body structure</li>
+                <li><strong>Proper Ear Positioning:</strong> Ears positioned on top of head with subtle tilting animations</li>
+                <li><strong>Detailed Features:</strong> Claws, teeth, fangs, whiskers, tusks for different beast types</li>
+                <li><strong>Enhanced Animations:</strong> Tail wagging, ear twitching, head movements, body coordination</li>
+                <li><strong>Species Variety:</strong> Bears, wolves, dire wolves, shadow cats, wild boars with unique features</li>
+                <li><strong>Visual Quality:</strong> PIXI.js sprites with proper scaling and anti-aliasing</li>
+            </ul>
+        </div>
+
+        <div class="file-section">
+            <h2>💾 For VSCode Development</h2>
+            <p><strong>Recommended setup:</strong></p>
+            <ol>
+                <li>Download the <strong>complete archive</strong> (dragon-game.tar.gz)</li>
+                <li>Extract: <code>tar -xzf dragon-game.tar.gz</code></li>
+                <li>Open the folder in VSCode</li>
+                <li>Use Live Server extension to run the game</li>
+                <li>Open <code>world.html</code> to see the enhanced beasts!</li>
+            </ol>
+        </div>
+
+        <div class="file-section" style="text-align: center; margin-top: 40px;">
+            <p><em>🤖 Enhanced with Claude Code - AI-powered game development</em></p>
+        </div>
+    </div>
+</body>
+</html>

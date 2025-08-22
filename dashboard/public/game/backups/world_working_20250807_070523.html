@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐉 Dragon Hatchers - World Map</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        #worldView {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #worldView:active {
+            cursor: grabbing;
+        }
+
+        #worldContainer {
+            position: relative;
+            width: 2000px;
+            height: 1500px;
+            background: linear-gradient(135deg, #87ceeb 0%, #98fb98 50%, #f0e68c 100%);
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+
+        .pixi-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        /* UI Overlays */
+        .inventory-toggle {
+            position: fixed;
+            right: 20px;
+            top: 130px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .inventory-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .inventory-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 350px;
+            max-height: 80vh;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1001;
+            overflow-y: auto;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .inventory-header h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.2em;
+        }
+
+        #statusBar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1em;
+            z-index: 1000;
+        }
+
+        /* Location popup styles */
+        .location-popup {
+            position: fixed;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 2000;
+            max-width: 400px;
+            display: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Mini-map */
+        #miniMap {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 150px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid white;
+            border-radius: 10px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        #miniPlayer {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: red;
+            border-radius: 50%;
+            z-index: 1001;
+        }
+
+        /* Control buttons */
+        .controls {
+            position: fixed;
+            top: 140px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="worldView">
+        <div id="worldContainer">
+            <!-- PixiJS canvas will be inserted here -->
+        </div>
+    </div>
+
+    <!-- UI Overlays -->
+    <div id="statusBar">Welcome to Dragon Hatchers! Use WASD or arrow keys to move around.</div>
+
+    <!-- Mini Map -->
+    <div id="miniMap">
+        <div id="miniPlayer"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In (+)">🔍+</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out (-)">🔍-</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom (0)">1:1</button>
+        <button class="zoom-btn" onclick="centerCamera()" title="Center Camera (C)">📍</button>
+    </div>
+
+    <!-- Inventory Toggle -->
+    <div class="inventory-toggle" onclick="toggleInventory()" title="Inventory (I)">🎒</div>
+    <div class="inventory-toggle" onclick="toggleDragonCare()" title="Dragon Care" style="top: 190px; background: linear-gradient(45deg, #ff9800, #f57c00);">🐲</div>
+    <div class="inventory-toggle" onclick="toggleBattle()" title="Battle" style="top: 250px; background: linear-gradient(45deg, #dc2626, #b91c1c);">⚔️</div>
+    <div class="inventory-toggle" onclick="toggleSettings()" title="Settings" style="top: 310px; background: linear-gradient(45deg, #6b7280, #4b5563);">⚙️</div>
+
+    <!-- Inventory Panel -->
+    <div class="inventory-panel" id="inventoryPanel">
+        <div class="inventory-header">
+            <h3>🎒 Inventory</h3>
+            <button onclick="closeInventory()" style="background: #dc2626; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+        </div>
+        <div id="inventoryContent">
+            <p>Your inventory is empty!</p>
+        </div>
+    </div>
+
+    <!-- Dragon Care Panel -->
+    <div class="inventory-panel" id="dragonCarePanel" style="display: none;">
+        <div class="inventory-header">
+            <h3>🐲 Dragon Care</h3>
+            <button onclick="closeDragonCare()" style="background: #dc2626; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+        </div>
+        <div id="dragonCareContent">
+            <p>Dragon care interface coming soon!</p>
+        </div>
+    </div>
+
+    <!-- Battle Panel -->
+    <div class="inventory-panel" id="battlePanel" style="display: none;">
+        <div class="inventory-header">
+            <h3>⚔️ Battle Arena</h3>
+            <button onclick="closeBattle()" style="background: #dc2626; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+        </div>
+        <div id="battleContent">
+            <p>Battle system coming soon!</p>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="inventory-panel" id="settingsPanel" style="display: none;">
+        <div class="inventory-header">
+            <h3>⚙️ Settings</h3>
+            <button onclick="closeSettings()" style="background: #dc2626; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+        </div>
+        <div id="settingsContent">
+            <button class="action-btn" onclick="saveGame()">💾 Save Game</button>
+            <button class="action-btn" onclick="loadGame()">📁 Load Game</button>
+        </div>
+    </div>
+
+    <!-- Location Popup -->
+    <div class="location-popup" id="locationPopup">
+        <button class="close-btn" onclick="closePopup()">×</button>
+        <h3 id="popupTitle">Location</h3>
+        <p id="popupDescription">Description</p>
+        <div id="popupActions"></div>
+    </div>
+
+    <script>
+        // Game variables
+        let currentZoom = 1;
+        let playerPosition = { x: 1000, y: 650 };
+        let cameraPosition = { x: 0, y: 0 };
+        let targetCameraPosition = { x: 0, y: 0 };
+        let smoothCameraFollow = true;
+        let keysPressed = {};
+        let isMoving = false;
+        let moveSpeed = 3;
+
+        // PixiJS variables
+        let pixiApp = null;
+        let pixiContainer = null;
+        let playerSprite = null;
+
+        // Initialize the game
+        window.addEventListener('load', function() {
+            console.log('Game loading...');
+            initPixiJS();
+            createPlayerSprite();
+            createWorldObjects();
+            centerCamera();
+            
+            // Set up movement controls
+            setupControls();
+            
+            console.log('Game loaded successfully!');
+            updateStatus('Game loaded! Use WASD to move, click objects to interact.');
+        });
+
+        function initPixiJS() {
+            const worldContainer = document.getElementById('worldContainer');
+            
+            // Create PixiJS application
+            pixiApp = new PIXI.Application({
+                width: 2000,
+                height: 1500,
+                backgroundColor: 0x87ceeb,
+                antialias: true
+            });
+
+            // Add canvas to world container
+            worldContainer.appendChild(pixiApp.view);
+            pixiApp.view.className = 'pixi-canvas';
+
+            // Create main container for sprites
+            pixiContainer = new PIXI.Container();
+            pixiApp.stage.addChild(pixiContainer);
+
+            console.log('PixiJS initialized');
+        }
+
+        function createPlayerSprite() {
+            if (!pixiApp || !pixiContainer) return;
+
+            // Create player graphics
+            const graphics = new PIXI.Graphics();
+            
+            // Player body (simple circle)
+            graphics.beginFill(0x3b82f6);
+            graphics.drawCircle(0, 0, 15);
+            graphics.endFill();
+            
+            // White outline
+            graphics.lineStyle(2, 0xFFFFFF);
+            graphics.drawCircle(0, 0, 15);
+            graphics.lineStyle(0);
+
+            // Position player
+            graphics.x = playerPosition.x;
+            graphics.y = 1500 - playerPosition.y; // Flip Y coordinate
+
+            playerSprite = graphics;
+            pixiContainer.addChild(playerSprite);
+            
+            console.log('Player sprite created at:', playerPosition.x, playerPosition.y);
+        }
+
+        function createWorldObjects() {
+            if (!pixiContainer) return;
+
+            // Create some simple trees
+            const treePositions = [
+                {x: 800, y: 800}, {x: 1200, y: 800}, {x: 1000, y: 1000},
+                {x: 600, y: 600}, {x: 1400, y: 600}, {x: 500, y: 900}
+            ];
+
+            treePositions.forEach(pos => {
+                const tree = new PIXI.Graphics();
+                
+                // Tree trunk
+                tree.beginFill(0x8B4513);
+                tree.drawRect(-5, -25, 10, 25);
+                tree.endFill();
+                
+                // Tree leaves
+                tree.beginFill(0x228B22);
+                tree.drawCircle(0, -35, 20);
+                tree.endFill();
+                
+                tree.x = pos.x;
+                tree.y = 1500 - pos.y; // Flip Y coordinate
+                
+                pixiContainer.addChild(tree);
+            });
+
+            console.log('World objects created');
+        }
+
+        function setupControls() {
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                keysPressed[e.code] = true;
+                if (!isMoving) {
+                    startMovement();
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                delete keysPressed[e.code];
+                if (Object.keys(keysPressed).length === 0) {
+                    stopMovement();
+                }
+            });
+
+            // Start animation loop
+            pixiApp.ticker.add(updateGame);
+        }
+
+        function startMovement() {
+            isMoving = true;
+        }
+
+        function stopMovement() {
+            isMoving = false;
+        }
+
+        function updateGame() {
+            // Handle movement
+            if (isMoving) {
+                let newX = playerPosition.x;
+                let newY = playerPosition.y;
+
+                if (keysPressed['KeyW'] || keysPressed['ArrowUp']) newY += moveSpeed;
+                if (keysPressed['KeyS'] || keysPressed['ArrowDown']) newY -= moveSpeed;
+                if (keysPressed['KeyA'] || keysPressed['ArrowLeft']) newX -= moveSpeed;
+                if (keysPressed['KeyD'] || keysPressed['ArrowRight']) newX += moveSpeed;
+
+                // Clamp to world bounds
+                newX = Math.max(50, Math.min(1950, newX));
+                newY = Math.max(50, Math.min(1450, newY));
+
+                playerPosition.x = newX;
+                playerPosition.y = newY;
+
+                // Update player sprite
+                if (playerSprite) {
+                    playerSprite.x = playerPosition.x;
+                    playerSprite.y = 1500 - playerPosition.y;
+                }
+
+                // Update camera
+                updateCamera();
+                updateMiniMap();
+            }
+        }
+
+        function updateCamera() {
+            // Calculate target camera position
+            const viewWidth = window.innerWidth;
+            const viewHeight = window.innerHeight;
+            
+            targetCameraPosition.x = playerPosition.x - (viewWidth / currentZoom) / 2;
+            targetCameraPosition.y = (1500 - playerPosition.y) - (viewHeight / currentZoom) / 2;
+
+            // Clamp camera to world bounds
+            const maxCameraX = 2000 - (viewWidth / currentZoom);
+            const maxCameraY = 1500 - (viewHeight / currentZoom);
+            
+            targetCameraPosition.x = Math.max(0, Math.min(maxCameraX, targetCameraPosition.x));
+            targetCameraPosition.y = Math.max(0, Math.min(maxCameraY, targetCameraPosition.y));
+
+            // Smooth camera movement
+            if (smoothCameraFollow) {
+                cameraPosition.x += (targetCameraPosition.x - cameraPosition.x) * 0.1;
+                cameraPosition.y += (targetCameraPosition.y - cameraPosition.y) * 0.1;
+            } else {
+                cameraPosition.x = targetCameraPosition.x;
+                cameraPosition.y = targetCameraPosition.y;
+            }
+
+            // Apply camera transform
+            const worldContainer = document.getElementById('worldContainer');
+            if (worldContainer) {
+                worldContainer.style.transform = `translate(${-cameraPosition.x}px, ${-cameraPosition.y}px) scale(${currentZoom})`;
+            }
+        }
+
+        function updateMiniMap() {
+            const miniPlayer = document.getElementById('miniPlayer');
+            if (miniPlayer) {
+                // Convert world coordinates to minimap coordinates
+                const miniX = (playerPosition.x / 2000) * 150 - 1.5;
+                const miniY = (playerPosition.y / 1500) * 100 - 1.5;
+                
+                miniPlayer.style.left = miniX + 'px';
+                miniPlayer.style.top = (100 - miniY) + 'px'; // Flip Y for minimap
+            }
+        }
+
+        function centerCamera() {
+            updateCamera();
+            cameraPosition.x = targetCameraPosition.x;
+            cameraPosition.y = targetCameraPosition.y;
+            
+            const worldContainer = document.getElementById('worldContainer');
+            if (worldContainer) {
+                worldContainer.style.transform = `translate(${-cameraPosition.x}px, ${-cameraPosition.y}px) scale(${currentZoom})`;
+            }
+            
+            updateMiniMap();
+        }
+
+        // UI Functions
+        function updateStatus(message) {
+            const statusBar = document.getElementById('statusBar');
+            if (statusBar) {
+                statusBar.textContent = message;
+            }
+        }
+
+        function toggleInventory() {
+            const panel = document.getElementById('inventoryPanel');
+            closeAllPanels();
+            if (panel.style.display !== 'block') {
+                panel.style.display = 'block';
+            }
+        }
+
+        function toggleDragonCare() {
+            const panel = document.getElementById('dragonCarePanel');
+            closeAllPanels();
+            if (panel.style.display !== 'block') {
+                panel.style.display = 'block';
+            }
+        }
+
+        function toggleBattle() {
+            const panel = document.getElementById('battlePanel');
+            closeAllPanels();
+            if (panel.style.display !== 'block') {
+                panel.style.display = 'block';
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            closeAllPanels();
+            if (panel.style.display !== 'block') {
+                panel.style.display = 'block';
+            }
+        }
+
+        function closeAllPanels() {
+            document.getElementById('inventoryPanel').style.display = 'none';
+            document.getElementById('dragonCarePanel').style.display = 'none';
+            document.getElementById('battlePanel').style.display = 'none';
+            document.getElementById('settingsPanel').style.display = 'none';
+        }
+
+        function closeInventory() {
+            document.getElementById('inventoryPanel').style.display = 'none';
+        }
+
+        function closeDragonCare() {
+            document.getElementById('dragonCarePanel').style.display = 'none';
+        }
+
+        function closeBattle() {
+            document.getElementById('battlePanel').style.display = 'none';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsPanel').style.display = 'none';
+        }
+
+        function closePopup() {
+            document.getElementById('locationPopup').style.display = 'none';
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            currentZoom = Math.min(2.0, currentZoom + 0.2);
+            updateCamera();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.5, currentZoom - 0.2);
+            updateCamera();
+        }
+
+        function resetZoom() {
+            currentZoom = 1.0;
+            updateCamera();
+        }
+
+        // Save/Load functions
+        function saveGame() {
+            try {
+                const gameData = {
+                    playerPosition: playerPosition,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('dragonHatchersGame', JSON.stringify(gameData));
+                updateStatus('Game saved successfully!');
+            } catch (error) {
+                updateStatus('Failed to save game!');
+            }
+        }
+
+        function loadGame() {
+            try {
+                const savedData = localStorage.getItem('dragonHatchersGame');
+                if (savedData) {
+                    const gameData = JSON.parse(savedData);
+                    playerPosition = gameData.playerPosition || { x: 1000, y: 650 };
+                    
+                    // Update player sprite position
+                    if (playerSprite) {
+                        playerSprite.x = playerPosition.x;
+                        playerSprite.y = 1500 - playerPosition.y;
+                    }
+                    
+                    centerCamera();
+                    updateStatus('Game loaded successfully!');
+                } else {
+                    updateStatus('No saved game found!');
+                }
+            } catch (error) {
+                updateStatus('Failed to load game!');
+            }
+        }
+    </script>
+</body>
+</html>

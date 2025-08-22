@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free web apps gallery - productivity tools, games, entertainment. No signup, no ads, instant access.">
+    <meta name="theme-color" content="#6366f1">
+    <title>AppHub - Free Instant Web Apps Gallery</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <style>
+        /* ===== CSS Variables for Theming ===== */
+        :root {
+            /* Brand Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-dark: #db2777;
+            --accent: #14b8a6;
+            
+            /* Semantic Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Neutrals */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --gray-50: #111827;
+            --gray-100: #1f2937;
+            --gray-200: #374151;
+            --gray-300: #4b5563;
+            --gray-400: #6b7280;
+            --gray-500: #9ca3af;
+            --gray-600: #d1d5db;
+            --gray-700: #e5e7eb;
+            --gray-800: #f3f4f6;
+            --gray-900: #f9fafb;
+        }
+
+        /* ===== Reset & Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+            line-height: 1.6;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Skip to content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: var(--radius);
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== Loading States ===== */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gray-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .loader-text {
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== Header & Navigation ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all var(--transition-base);
+        }
+
+        .header.scrolled {
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            transition: transform var(--transition-fast);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Enhanced Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+            font-size: 1.1rem;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gray-200);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .search-clear:hover {
+            background: var(--gray-300);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .search-clear.show {
+            display: flex;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .search-suggestion {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .search-suggestion:hover {
+            background: var(--gray-50);
+        }
+
+        .search-suggestion-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            color: var(--gray-600);
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .favorites-count {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .admin-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.03) 0%, transparent 70%);
+            animation: float 30s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            color: var(--gray-600);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .hero-cta {
+            margin-top: 2rem;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* ===== Filters & Categories ===== */
+        .filters-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .filters-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .results-count {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        .filters-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sort-dropdown {
+            position: relative;
+        }
+
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .sort-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .view-toggles {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--gray-100);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+        }
+
+        .view-btn {
+            padding: 0.6rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-filters {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .category-chip {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-weight: 600;
+            color: var(--gray-700);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: width var(--transition-base);
+            z-index: -1;
+        }
+
+        .category-chip:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-chip.active {
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-chip.active::before {
+            width: 100%;
+        }
+
+        .category-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.6rem;
+            background: var(--gray-100);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 24px;
+            height: 24px;
+        }
+
+        .category-chip.active .category-count {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ===== Apps Grid ===== */
+        .apps-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp var(--transition-slow) ease-out;
+        }
+
+        .apps-grid.list-view {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced App Card */
+        .app-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all var(--transition-base);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: cardEntry var(--transition-slow) ease-out;
+            animation-fill-mode: backwards;
+            border: 1px solid var(--gray-100);
+        }
+
+        .app-card:nth-child(n) { 
+            animation-delay: calc(var(--card-index, 0) * 100ms); 
+        }
+
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .app-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .app-card.list-view {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        /* Enhanced Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 10;
+            color: var(--gray-400);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .favorite-btn:hover {
+            background: white;
+            transform: scale(1.15);
+            box-shadow: var(--shadow-md);
+        }
+
+        .favorite-btn.active {
+            color: var(--secondary);
+            background: rgba(236, 72, 153, 0.1);
+            animation: heartbeat 0.4s ease;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* App Header */
+        .app-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--gray-50) 0%, rgba(99, 102, 241, 0.02) 100%);
+            position: relative;
+        }
+
+        .app-header.list-view {
+            padding: 1.5rem;
+            min-width: 280px;
+            max-width: 280px;
+        }
+
+        .app-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.5rem;
+            background: white;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            font-size: 2.2rem;
+            border: 1px solid var(--gray-100);
+        }
+
+        .list-view .app-icon-wrapper {
+            margin: 0 0 1rem;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .app-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .app-category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .app-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: var(--warning);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .app-usage-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        /* App Body */
+        .app-body {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-description {
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .app-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-tag {
+            padding: 0.4rem 0.9rem;
+            background: var(--gray-50);
+            color: var(--gray-700);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            border: 1px solid var(--gray-100);
+            transition: all var(--transition-fast);
+        }
+
+        .feature-tag:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+        }
+
+        .feature-tag i {
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+
+        /* Enhanced App Actions */
+        .app-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .app-btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .app-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .app-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .app-btn-secondary {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+            padding: 0.875rem 1.375rem;
+        }
+
+        .app-btn-secondary:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Badges */
+        .badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .badge-popular {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+
+        .badge-featured {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .badge-trending {
+            background: linear-gradient(135deg, var(--accent) 0%, #0d9488 100%);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        /* ===== No Results State ===== */
+        .no-results {
+            text-align: center;
+            padding: 6rem 2rem;
+            color: var(--gray-500);
+        }
+
+        .no-results-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            color: var(--gray-300);
+        }
+
+        .no-results-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+
+        .no-results-description {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .no-results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .no-results-btn {
+            padding: 0.875rem 1.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .no-results-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            color: var(--gray-300);
+            padding: 4rem 2rem 2rem;
+            margin-top: 8rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-section p {
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-700);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--gray-400);
+        }
+
+        .footer-bottom p {
+            margin-bottom: 1rem;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            background: var(--gray-800);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ===== Responsive Design ===== */
+        @media (max-width: 1024px) {
+            .hero-stats {
+                gap: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .search-container {
+                display: none;
+            }
+
+            .hero {
+                padding: 4rem 1.5rem;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .filters-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .filters-left {
+                justify-content: space-between;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .app-actions {
+                flex-direction: column;
+            }
+
+            .no-results {
+                padding: 4rem 1rem;
+            }
+        }
+
+        /* ===== Accessibility ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Enhanced focus styles */
+        *:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .app-card {
+                border: 3px solid var(--gray-900);
+            }
+            
+            .app-btn-primary {
+                background: var(--gray-900);
+            }
+
+            .category-chip {
+                border-width: 3px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .header, .footer, .filters-section {
+                display: none;
+            }
+
+            .app-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Loading AppHub...</div>
+        </div>
+    </div>
+
+    <!-- Skip to content link -->
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-content">
+            <a href="/" class="logo" aria-label="AppHub Home">
+                <div class="logo-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <span>AppHub</span>
+            </a>
+
+            <div class="search-container" role="search">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="search" 
+                        class="search-input" 
+                        placeholder="Search apps, features, categories..."
+                        aria-label="Search apps"
+                        id="searchInput"
+                        autocomplete="off"
+                    >
+                    <button class="search-clear" aria-label="Clear search" id="searchClear">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+
+            <div class="header-actions">
+                <button 
+                    class="action-btn theme-toggle" 
+                    aria-label="Toggle theme"
+                    data-tooltip="Toggle dark mode"
+                    id="themeToggle"
+                >
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <button 
+                    class="action-btn favorites-toggle" 
+                    aria-label="View favorites"
+                    data-tooltip="View favorites"
+                    id="favoritesToggle"
+                >
+                    <i class="fas fa-heart"></i>
+                    <span class="favorites-count" id="favoritesCount">0</span>
+                </button>
+
+                <a href="/admin" class="admin-btn">
+                    <i class="fas fa-lock"></i>
+                    <span>Admin</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main" role="main">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h1 id="hero-title">Instant Web Apps, Zero Friction</h1>
+                <p class="hero-subtitle">
+                    Discover powerful web applications that work instantly in your browser. No downloads, no signups, no ads—just pure productivity and entertainment.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="appsCount">15+</div>
+                        <div class="stat-label">Apps</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Free</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Ads</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="usageStats">1M+</div>
+                        <div class="stat-label">Uses</div>
+                    </div>
+                </div>
+                <div class="hero-cta">
+                    <a href="#apps" class="cta-button">
+                        <i class="fas fa-rocket"></i>
+                        <span>Explore Apps</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section" aria-label="Filter apps" id="apps">
+            <div class="filters-header">
+                <div class="filters-left">
+                    <h2 class="filter-title">Browse Apps</h2>
+                    <div class="results-count" id="resultsCount">Showing 15 apps</div>
+                </div>
+                <div class="filters-right">
+                    <div class="sort-dropdown">
+                        <button class="sort-btn" id="sortBtn">
+                            <i class="fas fa-sort"></i>
+                            <span>Sort by: Popular</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="view-toggles" role="tablist">
+                        <button 
+                            class="view-btn active" 
+                            data-view="grid"
+                            role="tab"
+                            aria-selected="true"
+                            aria-label="Grid view"
+                            id="gridViewBtn"
+                        >
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button 
+                            class="view-btn" 
+                            data-view="list"
+                            role="tab"
+                            aria-selected="false"
+                            aria-label="List view"
+                            id="listViewBtn"
+                        >
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-filters" role="group" aria-label="Filter by category" id="categoryFilters">
+                <!-- Categories will be dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- Apps Container -->
+        <section class="apps-container" aria-label="Apps gallery">
+            <div class="apps-grid" id="appsGrid">
+                <!-- Apps will be dynamically loaded here -->
+            </div>
+
+            <!-- No Results State -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="no-results-title">No apps found</h3>
+                <p class="no-results-description">
+                    We couldn't find any apps matching your criteria. Try adjusting your search or browse different categories.
+                </p>
+                <div class="no-results-actions">
+                    <button class="no-results-btn" onclick="clearFilters()">
+                        <i class="fas fa-refresh"></i>
+                        <span>Clear Filters</span>
+                    </button>
+                    <a href="#apps" class="no-results-btn" onclick="showAllApps()">
+                        <i class="fas fa-apps"></i>
+                        <span>Show All Apps</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About AppHub</h3>
+                <p>Your gateway to instant web applications. We curate the best browser-based tools and games, ensuring they're always free, fast, and accessible to everyone.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Discord">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <div class="footer-links">
+                    <a href="#productivity">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Productivity Tools</span>
+                    </a>
+                    <a href="#games">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Games & Entertainment</span>
+                    </a>
+                    <a href="#tools">
+                        <i class="fas fa-tools"></i>
+                        <span>Utilities & Tools</span>
+                    </a>
+                    <a href="#educational">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Educational Apps</span>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <div class="footer-links">
+                    <a href="#api">
+                        <i class="fas fa-code"></i>
+                        <span>Developer API</span>
+                    </a>
+                    <a href="#submit">
+                        <i class="fas fa-plus"></i>
+                        <span>Submit an App</span>
+                    </a>
+                    <a href="#privacy">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy Policy</span>
+                    </a>
+                    <a href="#terms">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Terms of Service</span>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="footer-links">
+                    <a href="#newsletter">
+                        <i class="fas fa-envelope"></i>
+                        <span>Newsletter</span>
+                    </a>
+                    <a href="#feedback">
+                        <i class="fas fa-comment"></i>
+                        <span>Send Feedback</span>
+                    </a>
+                    <a href="#blog">
+                        <i class="fas fa-blog"></i>
+                        <span>Blog</span>
+                    </a>
+                    <a href="#status">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>System Status</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AppHub. All apps are free to use. Built with ❤️ for the community.</p>
+            <p>Made with modern web technologies • Privacy-first • Open Source</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Enhanced App Data with more detailed information
+        const apps = [
+            {
+                id: 1,
+                title: "Simple Checklist",
+                category: "productivity",
+                icon: "📋",
+                description: "Clean and intuitive task management with advanced filtering, statistics, and export capabilities. Perfect for personal productivity and team collaboration.",
+                features: ["Task Management", "Smart Filters", "Export Options", "Statistics", "Team Sync"],
+                url: "/checklist.html",
+                rating: 4.8,
+                usage: 25400,
+                isNew: false,
+                isPopular: true,
+                lastUpdated: "2024-08-01"
+            },
+            {
+                id: 2,
+                title: "Photo to PDF Scanner",
+                category: "productivity",
+                icon: "📷",
+                description: "Advanced document scanner with OCR text recognition, batch processing, and high-quality PDF generation. Transform your phone into a powerful scanner.",
+                features: ["OCR Recognition", "PDF Export", "Batch Scan", "Cloud Sync", "High Quality"],
+                url: "/photo-to-pdf.html",
+                rating: 4.9,
+                usage: 18200,
+                isNew: false,
+                isFeatured: true,
+                lastUpdated: "2024-07-28"
+            },
+            {
+                id: 3,
+                title: "Voice Notes",
+                category: "productivity",
+                icon: "🎤",
+                description: "Record voice memos with automatic transcription, smart tagging, and cloud synchronization. Never lose an important thought again.",
+                features: ["Voice Recording", "Auto Transcription", "Smart Tags", "Cloud Sync", "Search"],
+                url: "/voice-notes.html",
+                rating: 4.7,
+                usage: 12800,
+                isNew: false,
+                lastUpdated: "2024-07-25"
+            },
+            {
+                id: 4,
+                title: "Chess Master",
+                category: "games",
+                icon: "♛",
+                description: "Play chess against intelligent AI with 5 difficulty levels, analysis mode, and multiplayer support. Perfect for learning and improving your game.",
+                features: ["Smart AI", "5 Difficulties", "Analysis Mode", "Multiplayer", "Learning"],
+                url: "/chess.html",
+                rating: 4.9,
+                usage: 34600,
+                isNew: false,
+                isPopular: true,
+                isTrending: true,
+                lastUpdated: "2024-08-05"
+            },
+            {
+                id: 5,
+                title: "Space Invaders",
+                category: "games",
+                icon: "👾",
+                description: "Classic arcade shooter reimagined with modern graphics, power-ups, and progressive difficulty. Defend Earth from waves of alien invaders!",
+                features: ["Retro Arcade", "Power-ups", "High Scores", "Progressive", "Classic"],
+                url: "/space-invaders.html",
+                rating: 4.6,
+                usage: 28900,
+                isNew: false,
+                lastUpdated: "2024-07-20"
+            },
+            {
+                id: 6,
+                title: "Dragon Flight 3D",
+                category: "games",
+                icon: "🐲",
+                description: "Soar through stunning 3D landscapes as a dragon! Experience breathtaking flight mechanics, epic boss battles, and an immersive fantasy world.",
+                features: ["3D Graphics", "Boss Battles", "Flight Physics", "Story Mode", "Epic Adventure"],
+                url: "/dragon-flight/index.html",
+                rating: 5.0,
+                usage: 42100,
+                isNew: true,
+                isFeatured: true,
+                isTrending: true,
+                lastUpdated: "2024-08-09"
+            },
+            {
+                id: 7,
+                title: "Dragon Hatchers",
+                category: "games",
+                icon: "🐉",
+                description: "Breed, hatch, and collect mystical dragons in this addictive strategy game. Build your dragon empire and discover rare breeds!",
+                features: ["Dragon Breeding", "Collection", "Strategy", "Rare Breeds", "Empire Building"],
+                url: "/game/index.html",
+                rating: 4.7,
+                usage: 19300,
+                isNew: false,
+                lastUpdated: "2024-07-15"
+            },
+            {
+                id: 8,
+                title: "HIIT Timer",
+                category: "fitness",
+                icon: "⏱️",
+                description: "Professional interval training timer with customizable workouts, audio cues, and progress tracking. Perfect for HIIT, Tabata, and circuit training.",
+                features: ["Custom Intervals", "Audio Cues", "Progress Track", "Workout Presets", "Statistics"],
+                url: "/hiit-timer.html",
+                rating: 4.8,
+                usage: 16700,
+                isNew: false,
+                isPopular: true,
+                lastUpdated: "2024-07-30"
+            },
+            {
+                id: 9,
+                title: "Simple Homing",
+                category: "tools",
+                icon: "🗺️",
+                description: "GPS navigation with location saving, compass features, and offline maps. Your reliable companion for outdoor adventures and navigation.",
+                features: ["GPS Navigation", "Compass", "Save Locations", "Offline Maps", "Distance Tracking"],
+                url: "/simple-homing.html",
+                rating: 4.5,
+                usage: 9800,
+                isNew: false,
+                lastUpdated: "2024-07-22"
+            },
+            {
+                id: 10,
+                title: "Palm Reader",
+                category: "entertainment",
+                icon: "🖐️",
+                description: "Fun palm reading experience with camera capture, AI analysis, and shareable predictions. Discover what your palm reveals about your future!",
+                features: ["Camera Scan", "AI Analysis", "Fun Predictions", "Share Results", "Multiple Languages"],
+                url: "/palm-reader.html",
+                rating: 4.3,
+                usage: 11200,
+                isNew: false,
+                lastUpdated: "2024-07-18"
+            },
+            {
+                id: 11,
+                title: "Turing Twister",
+                category: "educational",
+                icon: "🌪️",
+                description: "Master the art of debate with AI-powered argument simulation. Challenge your critical thinking and explore different perspectives on complex topics.",
+                features: ["AI Debate", "Critical Thinking", "Multiple Topics", "Skill Building", "Educational"],
+                url: "/turing-twister.html",
+                rating: 4.6,
+                usage: 8400,
+                isNew: false,
+                lastUpdated: "2024-07-12"
+            }
+        ];
+
+        // Enhanced State Management
+        let currentCategory = 'all';
+        let currentView = 'grid';
+        let currentSort = 'popular';
+        let searchQuery = '';
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let usageStats = JSON.parse(localStorage.getItem('usageStats') || '{}');
+
+        // DOM Elements
+        const elements = {
+            pageLoader: document.getElementById('pageLoader'),
+            appsGrid: document.getElementById('appsGrid'),
+            searchInput: document.getElementById('searchInput'),
+            searchClear: document.getElementById('searchClear'),
+            searchSuggestions: document.getElementById('searchSuggestions'),
+            categoryFilters: document.getElementById('categoryFilters'),
+            gridViewBtn: document.getElementById('gridViewBtn'),
+            listViewBtn: document.getElementById('listViewBtn'),
+            themeToggle: document.getElementById('themeToggle'),
+            favoritesToggle: document.getElementById('favoritesToggle'),
+            favoritesCount: document.getElementById('favoritesCount'),
+            resultsCount: document.getElementById('resultsCount'),
+            sortBtn: document.getElementById('sortBtn'),
+            noResults: document.getElementById('noResults'),
+            appsCount: document.getElementById('appsCount'),
+            usageStatsEl: document.getElementById('usageStats')
+        };
+
+        // Categories with enhanced data
+        const categories = [
+            { id: 'all', name: 'All Apps', icon: 'fas fa-th', count: 0 },
+            { id: 'productivity', name: 'Productivity', icon: 'fas fa-briefcase', count: 0 },
+            { id: 'games', name: 'Games', icon: 'fas fa-gamepad', count: 0 },
+            { id: 'tools', name: 'Tools', icon: 'fas fa-tools', count: 0 },
+            { id: 'entertainment', name: 'Entertainment', icon: 'fas fa-star', count: 0 },
+            { id: 'fitness', name: 'Fitness', icon: 'fas fa-heartbeat', count: 0 },
+            { id: 'educational', name: 'Educational', icon: 'fas fa-graduation-cap', count: 0 }
+        ];
+
+        // Initialize Application
+        function init() {
+            updateCategoryCounts();
+            renderCategories();
+            renderApps();
+            updateFavoritesCount();
+            updateStats();
+            setupEventListeners();
+            loadUserPreferences();
+            
+            // Hide loader after initialization
+            setTimeout(() => {
+                elements.pageLoader.classList.add('hidden');
+            }, 800);
+        }
+
+        // Enhanced App Rendering
+        function renderApps() {
+            let filteredApps = [...apps];
+
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filteredApps = filteredApps.filter(app => app.category === currentCategory);
+            }
+
+            // Filter by search
+            if (searchQuery) {
+                filteredApps = filteredApps.filter(app => 
+                    app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    app.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    app.features.some(f => f.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    app.category.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            // Sort apps
+            filteredApps = sortApps(filteredApps);
+
+            // Update results count
+            updateResultsCount(filteredApps.length);
+
+            // Show/hide no results
+            if (filteredApps.length === 0) {
+                elements.appsGrid.style.display = 'none';
+                elements.noResults.style.display = 'block';
+                return;
+            } else {
+                elements.appsGrid.style.display = 'grid';
+                elements.noResults.style.display = 'none';
+            }
+
+            // Apply view class
+            elements.appsGrid.className = `apps-grid ${currentView === 'list' ? 'list-view' : ''}`;
+
+            // Render app cards with enhanced animations
+            elements.appsGrid.innerHTML = filteredApps.map((app, index) => `
+                <article class="app-card ${currentView === 'list' ? 'list-view' : ''}" 
+                         style="--card-index: ${index}"
+                         data-app-id="${app.id}">
+                    ${getBadges(app)}
+                    
+                    <button class="favorite-btn ${favorites.includes(app.id) ? 'active' : ''}" 
+                            data-app-id="${app.id}"
+                            aria-label="${favorites.includes(app.id) ? 'Remove from favorites' : 'Add to favorites'}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+
+                    <div class="app-header ${currentView === 'list' ? 'list-view' : ''}">
+                        <div class="app-icon-wrapper">
+                            ${app.icon}
+                        </div>
+                        <div>
+                            <h3 class="app-title">${app.title}</h3>
+                            <div class="app-meta">
+                                <span class="app-category-badge">
+                                    <i class="${getCategoryIcon(app.category)}"></i>
+                                    ${app.category}
+                                </span>
+                                <div class="app-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>${app.rating}</span>
+                                </div>
+                                <div class="app-usage-stats">
+                                    <i class="fas fa-users"></i>
+                                    <span>${formatUsage(app.usage)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-body">
+                        <p class="app-description">${app.description}</p>
+                        <div class="app-features">
+                            ${app.features.map(feature => `
+                                <span class="feature-tag">
+                                    <i class="fas fa-check-circle"></i>
+                                    ${feature}
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div class="app-actions">
+                            <a href="${app.url}" class="app-btn app-btn-primary" onclick="trackUsage(${app.id})">
+                                <i class="fas fa-play"></i>
+                                <span>Launch App</span>
+                            </a>
+                            <a href="${app.url}" target="_blank" class="app-btn app-btn-secondary"
+                               aria-label="Open ${app.title} in new tab" onclick="trackUsage(${app.id})">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+
+            // Re-attach event listeners
+            attachAppEventListeners();
+        }
+
+        // Enhanced Badge System
+        function getBadges(app) {
+            let badges = '';
+            if (app.isNew) badges += '<span class="badge badge-new">New</span>';
+            if (app.isTrending) badges += '<span class="badge badge-trending">Trending</span>';
+            if (app.isPopular) badges += '<span class="badge badge-popular">Popular</span>';
+            if (app.isFeatured) badges += '<span class="badge badge-featured">Featured</span>';
+            return badges;
+        }
+
+        // Enhanced Sorting
+        function sortApps(apps) {
+            switch (currentSort) {
+                case 'popular':
+                    return apps.sort((a, b) => b.usage - a.usage);
+                case 'rating':
+                    return apps.sort((a, b) => b.rating - a.rating);
+                case 'newest':
+                    return apps.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+                case 'alphabetical':
+                    return apps.sort((a, b) => a.title.localeCompare(b.title));
+                default:
+                    return apps;
+            }
+        }
+
+        // Enhanced Category Rendering
+        function renderCategories() {
+            elements.categoryFilters.innerHTML = categories.map(category => `
+                <button class="category-chip ${currentCategory === category.id ? 'active' : ''}" 
+                        data-category="${category.id}"
+                        aria-label="Filter by ${category.name}">
+                    <i class="${category.icon}"></i>
+                    <span>${category.name}</span>
+                    <span class="category-count">${category.count}</span>
+                </button>
+            `).join('');
+
+            // Attach category listeners
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentCategory = chip.dataset.category;
+                    renderApps();
+                });
+            });
+        }
+
+        // Update category counts
+        function updateCategoryCounts() {
+            categories.forEach(category => {
+                if (category.id === 'all') {
+                    category.count = apps.length;
+                } else {
+                    category.count = apps.filter(app => app.category === category.id).length;
+                }
+            });
+        }
+
+        // Enhanced Search with Suggestions
+        function setupSearch() {
+            let searchTimeout;
+
+            elements.searchInput.addEventListener('input', (e) => {
+                const query = e.target.value;
+                searchQuery = query;
+                
+                elements.searchClear.classList.toggle('show', query.length > 0);
+                
+                // Debounce search
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    renderApps();
+                    if (query.length > 2) {
+                        showSearchSuggestions(query);
+                    } else {
+                        hideSearchSuggestions();
+                    }
+                }, 300);
+            });
+
+            elements.searchClear.addEventListener('click', clearSearch);
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!elements.searchInput.contains(e.target)) {
+                    hideSearchSuggestions();
+                }
+            });
+        }
+
+        function showSearchSuggestions(query) {
+            const suggestions = apps.filter(app => 
+                app.title.toLowerCase().includes(query.toLowerCase()) ||
+                app.features.some(f => f.toLowerCase().includes(query.toLowerCase()))
+            ).slice(0, 5);
+
+            if (suggestions.length > 0) {
+                elements.searchSuggestions.innerHTML = suggestions.map(app => `
+                    <div class="search-suggestion" data-app-id="${app.id}">
+                        <div class="search-suggestion-icon">${app.icon}</div>
+                        <div>
+                            <strong>${app.title}</strong>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">${app.category}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                elements.searchSuggestions.style.display = 'block';
+
+                // Add click listeners to suggestions
+                document.querySelectorAll('.search-suggestion').forEach(suggestion => {
+                    suggestion.addEventListener('click', (e) => {
+                        const appId = parseInt(e.currentTarget.dataset.appId);
+                        const app = apps.find(a => a.id === appId);
+                        if (app) {
+                            elements.searchInput.value = app.title;
+                            searchQuery = app.title;
+                            hideSearchSuggestions();
+                            renderApps();
+                        }
+                    });
+                });
+            }
+        }
+
+        function hideSearchSuggestions() {
+            elements.searchSuggestions.style.display = 'none';
+        }
+
+        function clearSearch() {
+            searchQuery = '';
+            elements.searchInput.value = '';
+            elements.searchClear.classList.remove('show');
+            hideSearchSuggestions();
+            renderApps();
+        }
+
+        // Enhanced Event Listeners Setup
+        function setupEventListeners() {
+            setupSearch();
+            setupViewToggles();
+            setupTheme();
+            setupFavorites();
+            setupScrollEffects();
+            setupKeyboardShortcuts();
+        }
+
+        function setupViewToggles() {
+            [elements.gridViewBtn, elements.listViewBtn].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    currentView = btn.dataset.view;
+                    renderApps();
+                    localStorage.setItem('preferredView', currentView);
+                });
+            });
+        }
+
+        function setupTheme() {
+            elements.themeToggle.addEventListener('click', () => {
+                const currentTheme = document.body.dataset.theme || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.body.dataset.theme = newTheme;
+                elements.themeToggle.innerHTML = 
+                    newTheme === 'dark' 
+                        ? '<i class="fas fa-sun"></i>' 
+                        : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.dataset.theme = savedTheme;
+            elements.themeToggle.innerHTML = 
+                savedTheme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+        }
+
+        function setupFavorites() {
+            elements.favoritesToggle.addEventListener('click', () => {
+                if (favorites.length === 0) {
+                    showNotification('No favorites yet! Click the heart icon on any app to add it to favorites.', 'info');
+                    return;
+                }
+                // Toggle favorites view
+                if (currentCategory === 'favorites') {
+                    currentCategory = 'all';
+                    document.querySelector('[data-category="all"]').click();
+                } else {
+                    showFavoritesView();
+                }
+            });
+        }
+
+        function showFavoritesView() {
+            currentCategory = 'favorites';
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            renderApps();
+        }
+
+        function setupScrollEffects() {
+            let ticking = false;
+
+            function updateScrollEffects() {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(updateScrollEffects);
+                    ticking = true;
+                }
+            });
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Cmd/Ctrl + K for search
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    elements.searchInput.focus();
+                }
+                
+                // Escape to clear search
+                if (e.key === 'Escape') {
+                    if (document.activeElement === elements.searchInput) {
+                        clearSearch();
+                        elements.searchInput.blur();
+                    }
+                }
+
+                // Number keys for categories
+                if (e.key >= '1' && e.key <= '7') {
+                    const categoryIndex = parseInt(e.key) - 1;
+                    if (categories[categoryIndex]) {
+                        document.querySelector(`[data-category="${categories[categoryIndex].id}"]`).click();
+                    }
+                }
+            });
+        }
+
+        // Enhanced App Event Listeners
+        function attachAppEventListeners() {
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', toggleFavorite);
+            });
+        }
+
+        // Enhanced Favorite System
+        function toggleFavorite(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            const appId = parseInt(e.currentTarget.dataset.appId);
+            const app = apps.find(a => a.id === appId);
+            
+            if (favorites.includes(appId)) {
+                favorites = favorites.filter(id => id !== appId);
+                e.currentTarget.classList.remove('active');
+                e.currentTarget.setAttribute('aria-label', 'Add to favorites');
+                showNotification(`${app.title} removed from favorites`, 'success');
+            } else {
+                favorites.push(appId);
+                e.currentTarget.classList.add('active');
+                e.currentTarget.setAttribute('aria-label', 'Remove from favorites');
+                showNotification(`${app.title} added to favorites`, 'success');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesCount();
+        }
+
+        // Utility Functions
+        function updateFavoritesCount() {
+            elements.favoritesCount.textContent = favorites.length;
+            elements.favoritesCount.style.display = favorites.length > 0 ? 'flex' : 'none';
+        }
+
+        function updateResultsCount(count) {
+            const text = count === 1 ? 'Showing 1 app' : `Showing ${count} apps`;
+            elements.resultsCount.textContent = text;
+        }
+
+        function updateStats() {
+            elements.appsCount.textContent = `${apps.length}+`;
+            const totalUsage = apps.reduce((sum, app) => sum + app.usage, 0);
+            elements.usageStatsEl.textContent = formatUsage(totalUsage);
+        }
+
+        function formatUsage(usage) {
+            if (usage >= 1000000) return `${(usage / 1000000).toFixed(1)}M`;
+            if (usage >= 1000) return `${(usage / 1000).toFixed(1)}K`;
+            return usage.toString();
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                productivity: 'fas fa-briefcase',
+                games: 'fas fa-gamepad',
+                tools: 'fas fa-tools',
+                entertainment: 'fas fa-star',
+                fitness: 'fas fa-heartbeat',
+                educational: 'fas fa-graduation-cap'
+            };
+            return icons[category] || 'fas fa-cube';
+        }
+
+        function trackUsage(appId) {
+            const app = apps.find(a => a.id === appId);
+            if (app) {
+                app.usage += 1;
+                usageStats[appId] = (usageStats[appId] || 0) + 1;
+                localStorage.setItem('usageStats', JSON.stringify(usageStats));
+            }
+        }
+
+        function loadUserPreferences() {
+            // Load saved view preference
+            const savedView = localStorage.getItem('preferredView');
+            if (savedView && ['grid', 'list'].includes(savedView)) {
+                currentView = savedView;
+                document.querySelector(`[data-view="${savedView}"]`).click();
+            }
+
+            // Load saved category
+            const savedCategory = localStorage.getItem('preferredCategory');
+            if (savedCategory && categories.find(c => c.id === savedCategory)) {
+                currentCategory = savedCategory;
+                document.querySelector(`[data-category="${savedCategory}"]`)?.click();
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Add styles for notification
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                padding: 16px 20px;
+                z-index: 1000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Global utility functions
+        function clearFilters() {
+            currentCategory = 'all';
+            searchQuery = '';
+            elements.searchInput.value = '';
+            elements.searchClear.classList.remove('show');
+            document.querySelector('[data-category="all"]').click();
+        }
+
+        function showAllApps() {
+            clearFilters();
+            document.getElementById('apps').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

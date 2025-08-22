@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    network_mode: "host"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET:-change-this-very-secure-secret}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./data:/app/data
+    restart: unless-stopped
+
+networks:
+  dashboard-network:
+    driver: bridge

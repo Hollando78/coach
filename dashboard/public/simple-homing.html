@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Simple Homing</title>
+    <link rel="stylesheet" href="simple-homing.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="index.html" class="back-btn">← Back to Dashboard</a>
+            <h1>Simple Homing</h1>
+        </nav>
+        
+        <main class="main-content">
+            <!-- Location Status Bar -->
+            <div class="location-status" id="locationStatus">
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="location-icon">📍</div>
+                    <span id="statusText">Getting location...</span>
+                </div>
+                <div class="accuracy" id="accuracyInfo"></div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">🗺️</div>
+                <h2>No Saved Locations</h2>
+                <p>Tap the + button to save your current location</p>
+            </div>
+            
+            <!-- Locations List -->
+            <div id="locationsList" class="locations-list hidden">
+                <div class="locations-header">
+                    <h2>Saved Locations</h2>
+                    <span id="locationsCount" class="count">0 locations</span>
+                </div>
+                <div id="locationsContainer" class="locations-container">
+                    <!-- Location items will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Add Location Button -->
+            <button id="addLocationBtn" class="add-location-btn" title="Add Current Location">
+                <span class="btn-icon">➕</span>
+                <span class="btn-text">Save Location</span>
+            </button>
+            
+            <!-- Save Location Modal -->
+            <div id="saveLocationModal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Save Current Location</h3>
+                        <button id="closeSaveModal" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="locationName">Location Name</label>
+                            <input type="text" id="locationName" placeholder="Enter location name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="locationType">Location Type</label>
+                            <select id="locationType">
+                                <option value="home">🏠 Home</option>
+                                <option value="work">💼 Work</option>
+                                <option value="restaurant">🍽️ Restaurant</option>
+                                <option value="shop">🛒 Shop</option>
+                                <option value="hospital">🏥 Hospital</option>
+                                <option value="school">🎓 School</option>
+                                <option value="gas">⛽ Gas Station</option>
+                                <option value="other" selected>📍 Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="current-location-info">
+                            <h4>Current Location</h4>
+                            <div class="location-details" id="currentLocationDetails">
+                                <div class="coordinate">
+                                    <strong>Latitude:</strong> <span id="currentLat">-</span>
+                                </div>
+                                <div class="coordinate">
+                                    <strong>Longitude:</strong> <span id="currentLon">-</span>
+                                </div>
+                                <div class="coordinate">
+                                    <strong>Accuracy:</strong> <span id="currentAccuracy">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-buttons">
+                            <button id="cancelSave" class="btn-secondary">Cancel</button>
+                            <button id="confirmSave" class="btn-primary" disabled>Save Location</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Modal -->
+            <div id="navigationModal" class="modal hidden">
+                <div class="modal-content navigation-modal">
+                    <div class="modal-header">
+                        <h3 id="navLocationName">Navigation</h3>
+                        <button id="closeNavModal" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="navigation-info">
+                            <div class="nav-stats">
+                                <div class="nav-stat">
+                                    <div class="nav-stat-label">Distance</div>
+                                    <div class="nav-stat-value" id="navDistance">-</div>
+                                </div>
+                                <div class="nav-stat">
+                                    <div class="nav-stat-label">Relative Bearing</div>
+                                    <div class="nav-stat-value" id="navRelativeBearing">-</div>
+                                </div>
+                                <div class="nav-stat">
+                                    <div class="nav-stat-label">Device Heading</div>
+                                    <div class="nav-stat-value" id="deviceHeading">-</div>
+                                    <button id="enableCompass" class="btn-secondary" style="display:none; margin-top:5px; font-size:0.8rem; padding:4px 8px;">Enable Compass</button>
+                                </div>
+                            </div>
+                            
+                            <div class="compass-controls">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="northUpToggle">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">North Up Mode</span>
+                                </label>
+                                <label class="toggle-switch" style="margin-left: 20px;">
+                                    <input type="checkbox" id="portraitCorrection">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">+90° Correction</span>
+                                </label>
+                                <label class="toggle-switch" style="margin-left: 15px;">
+                                    <input type="checkbox" id="portraitCorrectionMinus">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">-90° Correction</span>
+                                </label>
+                            </div>
+                            
+                            <div class="compass-container">
+                                <div class="compass" id="compass">
+                                    <div class="compass-rose" id="compassRose">
+                                        <div class="compass-ring">
+                                            <div class="compass-labels">
+                                                <div class="compass-label north">N</div>
+                                                <div class="compass-label northeast">NE</div>
+                                                <div class="compass-label east">E</div>
+                                                <div class="compass-label southeast">SE</div>
+                                                <div class="compass-label south">S</div>
+                                                <div class="compass-label southwest">SW</div>
+                                                <div class="compass-label west">W</div>
+                                                <div class="compass-label northwest">NW</div>
+                                            </div>
+                                            <div class="compass-ticks">
+                                                <div class="tick major" style="transform: rotate(0deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(15deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(30deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(45deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(60deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(75deg)"></div>
+                                                <div class="tick major" style="transform: rotate(90deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(105deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(120deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(135deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(150deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(165deg)"></div>
+                                                <div class="tick major" style="transform: rotate(180deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(195deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(210deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(225deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(240deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(255deg)"></div>
+                                                <div class="tick major" style="transform: rotate(270deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(285deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(300deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(315deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(330deg)"></div>
+                                                <div class="tick minor" style="transform: rotate(345deg)"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="compass-needle" id="compassNeedle">
+                                        <div class="needle-arrow">🧭</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="location-coordinates">
+                                <div class="coordinate-info">
+                                    <strong>Destination:</strong>
+                                    <div id="destCoordinates">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="navigation-actions">
+                            <button id="openInMaps" class="btn-primary">
+                                🗺️ Open in Maps
+                            </button>
+                            <button id="shareLocation" class="btn-secondary">
+                                📤 Share Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delete Confirmation Modal -->
+            <div id="deleteModal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete Location</h3>
+                        <button id="closeDeleteModal" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete "<span id="deleteLocationName"></span>"?</p>
+                        <div class="modal-buttons">
+                            <button id="cancelDelete" class="btn-secondary">Cancel</button>
+                            <button id="confirmDelete" class="btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="simple-homing.js"></script>
+</body>
+</html>

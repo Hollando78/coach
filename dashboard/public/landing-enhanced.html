@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free web apps gallery - productivity tools, games, entertainment. No signup, no ads, instant access.">
+    <title>AppHub - Free Instant Web Apps Gallery</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== CSS Variables for Theming ===== */
+        :root {
+            /* Brand Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-dark: #db2777;
+            --accent: #14b8a6;
+            
+            /* Semantic Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Neutrals */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --gray-50: #111827;
+            --gray-100: #1f2937;
+            --gray-200: #374151;
+            --gray-300: #4b5563;
+            --gray-400: #6b7280;
+            --gray-500: #9ca3af;
+            --gray-600: #d1d5db;
+            --gray-700: #e5e7eb;
+            --gray-800: #f3f4f6;
+            --gray-900: #f9fafb;
+        }
+
+        /* ===== Reset & Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+            line-height: 1.6;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Skip to content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: var(--radius);
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== Header & Navigation ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all var(--transition-base);
+        }
+
+        .header.scrolled {
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            transition: transform var(--transition-fast);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gray-200);
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .search-clear:hover {
+            background: var(--gray-300);
+        }
+
+        .search-clear.show {
+            display: flex;
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            color: var(--gray-600);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .favorites-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            color: var(--gray-600);
+        }
+
+        .favorites-toggle:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .favorites-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .admin-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===== Filters & Categories ===== */
+        .filters-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .view-toggles {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--gray-100);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--gray-600);
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-filters {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .category-chip {
+            padding: 0.5rem 1.25rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: 500;
+            color: var(--gray-700);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: width var(--transition-fast);
+            z-index: -1;
+        }
+
+        .category-chip:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .category-chip.active {
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-chip.active::before {
+            width: 100%;
+        }
+
+        .category-count {
+            display: inline-block;
+            margin-left: 0.5rem;
+            padding: 0.125rem 0.5rem;
+            background: var(--gray-100);
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .category-chip.active .category-count {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== Apps Grid ===== */
+        .apps-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            animation: fadeInUp var(--transition-slow) ease-out;
+        }
+
+        .apps-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* App Card */
+        .app-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all var(--transition-base);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: cardEntry var(--transition-slow) ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        .app-card:nth-child(n) { animation-delay: calc(n * 50ms); }
+
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .app-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .app-card.list-view {
+            flex-direction: row;
+        }
+
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 10;
+            color: var(--gray-400);
+        }
+
+        .favorite-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .favorite-btn.active {
+            color: var(--secondary);
+            animation: heartbeat 0.3s ease;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* App Header */
+        .app-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            position: relative;
+        }
+
+        .app-header.list-view {
+            padding: 1rem;
+            min-width: 200px;
+        }
+
+        .app-icon-wrapper {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: white;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            font-size: 2rem;
+        }
+
+        .list-view .app-icon-wrapper {
+            margin: 0;
+        }
+
+        .app-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .app-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .app-category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .app-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        /* App Body */
+        .app-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-description {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .app-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .feature-tag i {
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        /* App Actions */
+        .app-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .app-btn {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .app-btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .app-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .app-btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .app-btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        /* Badges */
+        .badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-new {
+            background: var(--danger);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .badge-popular {
+            background: var(--warning);
+            color: white;
+        }
+
+        .badge-featured {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: var(--gray-900);
+            color: var(--gray-300);
+            padding: 3rem 2rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-800);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--gray-500);
+        }
+
+        /* ===== Tooltips ===== */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: var(--gray-900);
+            color: white;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            margin-bottom: 0.5rem;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+        }
+
+        /* ===== Loading States ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ===== No Results ===== */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+        }
+
+        .no-results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        /* ===== Mobile Menu ===== */
+        .mobile-menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 24px;
+            height: 2px;
+            background: var(--gray-700);
+            transition: all var(--transition-fast);
+        }
+
+        /* ===== Responsive Design ===== */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            .search-container {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .hero {
+                padding: 3rem 1rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== Accessibility ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Focus styles */
+        *:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .app-card {
+                border: 2px solid var(--gray-900);
+            }
+            
+            .app-btn-primary {
+                background: var(--gray-900);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link -->
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-content">
+            <a href="/" class="logo" aria-label="AppHub Home">
+                <div class="logo-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <span>AppHub</span>
+            </a>
+
+            <div class="search-container" role="search">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="search" 
+                    class="search-input" 
+                    placeholder="Search apps..."
+                    aria-label="Search apps"
+                    id="searchInput"
+                >
+                <button class="search-clear" aria-label="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="header-actions">
+                <button 
+                    class="theme-toggle" 
+                    aria-label="Toggle theme"
+                    data-tooltip="Toggle dark mode"
+                >
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <button 
+                    class="favorites-toggle" 
+                    aria-label="View favorites"
+                    data-tooltip="View favorites"
+                >
+                    <i class="fas fa-heart"></i>
+                    <span class="favorites-count">0</span>
+                </button>
+
+                <a href="/admin" class="admin-btn">
+                    <i class="fas fa-lock"></i>
+                    <span>Admin</span>
+                </a>
+
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main" role="main">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h1 id="hero-title">Instant Web Apps, Zero Friction</h1>
+                <p class="hero-subtitle">
+                    No downloads. No signups. No ads. Just click and use.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Apps</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Free</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Ads</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section" aria-label="Filter apps">
+            <div class="filters-header">
+                <h2 class="filter-title">Browse Apps</h2>
+                <div class="view-toggles" role="tablist">
+                    <button 
+                        class="view-btn active" 
+                        data-view="grid"
+                        role="tab"
+                        aria-selected="true"
+                        aria-label="Grid view"
+                    >
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button 
+                        class="view-btn" 
+                        data-view="list"
+                        role="tab"
+                        aria-selected="false"
+                        aria-label="List view"
+                    >
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="category-filters" role="group" aria-label="Filter by category">
+                <button class="category-chip active" data-category="all">
+                    All Apps
+                    <span class="category-count">15</span>
+                </button>
+                <button class="category-chip" data-category="productivity">
+                    <i class="fas fa-briefcase"></i> Productivity
+                    <span class="category-count">3</span>
+                </button>
+                <button class="category-chip" data-category="games">
+                    <i class="fas fa-gamepad"></i> Games
+                    <span class="category-count">4</span>
+                </button>
+                <button class="category-chip" data-category="tools">
+                    <i class="fas fa-tools"></i> Tools
+                    <span class="category-count">3</span>
+                </button>
+                <button class="category-chip" data-category="entertainment">
+                    <i class="fas fa-star"></i> Entertainment
+                    <span class="category-count">2</span>
+                </button>
+                <button class="category-chip" data-category="fitness">
+                    <i class="fas fa-heartbeat"></i> Fitness
+                    <span class="category-count">1</span>
+                </button>
+                <button class="category-chip" data-category="educational">
+                    <i class="fas fa-graduation-cap"></i> Educational
+                    <span class="category-count">2</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Apps Container -->
+        <section class="apps-container" aria-label="Apps gallery">
+            <div class="apps-grid" id="appsGrid">
+                <!-- Apps will be dynamically loaded here -->
+            </div>
+
+            <!-- No Results State -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="no-results-title">No apps found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About AppHub</h3>
+                <p>Your gateway to instant web applications. No installation, no hassle, just productivity and fun.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <div class="footer-links">
+                    <a href="#productivity">Productivity Tools</a>
+                    <a href="#games">Games & Entertainment</a>
+                    <a href="#tools">Utilities & Tools</a>
+                    <a href="#educational">Educational Apps</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#developers">For Developers</a>
+                    <a href="#contact">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="footer-links">
+                    <a href="#github">GitHub</a>
+                    <a href="#twitter">Twitter</a>
+                    <a href="#discord">Discord Community</a>
+                    <a href="#newsletter">Newsletter</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AppHub. All apps are free to use. Built with ❤️ for the community.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // App Data
+        const apps = [
+            {
+                id: 1,
+                title: "Simple Checklist",
+                category: "productivity",
+                icon: "📋",
+                description: "Clean task management with filtering, stats, and export features.",
+                features: ["Task Management", "Filters", "Statistics", "Export"],
+                url: "/checklist.html",
+                rating: 4.8,
+                isNew: false,
+                isPopular: true
+            },
+            {
+                id: 2,
+                title: "Photo to PDF Scanner",
+                category: "productivity",
+                icon: "📷",
+                description: "Document scanner with OCR text recognition and PDF generation.",
+                features: ["OCR", "PDF Export", "Camera", "Batch Processing"],
+                url: "/photo-to-pdf.html",
+                rating: 4.9,
+                isNew: false,
+                isFeatured: true
+            },
+            {
+                id: 3,
+                title: "Voice Notes",
+                category: "productivity",
+                icon: "🎤",
+                description: "Record voice memos with automatic transcription capabilities.",
+                features: ["Voice Recording", "Transcription", "Cloud Sync"],
+                url: "/voice-notes.html",
+                rating: 4.7,
+                isNew: false
+            },
+            {
+                id: 4,
+                title: "Chess Master",
+                category: "games",
+                icon: "♛",
+                description: "Play chess against AI with 3 difficulty levels or with friends.",
+                features: ["Smart AI", "3 Difficulties", "Multiplayer", "Analysis"],
+                url: "/chess.html",
+                rating: 4.9,
+                isNew: false,
+                isPopular: true
+            },
+            {
+                id: 5,
+                title: "Space Invaders",
+                category: "games",
+                icon: "👾",
+                description: "Classic arcade shooter with waves of alien invaders.",
+                features: ["Arcade", "Levels", "High Score", "Power-ups"],
+                url: "/space-invaders.html",
+                rating: 4.6,
+                isNew: false
+            },
+            {
+                id: 6,
+                title: "Dragon Flight 3D",
+                category: "games",
+                icon: "🐲",
+                description: "Fly a dragon in stunning 3D with epic battles and challenges.",
+                features: ["3D Graphics", "Boss Battles", "Flight Sim", "Story Mode"],
+                url: "/dragon-flight/index.html",
+                rating: 5.0,
+                isNew: true,
+                isFeatured: true
+            },
+            {
+                id: 7,
+                title: "Dragon Hatchers",
+                category: "games",
+                icon: "🐉",
+                description: "Breed and hatch mystical dragons in this strategy game.",
+                features: ["Breeding", "Collection", "Strategy", "Trading"],
+                url: "/game/index.html",
+                rating: 4.7,
+                isNew: false
+            },
+            {
+                id: 8,
+                title: "HIIT Timer",
+                category: "fitness",
+                icon: "⏱️",
+                description: "Customizable interval training timer for workouts.",
+                features: ["Custom Intervals", "Audio Cues", "Progress Track", "Presets"],
+                url: "/hiit-timer.html",
+                rating: 4.8,
+                isNew: false,
+                isPopular: true
+            },
+            {
+                id: 9,
+                title: "Simple Homing",
+                category: "tools",
+                icon: "🗺️",
+                description: "GPS navigation with location saving and compass features.",
+                features: ["GPS", "Compass", "Save Locations", "Offline Mode"],
+                url: "/simple-homing.html",
+                rating: 4.5,
+                isNew: false
+            },
+            {
+                id: 10,
+                title: "Palm Reader",
+                category: "entertainment",
+                icon: "🖐️",
+                description: "Fun palm reading app with camera capture and predictions.",
+                features: ["Camera", "Analysis", "Fun Predictions", "Share Results"],
+                url: "/palm-reader.html",
+                rating: 4.3,
+                isNew: false
+            },
+            {
+                id: 11,
+                title: "Turing Twister",
+                category: "educational",
+                icon: "🌪️",
+                description: "Master debate skills with AI-powered argument simulator.",
+                features: ["Debate", "Critical Thinking", "AI Opponent", "Topics"],
+                url: "/turing-twister.html",
+                rating: 4.6,
+                isNew: false
+            }
+        ];
+
+        // State Management
+        let currentCategory = 'all';
+        let currentView = 'grid';
+        let searchQuery = '';
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+        // DOM Elements
+        const appsGrid = document.getElementById('appsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.querySelector('.search-clear');
+        const categoryChips = document.querySelectorAll('.category-chip');
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const themeToggle = document.querySelector('.theme-toggle');
+        const favoritesToggle = document.querySelector('.favorites-toggle');
+        const favoritesCount = document.querySelector('.favorites-count');
+        const noResults = document.getElementById('noResults');
+
+        // Initialize
+        function init() {
+            renderApps();
+            updateFavoritesCount();
+            setupEventListeners();
+            checkScrolled();
+        }
+
+        // Render Apps
+        function renderApps() {
+            let filteredApps = apps;
+
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filteredApps = filteredApps.filter(app => app.category === currentCategory);
+            }
+
+            // Filter by search
+            if (searchQuery) {
+                filteredApps = filteredApps.filter(app => 
+                    app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    app.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    app.features.some(f => f.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            }
+
+            // Show/hide no results
+            if (filteredApps.length === 0) {
+                appsGrid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            } else {
+                appsGrid.style.display = 'grid';
+                noResults.style.display = 'none';
+            }
+
+            // Apply view class
+            appsGrid.className = `apps-grid ${currentView === 'list' ? 'list-view' : ''}`;
+
+            // Render app cards
+            appsGrid.innerHTML = filteredApps.map((app, index) => `
+                <article class="app-card ${currentView === 'list' ? 'list-view' : ''}" 
+                         style="animation-delay: ${index * 50}ms"
+                         data-app-id="${app.id}">
+                    ${app.isNew ? '<span class="badge badge-new">New</span>' : ''}
+                    ${app.isPopular ? '<span class="badge badge-popular">Popular</span>' : ''}
+                    ${app.isFeatured ? '<span class="badge badge-featured">Featured</span>' : ''}
+                    
+                    <button class="favorite-btn ${favorites.includes(app.id) ? 'active' : ''}" 
+                            data-app-id="${app.id}"
+                            aria-label="Add to favorites">
+                        <i class="fas fa-heart"></i>
+                    </button>
+
+                    <div class="app-header ${currentView === 'list' ? 'list-view' : ''}">
+                        <div class="app-icon-wrapper">
+                            ${app.icon}
+                        </div>
+                        <div>
+                            <h3 class="app-title">${app.title}</h3>
+                            <div class="app-meta">
+                                <span class="app-category-badge">
+                                    <i class="fas fa-${getCategoryIcon(app.category)}"></i>
+                                    ${app.category}
+                                </span>
+                                <div class="app-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>${app.rating}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-body">
+                        <p class="app-description">${app.description}</p>
+                        <div class="app-features">
+                            ${app.features.map(feature => `
+                                <span class="feature-tag">
+                                    <i class="fas fa-check-circle"></i>
+                                    ${feature}
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div class="app-actions">
+                            <a href="${app.url}" class="app-btn app-btn-primary">
+                                <i class="fas fa-play"></i>
+                                <span>Launch App</span>
+                            </a>
+                            <a href="${app.url}" target="_blank" class="app-btn app-btn-secondary"
+                               aria-label="Open in new tab">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+
+            // Re-attach favorite button listeners
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', toggleFavorite);
+            });
+        }
+
+        // Get Category Icon
+        function getCategoryIcon(category) {
+            const icons = {
+                productivity: 'briefcase',
+                games: 'gamepad',
+                tools: 'tools',
+                entertainment: 'star',
+                fitness: 'heartbeat',
+                educational: 'graduation-cap'
+            };
+            return icons[category] || 'cube';
+        }
+
+        // Toggle Favorite
+        function toggleFavorite(e) {
+            e.stopPropagation();
+            const appId = parseInt(e.currentTarget.dataset.appId);
+            
+            if (favorites.includes(appId)) {
+                favorites = favorites.filter(id => id !== appId);
+                e.currentTarget.classList.remove('active');
+            } else {
+                favorites.push(appId);
+                e.currentTarget.classList.add('active');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesCount();
+        }
+
+        // Update Favorites Count
+        function updateFavoritesCount() {
+            favoritesCount.textContent = favorites.length;
+            favoritesCount.style.display = favorites.length > 0 ? 'block' : 'none';
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Search
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                searchClear.classList.toggle('show', searchQuery.length > 0);
+                renderApps();
+            });
+
+            searchClear.addEventListener('click', () => {
+                searchQuery = '';
+                searchInput.value = '';
+                searchClear.classList.remove('show');
+                renderApps();
+            });
+
+            // Categories
+            categoryChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    categoryChips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentCategory = chip.dataset.category;
+                    renderApps();
+                });
+            });
+
+            // View Toggle
+            viewButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    viewButtons.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    currentView = btn.dataset.view;
+                    renderApps();
+                });
+            });
+
+            // Theme Toggle
+            themeToggle.addEventListener('click', () => {
+                document.body.dataset.theme = 
+                    document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+                themeToggle.innerHTML = 
+                    document.body.dataset.theme === 'dark' 
+                        ? '<i class="fas fa-sun"></i>' 
+                        : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', document.body.dataset.theme);
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.dataset.theme = savedTheme;
+            themeToggle.innerHTML = 
+                savedTheme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+
+            // Favorites Toggle
+            favoritesToggle.addEventListener('click', () => {
+                if (favorites.length === 0) {
+                    alert('No favorites yet! Click the heart icon on any app to add it to favorites.');
+                    return;
+                }
+                // Filter to show only favorites
+                const favoriteApps = apps.filter(app => favorites.includes(app.id));
+                // Implementation for favorites view would go here
+                console.log('Favorite apps:', favoriteApps);
+            });
+
+            // Scroll detection
+            window.addEventListener('scroll', checkScrolled);
+        }
+
+        // Check if scrolled
+        function checkScrolled() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            // Cmd/Ctrl + K for search
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // Escape to clear search
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchQuery = '';
+                searchInput.value = '';
+                searchInput.blur();
+                renderApps();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

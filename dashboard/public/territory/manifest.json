@@ -1,0 +1,19 @@
+{
+  "short_name": "Territory Game",
+  "name": "Multiplayer Territory Conquest Game",
+  "description": "Real-time multiplayer territory conquest game with enclosed area capture",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "theme_color": "#4ECDC4",
+  "background_color": "#1a1a1a",
+  "categories": ["games", "strategy"],
+  "prefer_related_applications": false
+}

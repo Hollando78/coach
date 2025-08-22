@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palm Analysis Tool</title>
+    <link rel="stylesheet" href="palm-reader.css">
+</head>
+<body>
+    <div class="palm-reader-app">
+        <header class="app-header">
+            <h1>📋 Palm Reading Analysis 📋</h1>
+            <p class="subtitle">Discover insights about your future!</p>
+        </header>
+
+        <div class="container">
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="screen active">
+                <div class="welcome-content">
+                    <div class="magic-circle">🤲</div>
+                    <h2>Welcome to Palm Analysis!</h2>
+                    <p>Let's analyze your palm and provide insights about your future!</p>
+                    <button id="startBtn" class="magic-btn">Start Analysis</button>
+                </div>
+            </div>
+
+            <!-- Setup Screen -->
+            <div id="setupScreen" class="screen">
+                <div class="setup-content">
+                    <h2>Tell me about yourself!</h2>
+                    
+                    <div class="input-group">
+                        <label for="nameInput">What's your first name?</label>
+                        <input type="text" id="nameInput" placeholder="Your name" maxlength="20">
+                    </div>
+
+                    <div class="input-group">
+                        <label>How old are you?</label>
+                        <div class="age-slider">
+                            <input type="range" id="ageSlider" min="6" max="99" value="25">
+                            <span id="ageDisplay">25</span> years old
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Which hand would you like me to read?</label>
+                        <div class="hand-selection">
+                            <button class="hand-btn" data-hand="left">
+                                <div class="hand-icon">🤚</div>
+                                <span>Left Hand</span>
+                            </button>
+                            <button class="hand-btn" data-hand="right">
+                                <div class="hand-icon">✋</div>
+                                <span>Right Hand</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="nextBtn" class="magic-btn" disabled>Next Step</button>
+                </div>
+            </div>
+
+            <!-- Palm Photo Screen -->
+            <div id="tracingScreen" class="screen">
+                <div class="photo-content">
+                    <h2>Take a photo of your palm!</h2>
+                    <p>Hold your <span id="selectedHandText">hand</span> up to the camera</p>
+                    
+                    <div class="camera-container">
+                        <video id="cameraVideo" autoplay muted playsinline></video>
+                        <canvas id="captureCanvas" style="display: none;"></canvas>
+                        <div id="photoPreview" style="display: none;">
+                            <img id="capturedImage" alt="Captured palm photo">
+                        </div>
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button id="startCameraBtn" class="magic-btn">📷 Start Camera</button>
+                        <button id="capturePhotoBtn" class="magic-btn" style="display: none;">📸 Capture Palm</button>
+                        <button id="retakePhotoBtn" class="magic-btn secondary" style="display: none;">🔄 Retake Photo</button>
+                        <button id="generateReadingBtn" class="magic-btn" style="display: none;">📊 Generate Analysis</button>
+                    </div>
+                    
+                    <div class="photo-instructions">
+                        <div class="instruction-item">
+                            <span class="instruction-icon">📋</span>
+                            <span>Position your palm clearly in the camera view</span>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="instruction-icon">💡</span>
+                            <span>Make sure you have good lighting</span>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="instruction-icon">✋</span>
+                            <span>Keep your hand steady when capturing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Screen -->
+            <div id="readingScreen" class="screen">
+                <div class="reading-content">
+                    <h2 id="readingTitle">Your Palm Analysis</h2>
+                    
+                    <div class="reading-card">
+                        <div class="card-header">
+                            <h3 id="readingCategory">📊 Your Analysis</h3>
+                        </div>
+                        <div class="card-content">
+                            <p id="readingText" class="reading-main-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="additional-predictions">
+                        <div class="prediction-item">
+                            <span class="prediction-icon">📈</span>
+                            <span id="talentPrediction"></span>
+                        </div>
+                        <div class="prediction-item">
+                            <span class="prediction-icon">🤝</span>
+                            <span id="funPrediction"></span>
+                        </div>
+                        <div class="prediction-item">
+                            <span class="prediction-icon">🏆</span>
+                            <span id="specialPrediction"></span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="shareBtn" class="magic-btn secondary">Share Analysis</button>
+                        <button id="newReadingBtn" class="magic-btn">New Analysis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Screen -->
+            <div id="shareScreen" class="screen">
+                <div class="share-content">
+                    <h2>Share Your Analysis!</h2>
+                    <div class="share-card" id="shareCard">
+                        <div class="share-header">
+                            <h3 id="shareTitle"></h3>
+                        </div>
+                        <div class="share-text" id="shareText"></div>
+                        <div class="share-footer">📋 Palm Analysis Tool 📋</div>
+                    </div>
+                    <div class="share-buttons">
+                        <button id="copyReadingBtn" class="magic-btn">Copy Text</button>
+                        <button id="backToReadingBtn" class="magic-btn secondary">Back to Analysis</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="palm-reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.env
+dashboard.db
+uploads
+data
+logs
+.git
+.gitignore
+*.log
+.dockerignore
+Dockerfile*
+docker-compose*

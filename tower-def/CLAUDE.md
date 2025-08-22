@@ -1,0 +1,2 @@
+- run frontend on 127.0.0.1:51501
+- backend should be 51502

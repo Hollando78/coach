@@ -1,0 +1,33 @@
+{
+  "doodleBlob": {
+    "id": "doodleBlob",
+    "name": "Doodle Blob",
+    "health": 20,
+    "speed": 50,
+    "reward": 5,
+    "damage": 1,
+    "color": "0x4444FF",
+    "radius": 8
+  },
+  "paperAirplane": {
+    "id": "paperAirplane",
+    "name": "Paper Airplane",
+    "health": 10,
+    "speed": 100,
+    "reward": 8,
+    "damage": 1,
+    "color": "0xFFFFFF",
+    "radius": 6
+  },
+  "inkDroplet": {
+    "id": "inkDroplet",
+    "name": "Ink Droplet",
+    "health": 50,
+    "speed": 30,
+    "armor": 5,
+    "reward": 15,
+    "damage": 2,
+    "color": "0x000033",
+    "radius": 10
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "waves": [
+    {
+      "wave": 1,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 5, "interval": 1000 }
+      ]
+    },
+    {
+      "wave": 2,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 8, "interval": 800 }
+      ]
+    },
+    {
+      "wave": 3,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 5, "interval": 600 },
+        { "creepType": "paperAirplane", "count": 3, "interval": 1000, "delay": 3000 }
+      ]
+    },
+    {
+      "wave": 4,
+      "spawns": [
+        { "creepType": "paperAirplane", "count": 8, "interval": 500 }
+      ]
+    },
+    {
+      "wave": 5,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 10, "interval": 400 },
+        { "creepType": "inkDroplet", "count": 2, "interval": 2000, "delay": 2000 }
+      ]
+    },
+    {
+      "wave": 6,
+      "spawns": [
+        { "creepType": "paperAirplane", "count": 10, "interval": 300 },
+        { "creepType": "doodleBlob", "count": 10, "interval": 500, "delay": 2000 }
+      ]
+    },
+    {
+      "wave": 7,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 5, "interval": 1500 }
+      ]
+    },
+    {
+      "wave": 8,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 15, "interval": 300 },
+        { "creepType": "paperAirplane", "count": 10, "interval": 400, "delay": 2000 }
+      ]
+    },
+    {
+      "wave": 9,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 3, "interval": 1000 },
+        { "creepType": "paperAirplane", "count": 15, "interval": 200, "delay": 3000 }
+      ]
+    },
+    {
+      "wave": 10,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 20, "interval": 200 },
+        { "creepType": "paperAirplane", "count": 10, "interval": 300, "delay": 1000 },
+        { "creepType": "inkDroplet", "count": 5, "interval": 1000, "delay": 5000 }
+      ]
+    },
+    {
+      "wave": 11,
+      "spawns": [
+        { "creepType": "paperAirplane", "count": 20, "interval": 150 }
+      ]
+    },
+    {
+      "wave": 12,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 8, "interval": 800 },
+        { "creepType": "doodleBlob", "count": 15, "interval": 300, "delay": 3000 }
+      ]
+    },
+    {
+      "wave": 13,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 25, "interval": 150 },
+        { "creepType": "paperAirplane", "count": 15, "interval": 200, "delay": 2000 }
+      ]
+    },
+    {
+      "wave": 14,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 10, "interval": 600 }
+      ]
+    },
+    {
+      "wave": 15,
+      "spawns": [
+        { "creepType": "paperAirplane", "count": 30, "interval": 100 },
+        { "creepType": "inkDroplet", "count": 5, "interval": 800, "delay": 3000 }
+      ]
+    },
+    {
+      "wave": 16,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 30, "interval": 100 },
+        { "creepType": "paperAirplane", "count": 20, "interval": 150, "delay": 1000 },
+        { "creepType": "inkDroplet", "count": 8, "interval": 500, "delay": 5000 }
+      ]
+    },
+    {
+      "wave": 17,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 12, "interval": 400 }
+      ]
+    },
+    {
+      "wave": 18,
+      "spawns": [
+        { "creepType": "paperAirplane", "count": 40, "interval": 80 },
+        { "creepType": "doodleBlob", "count": 20, "interval": 200, "delay": 2000 }
+      ]
+    },
+    {
+      "wave": 19,
+      "spawns": [
+        { "creepType": "inkDroplet", "count": 15, "interval": 300 },
+        { "creepType": "paperAirplane", "count": 25, "interval": 100, "delay": 3000 }
+      ]
+    },
+    {
+      "wave": 20,
+      "spawns": [
+        { "creepType": "doodleBlob", "count": 40, "interval": 80 },
+        { "creepType": "paperAirplane", "count": 30, "interval": 100, "delay": 1000 },
+        { "creepType": "inkDroplet", "count": 20, "interval": 200, "delay": 5000 }
+      ]
+    }
+  ]
+}

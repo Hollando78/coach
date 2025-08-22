@@ -1,0 +1,8 @@
+packages:
+  - frontend
+  - backend
+
+ignoredBuiltDependencies:
+  - argon2
+  - es5-ext
+  - esbuild

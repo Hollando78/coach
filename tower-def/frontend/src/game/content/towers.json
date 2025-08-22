@@ -1,0 +1,136 @@
+{
+  "pencilTurret": {
+    "id": "pencilTurret",
+    "name": "Pencil Turret",
+    "description": "Fast firing, low damage",
+    "cost": 50,
+    "damage": 5,
+    "range": 100,
+    "fireRate": 2,
+    "projectileSpeed": 400,
+    "color": "0x666666",
+    "upgrades": {
+      "tier2a": {
+        "name": "Mechanical Pencil",
+        "cost": 100,
+        "damage": 8,
+        "fireRate": 3
+      },
+      "tier2b": {
+        "name": "Fineliner",
+        "cost": 100,
+        "damage": 7,
+        "critChance": 0.2,
+        "critMultiplier": 2
+      }
+    }
+  },
+  "inkBlot": {
+    "id": "inkBlot",
+    "name": "Ink Blot",
+    "description": "Splash AoE damage",
+    "cost": 100,
+    "damage": 15,
+    "range": 80,
+    "fireRate": 0.8,
+    "splashRadius": 40,
+    "projectileSpeed": 300,
+    "color": "0x000066",
+    "upgrades": {
+      "tier2a": {
+        "name": "Highlighter",
+        "cost": 150,
+        "damage": 20,
+        "dotDamage": 3,
+        "dotDuration": 3
+      },
+      "tier2b": {
+        "name": "Marker",
+        "cost": 150,
+        "damage": 25,
+        "splashRadius": 60
+      }
+    }
+  },
+  "rulerCannon": {
+    "id": "rulerCannon",
+    "name": "Ruler Cannon",
+    "description": "Piercing line shot",
+    "cost": 150,
+    "damage": 20,
+    "range": 150,
+    "fireRate": 0.5,
+    "pierce": 3,
+    "projectileSpeed": 600,
+    "color": "0x8B4513",
+    "upgrades": {
+      "tier2a": {
+        "name": "Steel Ruler",
+        "cost": 200,
+        "damage": 30,
+        "pierce": 5
+      },
+      "tier2b": {
+        "name": "Laser Ruler",
+        "cost": 200,
+        "damage": 25,
+        "projectileSpeed": 1000,
+        "fireRate": 0.8
+      }
+    }
+  },
+  "eraserWall": {
+    "id": "eraserWall",
+    "name": "Eraser Wall",
+    "description": "Blocks path, no damage",
+    "cost": 30,
+    "damage": 0,
+    "range": 0,
+    "fireRate": 0,
+    "health": 100,
+    "isWall": true,
+    "color": "0xFFB6C1",
+    "upgrades": {
+      "tier2a": {
+        "name": "Barrier",
+        "cost": 50,
+        "health": 200
+      },
+      "tier2b": {
+        "name": "White-Out Edge",
+        "cost": 60,
+        "health": 150,
+        "contactDamage": 2,
+        "slowAmount": 0.3
+      }
+    }
+  },
+  "stickyNoteTrap": {
+    "id": "stickyNoteTrap",
+    "name": "Sticky Note Trap",
+    "description": "Slows enemies",
+    "cost": 40,
+    "damage": 0,
+    "range": 0,
+    "fireRate": 0,
+    "slowAmount": 0.5,
+    "slowDuration": 2,
+    "isTrap": true,
+    "color": "0xFFFF00",
+    "upgrades": {
+      "tier2a": {
+        "name": "Super Sticky",
+        "cost": 60,
+        "slowAmount": 0.7,
+        "slowDuration": 3
+      },
+      "tier2b": {
+        "name": "Glue Trap",
+        "cost": 60,
+        "slowAmount": 0.6,
+        "slowDuration": 4,
+        "damage": 1
+      }
+    }
+  }
+}

@@ -189,9 +189,9 @@ REFRESH_SECRET=your-super-secret-refresh-key-minimum-32-characters-long!
 COOKIE_SECRET=your-super-secret-cookie-key-minimum-32-characters-long!
 
 # Server
-PORT=3001
-HOST=localhost
-FRONTEND_URL=http://localhost:5173
+PORT=3006
+HOST=0.0.0.0
+FRONTEND_URL=http://127.0.0.1:5177
 
 # Optional
 REDIS_URL=redis://localhost:6382
@@ -200,8 +200,8 @@ NODE_ENV=development
 
 ### Frontend Variables
 ```env
-VITE_API_BASE_URL=http://localhost:3001/api
-VITE_SOCKET_URL=http://localhost:3001
+VITE_API_BASE_URL=http://127.0.0.1:3006/api
+VITE_SOCKET_URL=http://127.0.0.1:3006
 ```
 
 ## Development Patterns
@@ -315,6 +315,44 @@ The venue field allows custom match locations beyond the default "Home Ground"/"
 - Edit from match planning page
 - Supports names like "Wembley Stadium", "Old Trafford", etc.
 - Displays custom venue in match cards when specified
+
+### Player Availability Display Fix (Recently Implemented)
+Fixed the player availability checkboxes in match planning to display match-specific availability instead of global availability:
+
+**Problem Solved:**
+- Player availability checkboxes in PlanningPage were showing global `player.isAvailable` instead of match-specific availability
+- Users could not see the correct match-day availability status when planning lineups
+- Page refresh issues when clicking availability checkboxes (previously resolved)
+
+**Implementation Details:**
+- **Data Merging**: Created `playersWithMatchAvailability` computed array that merges team store `players` with `currentMatch.playerAvailability` data
+- **Simplified Logic**: Changed from complex fallback logic to direct use of `player.isAvailableForMatch` 
+- **Consistent References**: Updated all player references in PlanningPage to use merged data for consistency
+- **Backend Integration**: Backend already provided correct data via `/matches/:matchId` endpoint with `playerAvailability` includes
+
+**Key Changes Made:**
+- `frontend/src/pages/PlanningPage.tsx` - Added `playersWithMatchAvailability` merge logic and updated all player references
+- Checkbox logic simplified from `player.isAvailableForMatch !== undefined ? !player.isAvailableForMatch : !player.isAvailable` to `!player.isAvailableForMatch`
+- Updated player filtering, counts, and TimeBlockPlanner props to use match-specific availability
+
+**Technical Pattern:**
+```typescript
+// Merge players with match-specific availability data
+const playersWithMatchAvailability = players.map(player => {
+  const matchAvailability = currentMatch?.playerAvailability?.find(
+    availability => availability.playerId === player.id
+  );
+  return {
+    ...player,
+    isAvailableForMatch: matchAvailability ? matchAvailability.isAvailable : player.isAvailable
+  };
+});
+```
+
+**Result:**
+- Checkboxes now correctly show and modify match-specific player availability
+- Global availability remains useful for general player management
+- Match planning displays accurate availability status for tactical decisions
 
 ### Debugging Real-time Issues
 1. Check Socket.IO room membership in browser dev tools

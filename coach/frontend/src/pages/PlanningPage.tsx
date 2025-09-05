@@ -11,13 +11,10 @@ import { createTimeBlockConfig, analyzeAllSubstitutions } from '../utils/timeBlo
 import { 
   ArrowLeftIcon,
   PlusIcon,
-  CheckIcon,
-  XMarkIcon,
   UserIcon,
   Squares2X2Icon,
   TrashIcon,
   DocumentTextIcon,
-  ClipboardDocumentListIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
 
@@ -121,304 +118,6 @@ function CreateFormationModal({ isOpen, onClose, onSubmit, isLoading }: CreateFo
   );
 }
 
-// Remove local Player interface since we import it from types
-
-interface PlayerSelectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  players: Player[];
-  selectedPlayers: string[];
-  onSelectionChange: (playerIds: string[]) => void;
-}
-
-function PlayerSelectionModal({ isOpen, onClose, players, selectedPlayers, onSelectionChange }: PlayerSelectionModalProps) {
-  const [localSelection, setLocalSelection] = useState<string[]>(selectedPlayers);
-
-  useEffect(() => {
-    setLocalSelection(selectedPlayers);
-  }, [selectedPlayers, isOpen]);
-
-  const togglePlayer = (playerId: string) => {
-    if (localSelection.includes(playerId)) {
-      setLocalSelection(localSelection.filter(id => id !== playerId));
-    } else {
-      setLocalSelection([...localSelection, playerId]);
-    }
-  };
-
-  const handleConfirm = () => {
-    onSelectionChange(localSelection);
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
-          Select Players ({localSelection.length} selected)
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-          {players.map((player) => {
-            const isSelected = localSelection.includes(player.id);
-            const canSelect = !isSelected && player.isAvailable;
-            const isDisabled = !player.isAvailable;
-            
-            return (
-              <div
-                key={player.id}
-                onClick={() => player.isAvailable ? togglePlayer(player.id) : undefined}
-                className={`p-3 border rounded-lg transition-colors ${
-                  !player.isAvailable
-                    ? 'border-red-200 bg-red-50 cursor-not-allowed opacity-60'
-                    : isSelected 
-                    ? 'border-blue-500 bg-blue-50 cursor-pointer' 
-                    : canSelect
-                    ? 'border-gray-300 hover:border-blue-300 hover:bg-blue-50 cursor-pointer'
-                    : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-gray-900">
-                        {player.name} #{player.shirtNo || 'N/A'}
-                      </p>
-                      {!player.isAvailable && (
-                        <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                          Unavailable
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {player.preferredPositions.join(', ') || 'No preferred positions'}
-                    </p>
-                  </div>
-                  {isSelected && (
-                    <CheckIcon className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-            disabled={localSelection.length === 0}
-          >
-            Confirm Selection
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface PlayerAssignment {
-  playerId: string;
-  position: string;
-  isBench: boolean;
-}
-
-interface PositionAssignmentModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  players: Player[];
-  selectedPlayers: string[];
-  onAssignmentsChange: (assignments: PlayerAssignment[]) => void;
-  formation?: any;
-}
-
-function PositionAssignmentModal({ 
-  isOpen, 
-  onClose, 
-  players, 
-  selectedPlayers, 
-  onAssignmentsChange,
-  formation 
-}: PositionAssignmentModalProps) {
-  const [assignments, setAssignments] = useState<PlayerAssignment[]>([]);
-
-  // Standard 9-a-side positions
-  const positions = [
-    'Goalkeeper',
-    'Centre Back',
-    'Left Back', 
-    'Right Back',
-    'Defensive Mid',
-    'Central Mid',
-    'Left Wing',
-    'Right Wing',
-    'Centre Forward'
-  ];
-
-  useEffect(() => {
-    if (isOpen && selectedPlayers.length > 0) {
-      // Initialize assignments for field players (max 9)
-      const fieldPlayers = selectedPlayers.slice(0, 9);
-      const bench = selectedPlayers.slice(9);
-      
-      const initialAssignments: PlayerAssignment[] = fieldPlayers.map((playerId, index) => ({
-        playerId,
-        position: positions[index] || `Position ${index + 1}`,
-        isBench: false
-      }));
-
-      // Add bench players
-      bench.forEach(playerId => {
-        initialAssignments.push({
-          playerId,
-          position: 'Substitute',
-          isBench: true
-        });
-      });
-
-      setAssignments(initialAssignments);
-    }
-  }, [isOpen, selectedPlayers]);
-
-  const updatePlayerPosition = (playerId: string, newPosition: string) => {
-    setAssignments(prev => prev.map(assignment => 
-      assignment.playerId === playerId 
-        ? { ...assignment, position: newPosition }
-        : assignment
-    ));
-  };
-
-  const togglePlayerBench = (playerId: string) => {
-    setAssignments(prev => prev.map(assignment => {
-      if (assignment.playerId === playerId) {
-        const newIsBench = !assignment.isBench;
-        return {
-          ...assignment,
-          isBench: newIsBench,
-          position: newIsBench ? 'Substitute' : 'Goalkeeper' // Default position when moving to field
-        };
-      }
-      return assignment;
-    }));
-  };
-
-  const handleConfirm = () => {
-    onAssignmentsChange(assignments);
-    onClose();
-  };
-
-  const getPlayerName = (playerId: string) => {
-    const player = players.find(p => p.id === playerId);
-    return player ? `${player.name} ${player.shirtNo ? `#${player.shirtNo}` : ''}` : 'Unknown';
-  };
-
-  if (!isOpen) return null;
-
-  const startingEleven = assignments.filter(a => !a.isBench);
-  const substitutes = assignments.filter(a => a.isBench);
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <ClipboardDocumentListIcon className="h-6 w-6" />
-          Assign Player Positions
-        </h2>
-        
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Selected Players */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Selected Players ({startingEleven.length})
-            </h3>
-            <div className="space-y-3">
-              {startingEleven.map((assignment) => (
-                <div key={assignment.playerId} className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">
-                      {getPlayerName(assignment.playerId)}
-                    </p>
-                    <select
-                      value={assignment.position}
-                      onChange={(e) => updatePlayerPosition(assignment.playerId, e.target.value)}
-                      className="mt-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      {positions.map(position => (
-                        <option key={position} value={position}>
-                          {position}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button
-                    onClick={() => togglePlayerBench(assignment.playerId)}
-                    className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 transition-colors"
-                  >
-                    Move to Bench
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bench */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Bench ({substitutes.length})
-            </h3>
-            <div className="space-y-3">
-              {substitutes.length === 0 ? (
-                <p className="text-gray-500 text-sm">No players on bench</p>
-              ) : (
-                substitutes.map((assignment) => (
-                  <div key={assignment.playerId} className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {getPlayerName(assignment.playerId)}
-                      </p>
-                      <p className="text-sm text-gray-600">Substitute</p>
-                    </div>
-                    {startingEleven.length < 9 && (
-                      <button
-                        onClick={() => togglePlayerBench(assignment.playerId)}
-                        className="text-sm bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200 transition-colors"
-                      >
-                        Move to Field
-                      </button>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Save Assignments
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface EditMatchModalProps {
   isOpen: boolean;
@@ -551,14 +250,10 @@ function PlanningPage() {
   }>();
   
   const { currentMatch, isLoading, error, getMatch, updateMatch, clearError, getFormations, createFormation, deleteFormation, updateMatchPlan, savePlayerAssignments } = useSeasonStore();
-  const { currentTeam, players, selectTeam, fetchPlayers } = useTeamStore();
+  const { currentTeam, players, selectTeam, fetchPlayers, updatePlayer } = useTeamStore();
   const [formations, setFormations] = useState<any[]>([]);
   const [selectedFormation, setSelectedFormation] = useState<any>(null);
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
-  const [playerAssignments, setPlayerAssignments] = useState<PlayerAssignment[]>([]);
   const [isFormationModalOpen, setIsFormationModalOpen] = useState(false);
-  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
-  const [isPositionModalOpen, setIsPositionModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formationToDelete, setFormationToDelete] = useState<any>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -574,6 +269,17 @@ function PlanningPage() {
   const [blockAssignments, setBlockAssignments] = useState<Record<number, Assignment[]>>({});
   const [blockFormations, setBlockFormations] = useState<Record<number, string>>({});
   const [currentBlockIndex, setCurrentBlockIndex] = useState<number>(0); // Will be used for editing specific blocks
+  
+  // Merge players with match-specific availability data
+  const playersWithMatchAvailability = players.map(player => {
+    const matchAvailability = currentMatch?.playerAvailability?.find(
+      availability => availability.playerId === player.id
+    );
+    return {
+      ...player,
+      isAvailableForMatch: matchAvailability ? matchAvailability.isAvailable : player.isAvailable
+    };
+  });
   
   // Warning dialog state for interval changes
   const [isIntervalWarningOpen, setIsIntervalWarningOpen] = useState(false);
@@ -595,25 +301,9 @@ function PlanningPage() {
     }
   }, [currentTeam]);
 
-  // Load existing match plan data and player assignments when match loads
+  // Load existing match plan data when match loads
   useEffect(() => {
     if (currentMatch) {
-      // Load existing player assignments from all blocks (not just first block)
-      if (currentMatch.blocks && currentMatch.blocks.length > 0) {
-        // Collect all unique player IDs from all blocks
-        const allAssignedPlayerIds = new Set<string>();
-        
-        currentMatch.blocks.forEach(block => {
-          if (block.assignments) {
-            block.assignments.forEach(assignment => {
-              allAssignedPlayerIds.add(assignment.playerId);
-            });
-          }
-        });
-        
-        setSelectedPlayers(Array.from(allAssignedPlayerIds));
-        console.log('Loaded players from blocks:', Array.from(allAssignedPlayerIds));
-      }
       
       // Load existing match plan data
       if (currentMatch.plan) {
@@ -745,6 +435,32 @@ function PlanningPage() {
     }));
   };
 
+  const handlePlayerAvailabilityChange = async (playerId: string, isAvailable: boolean) => {
+    try {
+      // Update match-specific player availability in the backend
+      await seasonService.updatePlayerAvailability(matchId!, playerId, isAvailable);
+      
+      // Refresh the match data to get updated player availability
+      if (matchId) {
+        await getMatch(matchId);
+      }
+      
+      // If a player becomes unavailable, remove them from all block assignments
+      if (!isAvailable) {
+        const updatedBlockAssignments: Record<number, Assignment[]> = {};
+        Object.entries(blockAssignments).forEach(([blockIndex, assignments]) => {
+          updatedBlockAssignments[parseInt(blockIndex)] = assignments.filter(
+            assignment => assignment.playerId !== playerId
+          );
+        });
+        setBlockAssignments(updatedBlockAssignments);
+      }
+    } catch (error) {
+      console.error('Failed to update player availability:', error);
+      // Don't rethrow to prevent unhandled promise rejection
+    }
+  };
+
   const handleSaveBlocks = async (blockAssignments: Record<number, Assignment[]>) => {
     if (!currentMatch) {
       throw new Error('No match selected');
@@ -843,12 +559,6 @@ function PlanningPage() {
     return new Date(dateString).toLocaleString();
   };
 
-  const getSelectedPlayerDetails = () => {
-    return selectedPlayers.map(playerId => 
-      players.find(p => p.id === playerId)
-    ).filter(Boolean);
-  };
-
   const addObjective = () => {
     setObjectives([...objectives, '']);
   };
@@ -881,16 +591,8 @@ function PlanningPage() {
       
       await updateMatchPlan(matchId, planData);
       
-      // Save player assignments with positions
-      const assignments = playerAssignments.length > 0 
-        ? playerAssignments 
-        : selectedPlayers.map((playerId, index) => ({
-            playerId,
-            position: `pos-${index + 1}`,
-            isBench: false
-          }));
-      
-      await savePlayerAssignments(matchId, assignments);
+      // Save player assignments will be handled via time blocks
+      // No need for separate player assignment saving
       
       // Also save the time blocks to preserve block assignments
       await handleSaveBlocks(blockAssignments);
@@ -1064,143 +766,80 @@ function PlanningPage() {
           </div>
         </div>
 
-        {/* Team Selection */}
+        {/* Player Availability */}
         <div className="lg:col-span-2">
           <div className="card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">
-                Selected Players ({selectedPlayers.length})
+                Player Availability ({playersWithMatchAvailability.filter(p => p.isAvailableForMatch).length}/{playersWithMatchAvailability.length} available)
               </h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setIsPlayerModalOpen(true)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
-                >
-                  <UserIcon className="h-4 w-4" />
-                  Select Players
-                </button>
-                {selectedPlayers.length > 0 && (
-                  <button
-                    onClick={() => setIsPositionModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
-                  >
-                    <ClipboardDocumentListIcon className="h-4 w-4" />
-                    Assign Positions
-                  </button>
-                )}
+              <div className="text-sm text-gray-600">
+                Check players as unavailable to filter them out from time blocks
               </div>
             </div>
 
-            {playerAssignments.length > 0 ? (
-              <div className="space-y-3">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Field Players */}
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-2">Selected Players</h3>
-                    {playerAssignments.filter(a => !a.isBench).map((assignment) => {
-                      const player = players.find(p => p.id === assignment.playerId);
-                      return (
-                        <div key={assignment.playerId} className="flex items-center justify-between p-3 bg-green-50 rounded-lg mb-2">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
-                              {player?.shirtNo || '?'}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{player?.name}</p>
-                              <p className="text-sm text-green-700 font-medium">{assignment.position}</p>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setSelectedPlayers(selectedPlayers.filter(id => id !== assignment.playerId));
-                              setPlayerAssignments(playerAssignments.filter(a => a.playerId !== assignment.playerId));
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <XMarkIcon className="h-5 w-5" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Bench Players */}
-                  {playerAssignments.some(a => a.isBench) && (
-                    <div>
-                      <h3 className="font-medium text-gray-900 mb-2">Bench</h3>
-                      {playerAssignments.filter(a => a.isBench).map((assignment) => {
-                        const player = players.find(p => p.id === assignment.playerId);
-                        return (
-                          <div key={assignment.playerId} className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg mb-2">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold">
-                                {player?.shirtNo || '?'}
-                              </div>
-                              <div>
-                                <p className="font-medium text-gray-900">{player?.name}</p>
-                                <p className="text-sm text-yellow-700 font-medium">{assignment.position}</p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => {
-                                setSelectedPlayers(selectedPlayers.filter(id => id !== assignment.playerId));
-                                setPlayerAssignments(playerAssignments.filter(a => a.playerId !== assignment.playerId));
-                              }}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <XMarkIcon className="h-5 w-5" />
-                            </button>
-                          </div>
-                        );
-                      })}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+              {playersWithMatchAvailability.map((player) => {
+                const isUnavailable = !player.isAvailableForMatch;
+                
+                return (
+                  <div
+                    key={player.id}
+                    className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                      isUnavailable
+                        ? 'bg-red-50 border-red-200 opacity-60'
+                        : 'bg-white border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`unavailable-${player.id}`}
+                        checked={isUnavailable}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          console.log('Checkbox clicked:', { playerId: player.id, checked: e.target.checked });
+                          try {
+                            handlePlayerAvailabilityChange(player.id, !e.target.checked);
+                          } catch (error) {
+                            console.error('Error in handlePlayerAvailabilityChange:', error);
+                          }
+                        }}
+                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
+                      />
+                      <label htmlFor={`unavailable-${player.id}`} className="ml-2 text-xs text-gray-600">
+                        Unavailable
+                      </label>
                     </div>
-                  )}
-                </div>
-              </div>
-            ) : selectedPlayers.length > 0 ? (
-              <div className="space-y-3">
-                {getSelectedPlayerDetails().map((player, index) => (
-                  <div key={player?.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
-                        #{player?.jerseyNumber}
+                    
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${
+                      isUnavailable ? 'bg-red-400' : 'bg-blue-600'
+                    }`}>
+                      {player.shirtNo || '?'}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-medium truncate ${
+                        isUnavailable ? 'text-red-800' : 'text-gray-900'
+                      }`}>
+                        {player.name}
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{player?.name}</p>
-                        <p className="text-sm text-gray-600">
-                          {player?.preferredPositions?.join(', ') || player?.position}
-                        </p>
+                      <div className={`text-xs truncate ${
+                        isUnavailable ? 'text-red-600' : 'text-gray-500'
+                      }`}>
+                        {player.preferredPositions.join(', ') || 'No preferred positions'}
                       </div>
                     </div>
-                    <button
-                      onClick={() => setSelectedPlayers(selectedPlayers.filter(id => id !== player?.id))}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <XMarkIcon className="h-5 w-5" />
-                    </button>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <UserIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No players selected</h3>
-                <p className="text-gray-500 mb-6">Select players for your starting nine</p>
-                <button
-                  onClick={() => setIsPlayerModalOpen(true)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors inline-flex items-center gap-2"
-                >
-                  <UserIcon className="h-4 w-4" />
-                  Select Players
-                </button>
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Time-based Planning Section */}
-      {selectedPlayers.length > 0 && (
+      {playersWithMatchAvailability.filter(p => p.isAvailableForMatch).length > 0 && (
         <div className="space-y-6">
           {/* Time Block Selector */}
           <TimeBlockSelector
@@ -1213,7 +852,7 @@ function PlanningPage() {
             <div>
               <TimeBlockPlanner
                 interval={planningInterval}
-                players={players}
+                players={playersWithMatchAvailability.filter(p => p.isAvailableForMatch)}
                 blockAssignments={blockAssignments}
                 onBlockAssignmentsChange={handleBlockAssignmentsChange}
                 onSaveBlocks={handleSaveBlocks}
@@ -1311,8 +950,8 @@ function PlanningPage() {
               <p className="font-medium">{selectedFormation?.shapeJSON?.formation || 'Not selected'}</p>
             </div>
             <div>
-              <span className="text-gray-500">Squad Size:</span>
-              <p className="font-medium">{players.length} players available</p>
+              <span className="text-gray-500">Squad Status:</span>
+              <p className="font-medium">{playersWithMatchAvailability.filter(p => p.isAvailableForMatch).length}/{playersWithMatchAvailability.length} available</p>
             </div>
           </div>
         </div>
@@ -1326,22 +965,6 @@ function PlanningPage() {
         isLoading={isLoading}
       />
 
-      <PlayerSelectionModal
-        isOpen={isPlayerModalOpen}
-        onClose={() => setIsPlayerModalOpen(false)}
-        players={players}
-        selectedPlayers={selectedPlayers}
-        onSelectionChange={setSelectedPlayers}
-      />
-
-      <PositionAssignmentModal
-        isOpen={isPositionModalOpen}
-        onClose={() => setIsPositionModalOpen(false)}
-        players={players}
-        selectedPlayers={selectedPlayers}
-        onAssignmentsChange={setPlayerAssignments}
-        formation={selectedFormation}
-      />
 
       <EditMatchModal
         isOpen={isEditMatchModalOpen}

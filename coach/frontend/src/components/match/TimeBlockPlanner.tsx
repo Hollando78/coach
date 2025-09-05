@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PencilIcon, UserIcon, EyeIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { Assignment, Player, PlanningInterval, TimeBlockConfig } from '../../types';
+import { Assignment, Player, PlanningInterval, TimeBlockConfig, Formation } from '../../types';
 import { createTimeBlockConfig, formatTimeRange } from '../../utils/timeBlocks';
 import { TacticsBoard } from './TacticsBoard';
 
@@ -10,6 +10,9 @@ interface TimeBlockPlannerProps {
   blockAssignments: Record<number, Assignment[]>;
   onBlockAssignmentsChange: (blockIndex: number, assignments: Assignment[]) => void;
   onSaveBlocks?: (blockAssignments: Record<number, Assignment[]>) => Promise<void>;
+  formations?: Formation[];
+  blockFormations?: Record<number, string>; // formationId per block
+  onBlockFormationChange?: (blockIndex: number, formationId: string) => void;
 }
 
 export function TimeBlockPlanner({ 
@@ -17,7 +20,10 @@ export function TimeBlockPlanner({
   players, 
   blockAssignments, 
   onBlockAssignmentsChange,
-  onSaveBlocks
+  onSaveBlocks,
+  formations,
+  blockFormations,
+  onBlockFormationChange
 }: TimeBlockPlannerProps) {
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
   const [showTacticsBoard, setShowTacticsBoard] = useState<boolean>(false);
@@ -117,6 +123,13 @@ export function TimeBlockPlanner({
           assignments={activeBlockAssignments}
           onAssignmentsChange={(assignments) => onBlockAssignmentsChange(activeBlockIndex, assignments)}
           readonly={false}
+          formations={formations}
+          selectedFormationId={blockFormations?.[activeBlockIndex] || ''}
+          onFormationChange={(formationId) => {
+            if (onBlockFormationChange) {
+              onBlockFormationChange(activeBlockIndex, formationId);
+            }
+          }}
         />
       </div>
     );

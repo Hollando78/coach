@@ -572,7 +572,12 @@ function PlanningPage() {
   // Time-based planning state
   const [planningInterval, setPlanningInterval] = useState<PlanningInterval>('quarters');
   const [blockAssignments, setBlockAssignments] = useState<Record<number, Assignment[]>>({});
+  const [blockFormations, setBlockFormations] = useState<Record<number, string>>({});
   const [currentBlockIndex, setCurrentBlockIndex] = useState<number>(0); // Will be used for editing specific blocks
+  
+  // Warning dialog state for interval changes
+  const [isIntervalWarningOpen, setIsIntervalWarningOpen] = useState(false);
+  const [pendingInterval, setPendingInterval] = useState<PlanningInterval | null>(null);
 
   useEffect(() => {
     if (matchId) {
@@ -694,16 +699,49 @@ function PlanningPage() {
 
   // Time-based planning handlers
   const handleIntervalChange = (newInterval: PlanningInterval) => {
-    setPlanningInterval(newInterval);
-    // Clear current assignments when changing interval to avoid confusion
-    setBlockAssignments({});
-    setCurrentBlockIndex(0);
+    // Check if there are any existing block assignments
+    const hasAssignments = Object.keys(blockAssignments).some(
+      blockIndex => blockAssignments[parseInt(blockIndex)]?.length > 0
+    );
+
+    if (hasAssignments) {
+      // Show warning dialog if there are existing assignments
+      setPendingInterval(newInterval);
+      setIsIntervalWarningOpen(true);
+    } else {
+      // No assignments, safe to change immediately
+      setPlanningInterval(newInterval);
+      setCurrentBlockIndex(0);
+    }
+  };
+
+  const handleConfirmIntervalChange = () => {
+    if (pendingInterval) {
+      setPlanningInterval(pendingInterval);
+      // Clear current assignments when changing interval to avoid confusion
+      setBlockAssignments({});
+      setCurrentBlockIndex(0);
+      setPendingInterval(null);
+    }
+    setIsIntervalWarningOpen(false);
+  };
+
+  const handleCancelIntervalChange = () => {
+    setPendingInterval(null);
+    setIsIntervalWarningOpen(false);
   };
 
   const handleBlockAssignmentsChange = (blockIndex: number, assignments: Assignment[]) => {
     setBlockAssignments(prev => ({
       ...prev,
       [blockIndex]: assignments
+    }));
+  };
+
+  const handleBlockFormationChange = (blockIndex: number, formationId: string) => {
+    setBlockFormations(prev => ({
+      ...prev,
+      [blockIndex]: formationId
     }));
   };
 
@@ -1179,6 +1217,9 @@ function PlanningPage() {
                 blockAssignments={blockAssignments}
                 onBlockAssignmentsChange={handleBlockAssignmentsChange}
                 onSaveBlocks={handleSaveBlocks}
+                formations={formations}
+                blockFormations={blockFormations}
+                onBlockFormationChange={handleBlockFormationChange}
               />
             </div>
 
@@ -1357,6 +1398,50 @@ function PlanningPage() {
               >
                 <TrashIcon className="h-4 w-4" />
                 {isLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interval Change Warning Modal */}
+      {isIntervalWarningOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg className="h-6 w-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              Change Planning Intervals
+            </h2>
+            
+            <div className="mb-6">
+              <p className="text-gray-700 mb-3">
+                You have existing player assignments for the current time blocks. 
+                Changing from <strong>{planningInterval}</strong> to <strong>{pendingInterval}</strong> will clear all current assignments.
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-amber-800 text-sm font-medium">
+                  ⚠️ This action cannot be undone. All tactical plans for the current interval will be lost.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleCancelIntervalChange}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                Keep Current ({planningInterval})
+              </button>
+              <button
+                onClick={handleConfirmIntervalChange}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear & Change to {pendingInterval}
               </button>
             </div>
           </div>

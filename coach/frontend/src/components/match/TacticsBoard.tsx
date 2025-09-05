@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, useSensor, useSensors, PointerSensor, TouchSensor, useDroppable, closestCenter, rectIntersection, pointerWithin } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
-import { Player, Assignment, Position } from '../../types';
+import { Player, Assignment, Position, Formation } from '../../types';
+import { Squares2X2Icon } from '@heroicons/react/24/outline';
 import PlayerPosition from './PlayerPosition';
 
 interface TacticsBoardProps {
@@ -10,36 +11,164 @@ interface TacticsBoardProps {
   onAssignmentsChange: (assignments: Assignment[]) => void;
   readonly?: boolean;
   formationPositions?: Position[];
+  formations?: Formation[];
+  selectedFormationId?: string;
+  onFormationChange?: (formationId: string) => void;
 }
 
-// Default 9-a-side formation positions (3-2-3-1)
-const DEFAULT_FORMATION_POSITIONS: Position[] = [
-  // Goalkeeper
-  { x: 50, y: 85, role: 'Goalkeeper' },
+// Formation position generators
+const FORMATION_POSITIONS: Record<string, Position[]> = {
+  '3-2-3': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (3)
+    { x: 25, y: 65, role: 'Left Back' },
+    { x: 50, y: 65, role: 'Centre Back' },
+    { x: 75, y: 65, role: 'Right Back' },
+    // Midfield (2)
+    { x: 35, y: 45, role: 'Defensive Mid' },
+    { x: 65, y: 45, role: 'Central Mid' },
+    // Attack (3)
+    { x: 20, y: 25, role: 'Left Wing' },
+    { x: 50, y: 25, role: 'Centre Forward' },
+    { x: 80, y: 25, role: 'Right Wing' },
+  ],
+  '3-3-2': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (3)
+    { x: 25, y: 65, role: 'Left Back' },
+    { x: 50, y: 65, role: 'Centre Back' },
+    { x: 75, y: 65, role: 'Right Back' },
+    // Midfield (3)
+    { x: 25, y: 45, role: 'Left Mid' },
+    { x: 50, y: 45, role: 'Central Mid' },
+    { x: 75, y: 45, role: 'Right Mid' },
+    // Attack (2)
+    { x: 35, y: 25, role: 'Left Forward' },
+    { x: 65, y: 25, role: 'Right Forward' },
+  ],
+  '2-4-2': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (2)
+    { x: 35, y: 65, role: 'Left Back' },
+    { x: 65, y: 65, role: 'Right Back' },
+    // Midfield (4)
+    { x: 20, y: 45, role: 'Left Wing' },
+    { x: 40, y: 50, role: 'Left Mid' },
+    { x: 60, y: 50, role: 'Right Mid' },
+    { x: 80, y: 45, role: 'Right Wing' },
+    // Attack (2)
+    { x: 35, y: 25, role: 'Left Forward' },
+    { x: 65, y: 25, role: 'Right Forward' },
+  ],
+  '3-4-1': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (3)
+    { x: 25, y: 65, role: 'Left Back' },
+    { x: 50, y: 65, role: 'Centre Back' },
+    { x: 75, y: 65, role: 'Right Back' },
+    // Midfield (4)
+    { x: 20, y: 45, role: 'Left Wing' },
+    { x: 40, y: 50, role: 'Left Mid' },
+    { x: 60, y: 50, role: 'Right Mid' },
+    { x: 80, y: 45, role: 'Right Wing' },
+    // Attack (1)
+    { x: 50, y: 25, role: 'Centre Forward' },
+  ],
+  '2-3-3': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (2)
+    { x: 35, y: 65, role: 'Left Back' },
+    { x: 65, y: 65, role: 'Right Back' },
+    // Midfield (3)
+    { x: 25, y: 45, role: 'Left Mid' },
+    { x: 50, y: 45, role: 'Central Mid' },
+    { x: 75, y: 45, role: 'Right Mid' },
+    // Attack (3)
+    { x: 20, y: 25, role: 'Left Wing' },
+    { x: 50, y: 25, role: 'Centre Forward' },
+    { x: 80, y: 25, role: 'Right Wing' },
+  ],
+  '4-3-1': [
+    { x: 50, y: 85, role: 'Goalkeeper' },
+    // Defense (4)
+    { x: 15, y: 65, role: 'Left Back' },
+    { x: 38, y: 65, role: 'Left Centre Back' },
+    { x: 62, y: 65, role: 'Right Centre Back' },
+    { x: 85, y: 65, role: 'Right Back' },
+    // Midfield (3)
+    { x: 25, y: 45, role: 'Left Mid' },
+    { x: 50, y: 45, role: 'Central Mid' },
+    { x: 75, y: 45, role: 'Right Mid' },
+    // Attack (1)
+    { x: 50, y: 25, role: 'Centre Forward' },
+  ],
+};
+
+// Default formation positions (3-2-3)
+const DEFAULT_FORMATION_POSITIONS: Position[] = FORMATION_POSITIONS['3-2-3'];
+
+// Function to get positions for a formation
+function getFormationPositions(formation?: Formation): Position[] {
+  if (!formation) {
+    return DEFAULT_FORMATION_POSITIONS;
+  }
   
-  // Defense (3 players)
-  { x: 25, y: 65, role: 'Left Back' },
-  { x: 50, y: 65, role: 'Centre Back' },
-  { x: 75, y: 65, role: 'Right Back' },
+  // Try to get formation type from shapeJSON.formation or fallback to formation name
+  const formationType = formation.shapeJSON?.formation || formation.name;
   
-  // Midfield (2 players)
-  { x: 35, y: 45, role: 'Defensive Mid' },
-  { x: 65, y: 45, role: 'Central Mid' },
+  console.log('getFormationPositions:', { 
+    formationName: formation.name, 
+    shapeJSONFormation: formation.shapeJSON?.formation, 
+    usingType: formationType,
+    availableTypes: Object.keys(FORMATION_POSITIONS)
+  });
   
-  // Attack (3 players)
-  { x: 20, y: 25, role: 'Left Wing' },
-  { x: 50, y: 25, role: 'Centre Forward' },
-  { x: 80, y: 25, role: 'Right Wing' },
-];
+  return FORMATION_POSITIONS[formationType] || DEFAULT_FORMATION_POSITIONS;
+}
 
 export function TacticsBoard({
   players,
   assignments,
   onAssignmentsChange,
   readonly = false,
-  formationPositions = DEFAULT_FORMATION_POSITIONS
+  formationPositions,
+  formations = [],
+  selectedFormationId,
+  onFormationChange
 }: TacticsBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  
+  // Get selected formation and positions
+  const selectedFormation = selectedFormationId ? formations.find(f => f.id === selectedFormationId) : null;
+  const currentPositions = formationPositions || getFormationPositions(selectedFormation);
+  
+  // Debug logging
+  console.log('TacticsBoard Debug:', {
+    selectedFormationId,
+    selectedFormation: selectedFormation?.name,
+    formationType: selectedFormation?.shapeJSON?.formation,
+    fullShapeJSON: selectedFormation?.shapeJSON,
+    currentPositions: currentPositions.map(p => p.role),
+    formationsAvailable: formations.map(f => ({ id: f.id, name: f.name, type: f.shapeJSON?.formation, fullShape: f.shapeJSON }))
+  });
+  
+  // Clear assignments when formation changes and positions don't match
+  useEffect(() => {
+    if (!readonly && currentPositions) {
+      const currentPositionRoles = currentPositions.map(p => p.role);
+      const invalidAssignments = assignments.filter(
+        a => !a.isBench && !currentPositionRoles.includes(a.position)
+      );
+      
+      if (invalidAssignments.length > 0) {
+        // Move players with invalid positions back to available
+        const validAssignments = assignments.filter(
+          a => a.isBench || currentPositionRoles.includes(a.position)
+        );
+        onAssignmentsChange(validAssignments);
+      }
+    }
+  }, [selectedFormationId, currentPositions, assignments, onAssignmentsChange, readonly]);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -278,6 +407,36 @@ export function TacticsBoard({
           
           {/* Main Pitch */}
           <div className="flex-1">
+            {/* Formation Selector */}
+            {formations.length > 0 && onFormationChange && !readonly && (
+              <div className="mb-4 p-3 bg-white rounded-lg shadow-sm border">
+                <div className="flex items-center gap-3">
+                  <Squares2X2Icon className="h-5 w-5 text-gray-600" />
+                  <label htmlFor="formation-select" className="text-sm font-medium text-gray-700">
+                    Formation:
+                  </label>
+                  <select
+                    id="formation-select"
+                    value={selectedFormationId || ''}
+                    onChange={(e) => {
+                      console.log('Formation dropdown changed:', e.target.value);
+                      if (onFormationChange) {
+                        onFormationChange(e.target.value);
+                      }
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="">Default (3-2-3)</option>
+                    {formations.map((formation) => (
+                      <option key={formation.id} value={formation.id}>
+                        {formation.name} ({formation.shapeJSON?.formation || 'Custom'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+            
             <div 
               className="pitch relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-green-600"
               style={{
@@ -307,7 +466,7 @@ export function TacticsBoard({
               <div className="absolute bottom-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
               
               {/* Formation Positions */}
-              {formationPositions.map((position) => {
+              {currentPositions.map((position) => {
                 const player = getPlayerAtPosition(position.role);
                 return (
                   <PositionSlot

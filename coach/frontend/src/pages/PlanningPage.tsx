@@ -468,17 +468,24 @@ function PlanningPage() {
 
     const config = createTimeBlockConfig(planningInterval);
     
-    // Transform blockAssignments to API format
+    // Transform blockAssignments to API format with formation information
     const blocks = config.blocks.map(blockConfig => ({
       index: blockConfig.index,
       startMin: blockConfig.startMin,
       endMin: blockConfig.endMin,
+      formationId: blockFormations[blockConfig.index], // Include planned formation
       assignments: (blockAssignments[blockConfig.index] || []).map(assignment => ({
         playerId: assignment.playerId,
         position: assignment.position,
         isBench: assignment.isBench
       }))
     }));
+
+    console.log('Saving blocks with formations:', blocks.map(b => ({
+      index: b.index,
+      formationId: b.formationId,
+      assignmentCount: b.assignments.length
+    })));
 
     await seasonService.saveBlocks(currentMatch.id, blocks);
   };

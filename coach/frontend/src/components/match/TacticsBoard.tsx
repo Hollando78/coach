@@ -14,6 +14,9 @@ interface TacticsBoardProps {
   formations?: Formation[];
   selectedFormationId?: string;
   onFormationChange?: (formationId: string) => void;
+  nameDisplay?: 'initials' | 'first' | 'last';
+  playerTimeOnPitch?: Record<string, number>; // playerId -> minutes
+  matchDuration?: number;
 }
 
 // Formation position generators
@@ -134,7 +137,10 @@ export function TacticsBoard({
   formationPositions,
   formations = [],
   selectedFormationId,
-  onFormationChange
+  onFormationChange,
+  nameDisplay = 'initials',
+  playerTimeOnPitch = {},
+  matchDuration = 90
 }: TacticsBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   
@@ -393,6 +399,9 @@ export function TacticsBoard({
                       position="unassigned"
                       isDraggable={!readonly}
                       className="transform-none"
+                      nameDisplay={nameDisplay}
+                      timeOnPitch={playerTimeOnPitch[player.id] || 0}
+                      matchDuration={matchDuration}
                     />
                   </div>
                 ))}
@@ -474,6 +483,9 @@ export function TacticsBoard({
                     position={position}
                     player={player}
                     readonly={readonly}
+                    nameDisplay={nameDisplay}
+                    playerTimeOnPitch={playerTimeOnPitch}
+                    matchDuration={matchDuration}
                   />
                 );
               })}
@@ -489,6 +501,9 @@ export function TacticsBoard({
                 players={benchPlayers}
                 maxSlots={4}
                 readonly={readonly}
+                nameDisplay={nameDisplay}
+                playerTimeOnPitch={playerTimeOnPitch}
+                matchDuration={matchDuration}
               />
             </div>
           </div>
@@ -502,6 +517,9 @@ export function TacticsBoard({
                 player={activePlayer}
                 position="dragging"
                 isDraggable={false}
+                nameDisplay={nameDisplay}
+                timeOnPitch={playerTimeOnPitch[activePlayer.id] || 0}
+                matchDuration={matchDuration}
               />
             </div>
           ) : null}
@@ -517,9 +535,12 @@ interface PositionSlotProps {
   position: Position;
   player: Player | null;
   readonly: boolean;
+  nameDisplay?: 'initials' | 'first' | 'last';
+  playerTimeOnPitch: Record<string, number>;
+  matchDuration: number;
 }
 
-function PositionSlot({ position, player, readonly }: PositionSlotProps) {
+function PositionSlot({ position, player, readonly, nameDisplay = 'initials', playerTimeOnPitch, matchDuration }: PositionSlotProps) {
   const dropId = `position-${position.role}`;
   const { isOver, setNodeRef } = useDroppable({
     id: dropId,
@@ -543,6 +564,9 @@ function PositionSlot({ position, player, readonly }: PositionSlotProps) {
           player={player}
           position={position.role}
           isDraggable={!readonly}
+          nameDisplay={nameDisplay}
+          timeOnPitch={playerTimeOnPitch[player.id] || 0}
+          matchDuration={matchDuration}
         />
       ) : (
         <div className={`w-10 h-10 border-2 border-dashed rounded-full flex items-center justify-center transition-all ${
@@ -555,7 +579,7 @@ function PositionSlot({ position, player, readonly }: PositionSlotProps) {
       )}
       
       {/* Position label */}
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs font-medium whitespace-nowrap bg-black bg-opacity-50 px-2 py-1 rounded">
+      <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-white text-xs font-medium whitespace-nowrap bg-black bg-opacity-50 px-2 py-1 rounded">
         {position.role}
       </div>
     </div>
@@ -589,9 +613,12 @@ interface BenchAreaProps {
   players: Player[];
   maxSlots: number;
   readonly: boolean;
+  nameDisplay?: 'initials' | 'first' | 'last';
+  playerTimeOnPitch: Record<string, number>;
+  matchDuration: number;
 }
 
-function BenchArea({ players, maxSlots, readonly }: BenchAreaProps) {
+function BenchArea({ players, maxSlots, readonly, nameDisplay = 'initials', playerTimeOnPitch, matchDuration }: BenchAreaProps) {
   const { isOver, setNodeRef } = useDroppable({
     id: 'bench',
   });
@@ -616,6 +643,9 @@ function BenchArea({ players, maxSlots, readonly }: BenchAreaProps) {
               position="bench"
               isDraggable={!readonly}
               className="transform-none"
+              nameDisplay={nameDisplay}
+              timeOnPitch={playerTimeOnPitch[player.id] || 0}
+              matchDuration={matchDuration}
             />
           </div>
         ))}

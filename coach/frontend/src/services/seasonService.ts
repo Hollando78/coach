@@ -150,6 +150,7 @@ class SeasonService {
       index: number;
       startMin: number;
       endMin: number;
+      formationId?: string;
       assignments: Array<{
         playerId: string;
         position: string;

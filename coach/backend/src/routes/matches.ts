@@ -35,6 +35,7 @@ const saveBlocksSchema = z.object({
     index: z.number(),
     startMin: z.number(),
     endMin: z.number(),
+    formationId: z.string().optional(),
     assignments: z.array(z.object({
       playerId: z.string(),
       position: z.string(),
@@ -58,9 +59,10 @@ const makeSubstitutionSchema = z.object({
 });
 
 const scoreGoalSchema = z.object({
-  playerId: z.string(),
+  playerId: z.string().optional(),
   minute: z.number().int().min(0),
-  notes: z.string().default('')
+  notes: z.string().default(''),
+  isOpposition: z.boolean().default(false)
 });
 
 const savePlayerAssignmentsSchema = z.object({
@@ -230,6 +232,7 @@ export default async function matchRoutes(fastify: FastifyInstance) {
         formation: true,
         blocks: {
           include: {
+            formation: true,
             assignments: {
               include: {
                 player: true
@@ -413,7 +416,7 @@ export default async function matchRoutes(fastify: FastifyInstance) {
   fastify.post('/matches/:matchId/goals', { preHandler: [verifyAuth] }, async (request, reply) => {
     try {
       const { matchId } = request.params as { matchId: string };
-      const { playerId, minute, notes } = scoreGoalSchema.parse(request.body);
+      const { playerId, minute, notes, isOpposition } = scoreGoalSchema.parse(request.body);
 
       const match = await prisma.match.findFirst({
         where: { id: matchId },
@@ -428,12 +431,22 @@ export default async function matchRoutes(fastify: FastifyInstance) {
         return reply.status(404).send({ error: 'Match not found' });
       }
 
+      // Validate that either we have a playerId (for our team) or isOpposition is true
+      if (!isOpposition && !playerId) {
+        return reply.status(400).send({ error: 'playerId is required for team goals' });
+      }
+
+      if (isOpposition && playerId) {
+        return reply.status(400).send({ error: 'playerId should not be provided for opposition goals' });
+      }
+
       const goal = await prisma.goal.create({
         data: {
           matchId,
-          playerId,
+          playerId: isOpposition ? null : playerId,
           minute,
-          notes
+          notes,
+          isOpposition
         },
         include: {
           player: true
@@ -448,6 +461,46 @@ export default async function matchRoutes(fastify: FastifyInstance) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({ error: 'Invalid input', details: error.errors });
       }
+      throw error;
+    }
+  });
+
+  // Delete goal (for corrections)
+  fastify.delete('/matches/:matchId/goals/:goalId', { preHandler: [verifyAuth] }, async (request, reply) => {
+    try {
+      const { matchId, goalId } = request.params as { matchId: string; goalId: string };
+
+      const match = await prisma.match.findFirst({
+        where: { id: matchId },
+        include: {
+          season: {
+            include: { team: true }
+          }
+        }
+      });
+
+      if (!match || match.season.team.ownerId !== request.user!.id) {
+        return reply.status(404).send({ error: 'Match not found' });
+      }
+
+      const goal = await prisma.goal.findFirst({
+        where: { id: goalId, matchId },
+        include: { player: true }
+      });
+
+      if (!goal) {
+        return reply.status(404).send({ error: 'Goal not found' });
+      }
+
+      await prisma.goal.delete({
+        where: { id: goalId }
+      });
+
+      // Emit socket event
+      fastify.io.to(`match:${matchId}`).emit('goal:deleted', { goalId });
+
+      return reply.status(200).send({ success: true });
+    } catch (error) {
       throw error;
     }
   });
@@ -919,6 +972,7 @@ export default async function matchRoutes(fastify: FastifyInstance) {
           const block = await prisma.block.create({
             data: {
               matchId,
+              formationId: blockData.formationId,
               index: blockData.index,
               startMin: blockData.startMin,
               endMin: blockData.endMin,
@@ -931,6 +985,7 @@ export default async function matchRoutes(fastify: FastifyInstance) {
               }
             },
             include: {
+              formation: true,
               assignments: {
                 include: {
                   player: true

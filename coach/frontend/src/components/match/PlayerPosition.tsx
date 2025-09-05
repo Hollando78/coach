@@ -9,6 +9,9 @@ interface PlayerPositionProps {
   isDraggable?: boolean;
   className?: string;
   onClick?: () => void;
+  nameDisplay?: 'initials' | 'first' | 'last';
+  timeOnPitch?: number; // minutes played
+  matchDuration?: number; // total match duration in minutes
 }
 
 function PlayerPosition({ 
@@ -16,7 +19,10 @@ function PlayerPosition({
   position, 
   isDraggable = true, 
   className = '',
-  onClick 
+  onClick,
+  nameDisplay = 'initials',
+  timeOnPitch = 0,
+  matchDuration = 90
 }: PlayerPositionProps) {
   const {
     attributes,
@@ -53,7 +59,49 @@ function PlayerPosition({
       .substring(0, 3); // Max 3 initials to fit in chip
   };
 
-  const displayText = getPlayerInitials(player.name);
+  const getFirstName = (name: string) => {
+    return name.split(' ')[0];
+  };
+
+  const getLastName = (name: string) => {
+    const parts = name.split(' ');
+    return parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  };
+
+  const getDisplayText = (name: string, display: 'initials' | 'first' | 'last') => {
+    switch (display) {
+      case 'first':
+        return getFirstName(name);
+      case 'last':
+        return getLastName(name);
+      case 'initials':
+      default:
+        return getPlayerInitials(name);
+    }
+  };
+
+  const displayText = getDisplayText(player.name, nameDisplay);
+
+  // Calculate pie chart progress (0 to 100)
+  const timeProgress = Math.min(100, (timeOnPitch / matchDuration) * 100);
+  
+  // Create SVG path for pie chart starting from 12 o'clock
+  const createPieChart = (percentage: number) => {
+    const angle = (percentage / 100) * 360;
+    // Start from 12 o'clock (top) and go clockwise
+    const radians = (angle * Math.PI) / 180 - Math.PI / 2;
+    const x = 50 + 40 * Math.cos(radians);
+    const y = 50 + 40 * Math.sin(radians);
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    
+    if (percentage === 0) return '';
+    if (percentage >= 100) return 'M 50,10 A 40,40 0 1,1 49.99,10 Z';
+    
+    // Start from 12 o'clock (50,10) and sweep clockwise
+    return `M 50,50 L 50,10 A 40,40 0 ${largeArcFlag},1 ${x},${y} Z`;
+  };
+
+  const pieChartPath = createPieChart(timeProgress);
 
 
   return (
@@ -61,18 +109,44 @@ function PlayerPosition({
       ref={setNodeRef}
       style={style}
       className={`
-        player-position ${getPositionColor(position)} ${className}
+        player-position ${className}
         ${isDraggable ? 'cursor-move' : ''}
         ${onClick ? 'cursor-pointer' : ''}
         ${isDragging ? '' : 'transition-opacity duration-150'}
       `}
       onClick={onClick}
       {...(isDraggable ? { ...attributes, ...listeners } : {})}
-      title={`${player.name} (${position})`}
+      title={`${player.name} (${position}) - ${timeOnPitch.toFixed(1)}min`}
     >
-      <span className="text-white text-xs font-bold">
-        {displayText}
-      </span>
+      {/* Background pie chart */}
+      <svg 
+        className="absolute inset-0 w-full h-full" 
+        viewBox="0 0 100 100"
+      >
+        {/* Blue background circle */}
+        <circle 
+          cx="50" 
+          cy="50" 
+          r="40" 
+          fill="#3B82F6" 
+          opacity="0.8"
+        />
+        {/* Red progress pie */}
+        {pieChartPath && (
+          <path 
+            d={pieChartPath}
+            fill="#EF4444" 
+            opacity="0.9"
+          />
+        )}
+      </svg>
+      
+      {/* Player text content - positioned above SVG */}
+      <div className="relative z-10 flex items-center justify-center h-full">
+        <span className="text-white text-xs font-bold drop-shadow-sm">
+          {displayText}
+        </span>
+      </div>
       
       {/* Skill rating indicator */}
       <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white flex items-center justify-center">

@@ -91,11 +91,13 @@ export interface MatchPlan {
 export interface Block {
   id: string;
   matchId: string;
+  formationId?: string;
   index: number;
   startMin: number;
   endMin: number;
   createdAt: string;
   updatedAt: string;
+  formation?: Formation;
   assignments: Assignment[];
 }
 
@@ -147,12 +149,13 @@ export interface Substitution {
 export interface Goal {
   id: string;
   matchId: string;
-  playerId: string;
+  playerId?: string;
   minute: number;
   notes: string;
+  isOpposition: boolean;
   createdAt: string;
   updatedAt: string;
-  player: Player;
+  player?: Player;
 }
 
 export interface ApiResponse<T> {

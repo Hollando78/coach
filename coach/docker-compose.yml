@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: coach_db
+    environment:
+      POSTGRES_DB: coach
+      POSTGRES_USER: coach
+      POSTGRES_PASSWORD: coach123
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - coach-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coach -d coach"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: coach_redis
+    ports:
+      - "6382:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - coach-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: coach_backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://coach:coach123@db:5432/coach
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-minimum-32-characters-long!
+      REFRESH_SECRET: your-super-secret-refresh-key-minimum-32-characters-long!
+      COOKIE_SECRET: your-super-secret-cookie-key-minimum-32-characters-long!
+      PORT: 3006
+      HOST: 0.0.0.0
+      FRONTEND_URL: http://localhost:5177
+    ports:
+      - "3006:3006"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - coach-network
+    command: npm run dev
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3006/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: coach_frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:3006/api
+      VITE_SOCKET_URL: http://localhost:3006
+    ports:
+      - "5177:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - coach-network
+    command: npm run dev
+
+  # Nginx (Production Proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: coach_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - coach-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  coach-network:
+    driver: bridge

@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users & Auth
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions Session[]
+  teams    Team[]
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Teams & Players
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner      User        @relation(fields: [ownerId], references: [id])
+  players    Player[]
+  seasons    Season[]
+  formations Formation[]
+
+  @@index([ownerId])
+}
+
+model Player {
+  id                 String   @id @default(cuid())
+  teamId             String
+  name               String
+  shirtNo            Int?
+  skillRating        Float    @default(5.0)
+  preferredPositions Json     @default("[]")
+  isAvailable        Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  assignments   Assignment[]
+  substitutions Substitution[] @relation("OffPlayer")
+  substitutedOn Substitution[] @relation("OnPlayer")
+  goals         Goal[]
+
+  @@index([teamId])
+}
+
+// Seasons & Matches
+model Season {
+  id        String    @id @default(cuid())
+  teamId    String
+  name      String
+  startDate DateTime?
+  endDate   DateTime?
+  deleted   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  team    Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  matches Match[]
+
+  @@index([teamId])
+}
+
+model Match {
+  id            String    @id @default(cuid())
+  seasonId      String
+  date          DateTime
+  opponent      String
+  homeAway      String    @default("home")
+  venue         String?
+  formationId   String?
+  currentMinute Int       @default(0)
+  isLive        Boolean   @default(false)
+  startedAt     DateTime?
+  stoppedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  season        Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  formation     Formation?     @relation(fields: [formationId], references: [id])
+  blocks        Block[]
+  substitutions Substitution[]
+  goals         Goal[]
+  plan          MatchPlan?
+
+  @@index([seasonId])
+}
+
+// Planning & Events
+model Formation {
+  id        String   @id @default(cuid())
+  name      String
+  shapeJSON Json
+  isPreset  Boolean  @default(false)
+  teamId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team       Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  matches    Match[]
+  matchPlans MatchPlan[]
+
+  @@index([teamId])
+}
+
+model MatchPlan {
+  id             String   @id @default(cuid())
+  matchId        String   @unique
+  formationId    String?
+  notes          String   @default("")
+  objectivesJSON Json     @default("[]")
+  opponentInfoJSON Json   @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  match     Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  formation Formation? @relation(fields: [formationId], references: [id])
+
+  @@index([matchId])
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  matchId   String
+  index     Int
+  startMin  Int
+  endMin    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  match       Match        @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  assignments Assignment[]
+
+  @@unique([matchId, index])
+  @@index([matchId])
+}
+
+model Assignment {
+  id        String   @id @default(cuid())
+  blockId   String
+  playerId  String
+  position  String
+  isBench   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  block  Block  @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([blockId, playerId])
+  @@index([blockId])
+  @@index([playerId])
+}
+
+model Substitution {
+  id         String   @id @default(cuid())
+  matchId    String
+  minute     Int
+  offPlayerId String
+  onPlayerId  String
+  position   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  offPlayer Player @relation("OffPlayer", fields: [offPlayerId], references: [id])
+  onPlayer  Player @relation("OnPlayer", fields: [onPlayerId], references: [id])
+
+  @@index([matchId])
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  matchId   String
+  playerId  String
+  minute    Int
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@index([matchId])
+  @@index([playerId])
+}

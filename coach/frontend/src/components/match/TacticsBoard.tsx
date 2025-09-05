@@ -545,9 +545,9 @@ function PositionSlot({ position, player, readonly }: PositionSlotProps) {
           isDraggable={!readonly}
         />
       ) : (
-        <div className={`w-16 h-16 border-2 border-dashed rounded-full flex items-center justify-center transition-all ${
+        <div className={`w-10 h-10 border-2 border-dashed rounded-full flex items-center justify-center transition-all ${
           isOver 
-            ? 'border-blue-400 bg-blue-200 scale-110' 
+            ? 'border-blue-400 bg-blue-200' 
             : 'border-white bg-white bg-opacity-20 hover:bg-opacity-30'
         }`}>
           <span className="text-white text-xs font-bold">?</span>
@@ -626,7 +626,7 @@ function BenchArea({ players, maxSlots, readonly }: BenchAreaProps) {
             key={`empty-${index}`} 
             className="flex justify-center"
           >
-            <div className="w-12 h-12 border-2 border-dashed border-gray-400 rounded-full bg-gray-200 flex items-center justify-center">
+            <div className="w-10 h-10 border-2 border-dashed border-gray-400 rounded-full bg-gray-200 flex items-center justify-center">
               <span className="text-gray-500 text-xs">?</span>
             </div>
           </div>

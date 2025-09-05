@@ -32,7 +32,7 @@ function PlayerPosition({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.5 : 1
   };
 
@@ -62,9 +62,9 @@ function PlayerPosition({
       style={style}
       className={`
         player-position ${getPositionColor(position)} ${className}
-        ${isDraggable ? 'cursor-move hover:scale-110' : ''}
+        ${isDraggable ? 'cursor-move' : ''}
         ${onClick ? 'cursor-pointer' : ''}
-        transition-all duration-200 ease-in-out
+        ${isDragging ? '' : 'transition-opacity duration-150'}
       `}
       onClick={onClick}
       {...(isDraggable ? { ...attributes, ...listeners } : {})}

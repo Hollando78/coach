@@ -59,11 +59,12 @@ model Player {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team          Team                     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   assignments   Assignment[]
-  substitutions Substitution[] @relation("OffPlayer")
-  substitutedOn Substitution[] @relation("OnPlayer")
+  substitutions Substitution[]           @relation("OffPlayer")
+  substitutedOn Substitution[]           @relation("OnPlayer")
   goals         Goal[]
+  matchAvailability MatchPlayerAvailability[]
 
   @@index([teamId])
 }
@@ -106,6 +107,7 @@ model Match {
   substitutions Substitution[]
   goals         Goal[]
   plan          MatchPlan?
+  playerAvailability MatchPlayerAvailability[]
 
   @@index([seasonId])
 }
@@ -205,6 +207,22 @@ model Goal {
   match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
   player Player @relation(fields: [playerId], references: [id])
 
+  @@index([matchId])
+  @@index([playerId])
+}
+
+model MatchPlayerAvailability {
+  id          String   @id @default(cuid())
+  matchId     String
+  playerId    String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, playerId])
   @@index([matchId])
   @@index([playerId])
 }

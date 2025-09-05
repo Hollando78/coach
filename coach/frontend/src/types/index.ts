@@ -21,7 +21,8 @@ export interface Player {
   shirtNo?: number;
   skillRating: number;
   preferredPositions: string[];
-  isAvailable: boolean;
+  isAvailable: boolean; // Global availability (kept for backward compatibility)
+  isAvailableForMatch?: boolean; // Match-specific availability
   createdAt: string;
   updatedAt: string;
 }

@@ -159,6 +159,20 @@ class SeasonService {
   ): Promise<any> {
     return apiClient.post(`/matches/${matchId}/blocks`, { blocks });
   }
+
+  async updatePlayerAvailability(
+    matchId: string,
+    playerId: string,
+    isAvailable: boolean
+  ): Promise<any> {
+    console.log('seasonService.updatePlayerAvailability called:', { matchId, playerId, isAvailable });
+    const response = await apiClient.put(`/matches/${matchId}/player-availability`, {
+      playerId,
+      isAvailable
+    });
+    console.log('seasonService.updatePlayerAvailability response:', response);
+    return response;
+  }
 }
 
 export const seasonService = new SeasonService();

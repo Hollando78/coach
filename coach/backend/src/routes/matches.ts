@@ -71,6 +71,11 @@ const savePlayerAssignmentsSchema = z.object({
   }))
 });
 
+const updatePlayerAvailabilitySchema = z.object({
+  playerId: z.string(),
+  isAvailable: z.boolean()
+});
+
 export default async function matchRoutes(fastify: FastifyInstance) {
   // Get seasons for team
   fastify.get('/teams/:teamId/seasons', { preHandler: [verifyAuth] }, async (request, reply) => {
@@ -214,7 +219,13 @@ export default async function matchRoutes(fastify: FastifyInstance) {
       where: { id: matchId },
       include: {
         season: {
-          include: { team: true }
+          include: { 
+            team: {
+              include: {
+                players: true // Include all team players for availability checking
+              }
+            }
+          }
         },
         formation: true,
         blocks: {
@@ -244,6 +255,11 @@ export default async function matchRoutes(fastify: FastifyInstance) {
           include: {
             formation: true
           }
+        },
+        playerAvailability: {
+          include: {
+            player: true
+          }
         }
       }
     });
@@ -252,7 +268,30 @@ export default async function matchRoutes(fastify: FastifyInstance) {
       return reply.status(404).send({ error: 'Match not found' });
     }
 
-    return reply.send({ match });
+    // Create a map of player availability for easier frontend consumption
+    const availabilityMap = match.playerAvailability.reduce((acc, availability) => {
+      acc[availability.playerId] = availability.isAvailable;
+      return acc;
+    }, {} as Record<string, boolean>);
+
+    // Add availability info to players
+    const playersWithAvailability = match.season.team.players.map(player => ({
+      ...player,
+      isAvailableForMatch: availabilityMap[player.id] !== undefined ? availabilityMap[player.id] : true // Default to available
+    }));
+
+    return reply.send({ 
+      match: {
+        ...match,
+        season: {
+          ...match.season,
+          team: {
+            ...match.season.team,
+            players: playersWithAvailability
+          }
+        }
+      }
+    });
   });
 
   // Start match
@@ -780,6 +819,69 @@ export default async function matchRoutes(fastify: FastifyInstance) {
       });
 
       return reply.send({ match: updatedMatch });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: 'Invalid input', details: error.errors });
+      }
+      throw error;
+    }
+  });
+
+  // Update player availability for match
+  fastify.put('/matches/:matchId/player-availability', { preHandler: [verifyAuth] }, async (request, reply) => {
+    try {
+      const { matchId } = request.params as { matchId: string };
+      const { playerId, isAvailable } = updatePlayerAvailabilitySchema.parse(request.body);
+
+      // Verify match ownership
+      const match = await prisma.match.findFirst({
+        where: { 
+          id: matchId,
+          season: { team: { ownerId: request.user!.id } }
+        },
+        include: {
+          season: { include: { team: true } }
+        }
+      });
+
+      if (!match) {
+        return reply.status(404).send({ error: 'Match not found' });
+      }
+
+      // Verify player belongs to team
+      const player = await prisma.player.findFirst({
+        where: {
+          id: playerId,
+          teamId: match.season.team.id
+        }
+      });
+
+      if (!player) {
+        return reply.status(404).send({ error: 'Player not found in team' });
+      }
+
+      // Upsert player availability
+      const availability = await prisma.matchPlayerAvailability.upsert({
+        where: {
+          matchId_playerId: {
+            matchId,
+            playerId
+          }
+        },
+        update: {
+          isAvailable
+        },
+        create: {
+          matchId,
+          playerId,
+          isAvailable
+        },
+        include: {
+          player: true
+        }
+      });
+
+      return reply.send({ availability });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({ error: 'Invalid input', details: error.errors });

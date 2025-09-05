@@ -30,6 +30,19 @@ const createFormationSchema = z.object({
   isPreset: z.boolean().default(false)
 });
 
+const saveBlocksSchema = z.object({
+  blocks: z.array(z.object({
+    index: z.number(),
+    startMin: z.number(),
+    endMin: z.number(),
+    assignments: z.array(z.object({
+      playerId: z.string(),
+      position: z.string(),
+      isBench: z.boolean().default(false)
+    }))
+  }))
+});
+
 const updateMatchPlanSchema = z.object({
   formationId: z.string().nullable().optional(),
   notes: z.string().default(''),
@@ -767,6 +780,71 @@ export default async function matchRoutes(fastify: FastifyInstance) {
       });
 
       return reply.send({ match: updatedMatch });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: 'Invalid input', details: error.errors });
+      }
+      throw error;
+    }
+  });
+
+  // Save match blocks with assignments
+  fastify.post('/matches/:matchId/blocks', { preHandler: [verifyAuth] }, async (request, reply) => {
+    try {
+      const { matchId } = request.params as { matchId: string };
+      const data = saveBlocksSchema.parse(request.body);
+
+      // Verify match ownership
+      const match = await prisma.match.findFirst({
+        where: { 
+          id: matchId,
+          season: { team: { ownerId: request.user!.id } }
+        }
+      });
+
+      if (!match) {
+        return reply.status(404).send({ error: 'Match not found' });
+      }
+
+      // Delete existing blocks and assignments for this match
+      await prisma.block.deleteMany({
+        where: { matchId }
+      });
+
+      // Create new blocks with assignments
+      const createdBlocks = await Promise.all(
+        data.blocks.map(async (blockData) => {
+          const block = await prisma.block.create({
+            data: {
+              matchId,
+              index: blockData.index,
+              startMin: blockData.startMin,
+              endMin: blockData.endMin,
+              assignments: {
+                create: blockData.assignments.map(assignment => ({
+                  playerId: assignment.playerId,
+                  position: assignment.position,
+                  isBench: assignment.isBench
+                }))
+              }
+            },
+            include: {
+              assignments: {
+                include: {
+                  player: true
+                }
+              }
+            }
+          });
+          return block;
+        })
+      );
+
+      return reply.send({ 
+        message: 'Blocks saved successfully', 
+        blocks: createdBlocks 
+      });
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({ error: 'Invalid input', details: error.errors });

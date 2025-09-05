@@ -143,6 +143,22 @@ class SeasonService {
   ): Promise<any> {
     return apiClient.put(`/matches/${matchId}/player-assignments`, { assignments });
   }
+
+  async saveBlocks(
+    matchId: string,
+    blocks: Array<{
+      index: number;
+      startMin: number;
+      endMin: number;
+      assignments: Array<{
+        playerId: string;
+        position: string;
+        isBench: boolean;
+      }>;
+    }>
+  ): Promise<any> {
+    return apiClient.post(`/matches/${matchId}/blocks`, { blocks });
+  }
 }
 
 export const seasonService = new SeasonService();

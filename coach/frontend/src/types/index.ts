@@ -109,6 +109,27 @@ export interface Assignment {
   player: Player;
 }
 
+export type PlanningInterval = 'quarters' | 'thirds';
+
+export interface PlannedSubstitution {
+  fromBlock: number;
+  toBlock: number;
+  playerOut: Player;
+  playerIn: Player;
+  position: string;
+  minute: number;
+}
+
+export interface TimeBlockConfig {
+  interval: PlanningInterval;
+  blocks: Array<{
+    index: number;
+    startMin: number;
+    endMin: number;
+    label: string;
+  }>;
+}
+
 export interface Substitution {
   id: string;
   matchId: string;

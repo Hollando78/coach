@@ -8,9 +8,7 @@ import './index.css';
 // Don't connect on app load - wait for user authentication
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>,
+  <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+    <App />
+  </BrowserRouter>,
 );

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSeasonStore } from '../stores/seasonStore';
 import { useTeamStore } from '../stores/teamStore';
-import { Player } from '../types';
+import { seasonService } from '../services/seasonService';
+import { Player, Assignment, PlanningInterval } from '../types';
+import { TimeBlockSelector } from '../components/match/TimeBlockSelector';
+import { TimeBlockPlanner } from '../components/match/TimeBlockPlanner';
+import { SubstitutionPlan } from '../components/match/SubstitutionPlan';
+import { createTimeBlockConfig, analyzeAllSubstitutions } from '../utils/timeBlocks';
 import { 
   ArrowLeftIcon,
   PlusIcon,
@@ -563,6 +568,11 @@ function PlanningPage() {
   const [matchNotes, setMatchNotes] = useState<string>('');
   const [objectives, setObjectives] = useState<string[]>(['']);
   const [opponentInfo, setOpponentInfo] = useState<Record<string, any>>({});
+  
+  // Time-based planning state
+  const [planningInterval, setPlanningInterval] = useState<PlanningInterval>('quarters');
+  const [blockAssignments, setBlockAssignments] = useState<Record<number, Assignment[]>>({});
+  const [currentBlockIndex, setCurrentBlockIndex] = useState<number>(0); // Will be used for editing specific blocks
 
   useEffect(() => {
     if (matchId) {
@@ -583,13 +593,21 @@ function PlanningPage() {
   // Load existing match plan data and player assignments when match loads
   useEffect(() => {
     if (currentMatch) {
-      // Load existing player assignments from blocks
+      // Load existing player assignments from all blocks (not just first block)
       if (currentMatch.blocks && currentMatch.blocks.length > 0) {
-        const firstBlock = currentMatch.blocks[0];
-        const assignedPlayerIds = firstBlock.assignments
-          ?.filter(assignment => !assignment.isBench)
-          .map(assignment => assignment.playerId) || [];
-        setSelectedPlayers(assignedPlayerIds);
+        // Collect all unique player IDs from all blocks
+        const allAssignedPlayerIds = new Set<string>();
+        
+        currentMatch.blocks.forEach(block => {
+          if (block.assignments) {
+            block.assignments.forEach(assignment => {
+              allAssignedPlayerIds.add(assignment.playerId);
+            });
+          }
+        });
+        
+        setSelectedPlayers(Array.from(allAssignedPlayerIds));
+        console.log('Loaded players from blocks:', Array.from(allAssignedPlayerIds));
       }
       
       // Load existing match plan data
@@ -674,6 +692,84 @@ function PlanningPage() {
     setIsDeleteModalOpen(true);
   };
 
+  // Time-based planning handlers
+  const handleIntervalChange = (newInterval: PlanningInterval) => {
+    setPlanningInterval(newInterval);
+    // Clear current assignments when changing interval to avoid confusion
+    setBlockAssignments({});
+    setCurrentBlockIndex(0);
+  };
+
+  const handleBlockAssignmentsChange = (blockIndex: number, assignments: Assignment[]) => {
+    setBlockAssignments(prev => ({
+      ...prev,
+      [blockIndex]: assignments
+    }));
+  };
+
+  const handleSaveBlocks = async (blockAssignments: Record<number, Assignment[]>) => {
+    if (!currentMatch) {
+      throw new Error('No match selected');
+    }
+
+    const config = createTimeBlockConfig(planningInterval);
+    
+    // Transform blockAssignments to API format
+    const blocks = config.blocks.map(blockConfig => ({
+      index: blockConfig.index,
+      startMin: blockConfig.startMin,
+      endMin: blockConfig.endMin,
+      assignments: (blockAssignments[blockConfig.index] || []).map(assignment => ({
+        playerId: assignment.playerId,
+        position: assignment.position,
+        isBench: assignment.isBench
+      }))
+    }));
+
+    await seasonService.saveBlocks(currentMatch.id, blocks);
+  };
+
+  // Initialize block assignments when planning interval changes
+  useEffect(() => {
+    if (currentMatch && players.length > 0) {
+      const config = createTimeBlockConfig(planningInterval);
+      const newBlockAssignments: Record<number, Assignment[]> = {};
+      
+      console.log('Loading block assignments for match:', currentMatch.id);
+      console.log('Current match blocks:', currentMatch.blocks);
+      
+      // Load existing block assignments if they exist, otherwise initialize as empty
+      if (currentMatch.blocks && currentMatch.blocks.length > 0) {
+        console.log('Loading existing blocks from database, count:', currentMatch.blocks.length);
+        // Load existing blocks from database
+        for (let i = 0; i < config.blocks.length; i++) {
+          const existingBlock = currentMatch.blocks.find(block => block.index === i);
+          if (existingBlock && existingBlock.assignments && existingBlock.assignments.length > 0) {
+            console.log(`Loading block ${i} with ${existingBlock.assignments.length} assignments`);
+            newBlockAssignments[i] = existingBlock.assignments.map(assignment => ({
+              playerId: assignment.playerId,
+              player: players.find(p => p.id === assignment.playerId)!,
+              position: assignment.position,
+              isBench: assignment.isBench
+            })).filter(assignment => assignment.player); // Filter out any assignments where player wasn't found
+          } else {
+            newBlockAssignments[i] = [];
+          }
+        }
+      } else {
+        console.log('No existing blocks found, initializing empty blocks');
+        // Initialize all blocks as empty for tactics board functionality
+        // Users will drag players from Available Players to assign them
+        for (let i = 0; i < config.blocks.length; i++) {
+          newBlockAssignments[i] = [];
+        }
+      }
+      
+      console.log('Final block assignments:', newBlockAssignments);
+      setBlockAssignments(newBlockAssignments);
+    }
+  }, [planningInterval, currentMatch?.id, players.length]);
+
   const confirmDeleteFormation = async () => {
     if (formationToDelete) {
       try {
@@ -757,6 +853,9 @@ function PlanningPage() {
           }));
       
       await savePlayerAssignments(matchId, assignments);
+      
+      // Also save the time blocks to preserve block assignments
+      await handleSaveBlocks(blockAssignments);
     } catch (error) {
       // Error is handled by the store
     }
@@ -1061,6 +1160,44 @@ function PlanningPage() {
           </div>
         </div>
       </div>
+
+      {/* Time-based Planning Section */}
+      {selectedPlayers.length > 0 && (
+        <div className="space-y-6">
+          {/* Time Block Selector */}
+          <TimeBlockSelector
+            interval={planningInterval}
+            onIntervalChange={handleIntervalChange}
+          />
+
+          {/* Time Block Planner */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            <div>
+              <TimeBlockPlanner
+                interval={planningInterval}
+                players={players}
+                blockAssignments={blockAssignments}
+                onBlockAssignmentsChange={handleBlockAssignmentsChange}
+                onSaveBlocks={handleSaveBlocks}
+              />
+            </div>
+
+            {/* Substitution Analysis */}
+            <div>
+              <SubstitutionPlan
+                substitutions={analyzeAllSubstitutions(
+                  Object.entries(blockAssignments).map(([index, assignments]) => ({
+                    index: parseInt(index),
+                    assignments
+                  })),
+                  players
+                )}
+                interval={planningInterval}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Match Plan */}
       <div className="card">

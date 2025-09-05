@@ -45,7 +45,16 @@ function PlayerPosition({
     return 'bg-blue-600';
   };
 
-  const displayNumber = player.shirtNo || player.name.charAt(0).toUpperCase();
+  const getPlayerInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase())
+      .join('')
+      .substring(0, 3); // Max 3 initials to fit in chip
+  };
+
+  const displayText = getPlayerInitials(player.name);
+
 
   return (
     <div
@@ -62,7 +71,7 @@ function PlayerPosition({
       title={`${player.name} (${position})`}
     >
       <span className="text-white text-xs font-bold">
-        {displayNumber}
+        {displayText}
       </span>
       
       {/* Skill rating indicator */}

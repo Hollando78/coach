@@ -551,6 +551,17 @@ function MatchDetailPage() {
               Match Planning
             </Link>
 
+            {/* Show Live Match button if match has planning (blocks) or is already live */}
+            {(currentMatch?.blocks && currentMatch.blocks.length > 0) || status === 'Live' ? (
+              <Link
+                to={`/teams/${teamId}/seasons/${seasonId}/matches/${matchId}/live`}
+                className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors flex items-center gap-2 justify-center"
+              >
+                <PlayIcon className="h-4 w-4" />
+                Live Match View
+              </Link>
+            ) : null}
+
             {status === 'Live' && (
               <>
                 <button

@@ -50,7 +50,35 @@
   }
   
   .player-position {
-    @apply absolute w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg transform -translate-x-1/2 -translate-y-1/2 cursor-move;
+    @apply relative w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg cursor-move;
+  }
+  
+  /* Larger touch targets on mobile */
+  @media screen and (max-width: 768px) {
+    .player-position {
+      @apply w-12 h-12 text-sm;
+      /* Add invisible touch target extension */
+      position: relative;
+      min-width: 48px;
+      min-height: 48px;
+    }
+    
+    .player-position::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      z-index: -1;
+      /* Debug: uncomment to see touch target area */
+      /* background: rgba(255, 0, 0, 0.1); */
+    }
+    
+    /* Ensure proper spacing in grids */
+    .tactics-board .grid {
+      @apply gap-4;
+    }
   }
   
   .player-position.bench {
@@ -67,5 +95,108 @@
   
   .match-live {
     @apply animate-pulse;
+  }
+}
+
+/* Mobile drag-and-drop optimizations */
+@layer base {
+  * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Allow text selection for specific elements */
+  input, textarea, [contenteditable="true"], .allow-select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Prevent iOS zoom on form inputs */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@layer components {
+  /* Tactics board specific styles - only apply in drag/drop context */
+  .tactics-board {
+    /* Allow scrolling by default */
+    touch-action: auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Apply viewport fixes only within tactics board on mobile */
+  @media screen and (max-width: 768px) {
+    .tactics-board {
+      /* Contain the drag area without breaking drag functionality */
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  
+  /* Player chips - better touch handling */
+  .tactics-board .player-position {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Use manipulation for better mobile experience */
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  
+  /* When dragging is active, prevent scrolling */
+  .tactics-board.dragging {
+    touch-action: none !important;
+    overflow: hidden !important;
+  }
+  
+  /* Pitch area - allow scrolling except when dragging */
+  .tactics-board .pitch {
+    touch-action: auto;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Prevent text selection during drag operations */
+  .dragging * {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* Mobile-specific tactics board optimizations */
+  .mobile-tactics {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .mobile-tactics .player-position {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* Prevent magnifying glass on iOS */
+  .mobile-tactics * {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+  }
+
+  /* Touch manipulation class */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
   }
 }

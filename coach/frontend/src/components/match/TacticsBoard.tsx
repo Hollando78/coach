@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, useSensor, useSensors, PointerSensor, TouchSensor, useDroppable, closestCenter, rectIntersection, pointerWithin } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 import { Player, Assignment, Position, Formation } from '../../types';
-import { Squares2X2Icon } from '@heroicons/react/24/outline';
+import { Squares2X2Icon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import PlayerPosition from './PlayerPosition';
 
 interface TacticsBoardProps {
@@ -143,6 +143,7 @@ export function TacticsBoard({
   matchDuration = 90
 }: TacticsBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isAvailablePlayersCollapsed, setIsAvailablePlayersCollapsed] = useState(false);
   
   // Get selected formation and positions
   const selectedFormation = selectedFormationId ? formations.find(f => f.id === selectedFormationId) : null;
@@ -179,13 +180,13 @@ export function TacticsBoard({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 10, // Increased to prevent accidental drags on desktop
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        delay: 150, // Reduced delay for quicker response
+        tolerance: 8, // Increased tolerance for finger movement
       },
     })
   );
@@ -368,6 +369,9 @@ export function TacticsBoard({
   const benchPlayers = getBenchPlayers();
   const unassignedPlayers = getUnassignedPlayers();
   const activePlayer = getActivePlayer();
+  
+  // Check if mobile device
+  const isMobile = window.innerWidth < 768;
 
   // Create a comprehensive list of all draggable items
   const allDraggableItems = [
@@ -375,155 +379,283 @@ export function TacticsBoard({
     ...assignments.map(a => `${a.playerId}-${a.isBench ? 'bench' : a.position}`)
   ];
 
-
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className={`w-full max-w-6xl mx-auto tactics-board ${activeId ? 'dragging' : ''}`}>
       <DndContext
         sensors={sensors}
-        collisionDetection={pointerWithin}
+        collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={allDraggableItems}>
-          <div className="flex gap-4">
-          {/* Available Players */}
-          <div className="w-52">
-            <AvailablePlayersArea>
-              <h3 className="text-lg font-semibold mb-3">Available Players</h3>
-              
-              <div className="grid grid-cols-2 gap-3 min-h-[200px] py-2">
-                {unassignedPlayers.map((player) => (
-                  <div key={player.id} className="flex justify-center">
-                    <PlayerPosition
-                      player={player}
-                      position="unassigned"
-                      isDraggable={!readonly}
-                      className="transform-none"
-                      nameDisplay={nameDisplay}
-                      timeOnPitch={playerTimeOnPitch[player.id] || 0}
-                      matchDuration={matchDuration}
-                    />
-                  </div>
-                ))}
-                {unassignedPlayers.length === 0 && (
-                  <div className="text-center text-gray-500 mt-8">
-                    <p className="text-sm">All players assigned</p>
+          {readonly ? (
+            /* Live View Layout - No available players, pitch above bench */
+            <div className="space-y-4">
+              {/* Main Pitch */}
+              <div className="w-full">
+                {/* Formation Selector */}
+                {formations.length > 0 && onFormationChange && !readonly && (
+                  <div className="mb-4 p-3 bg-white rounded-lg shadow-sm border">
+                    <div className="flex items-center gap-3">
+                      <Squares2X2Icon className="h-5 w-5 text-gray-600" />
+                      <label htmlFor="formation-select" className="text-sm font-medium text-gray-700">
+                        Formation:
+                      </label>
+                      <select
+                        id="formation-select"
+                        value={selectedFormationId || ''}
+                        onChange={(e) => {
+                          console.log('Formation dropdown changed:', e.target.value);
+                          if (onFormationChange) {
+                            onFormationChange(e.target.value);
+                          }
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      >
+                        <option value="">Default (3-2-3)</option>
+                        {formations.map((formation) => (
+                          <option key={formation.id} value={formation.id}>
+                            {formation.name} ({formation.shapeJSON?.formation || 'Custom'})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 )}
-              </div>
-            </AvailablePlayersArea>
-          </div>
-          
-          {/* Main Pitch */}
-          <div className="flex-1">
-            {/* Formation Selector */}
-            {formations.length > 0 && onFormationChange && !readonly && (
-              <div className="mb-4 p-3 bg-white rounded-lg shadow-sm border">
-                <div className="flex items-center gap-3">
-                  <Squares2X2Icon className="h-5 w-5 text-gray-600" />
-                  <label htmlFor="formation-select" className="text-sm font-medium text-gray-700">
-                    Formation:
-                  </label>
-                  <select
-                    id="formation-select"
-                    value={selectedFormationId || ''}
-                    onChange={(e) => {
-                      console.log('Formation dropdown changed:', e.target.value);
-                      if (onFormationChange) {
-                        onFormationChange(e.target.value);
-                      }
-                    }}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  >
-                    <option value="">Default (3-2-3)</option>
-                    {formations.map((formation) => (
-                      <option key={formation.id} value={formation.id}>
-                        {formation.name} ({formation.shapeJSON?.formation || 'Custom'})
-                      </option>
-                    ))}
-                  </select>
+                
+                <div 
+                  className="pitch relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-green-600"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(white 2px, transparent 2px),
+                      linear-gradient(90deg, white 2px, transparent 2px),
+                      linear-gradient(white 1px, transparent 1px),
+                      linear-gradient(90deg, white 1px, transparent 1px)
+                    `,
+                    backgroundSize: '60px 40px, 60px 40px, 20px 20px, 20px 20px'
+                  }}
+                >
+                  {/* Center circle */}
+                  <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                  <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                  
+                  {/* Goals */}
+                  <div className="absolute top-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
+                  
+                  {/* 18-yard boxes */}
+                  <div className="absolute top-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
+                  
+                  {/* 6-yard boxes */}
+                  <div className="absolute top-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
+                  
+                  {/* Formation Positions */}
+                  {currentPositions.map((position) => {
+                    const player = getPlayerAtPosition(position.role);
+                    return (
+                      <PositionSlot
+                        key={position.role}
+                        position={position}
+                        player={player}
+                        readonly={readonly}
+                        nameDisplay={nameDisplay}
+                        playerTimeOnPitch={playerTimeOnPitch}
+                        matchDuration={matchDuration}
+                      />
+                    );
+                  })}
                 </div>
               </div>
-            )}
-            
-            <div 
-              className="pitch relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-green-600"
-              style={{
-                backgroundImage: `
-                  linear-gradient(white 2px, transparent 2px),
-                  linear-gradient(90deg, white 2px, transparent 2px),
-                  linear-gradient(white 1px, transparent 1px),
-                  linear-gradient(90deg, white 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 40px, 60px 40px, 20px 20px, 20px 20px'
-              }}
-            >
-              {/* Center circle */}
-              <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-              <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-              
-              {/* Goals */}
-              <div className="absolute top-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
-              <div className="absolute bottom-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
-              
-              {/* 18-yard boxes */}
-              <div className="absolute top-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
-              <div className="absolute bottom-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
-              
-              {/* 6-yard boxes */}
-              <div className="absolute top-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
-              <div className="absolute bottom-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
-              
-              {/* Formation Positions */}
-              {currentPositions.map((position) => {
-                const player = getPlayerAtPosition(position.role);
-                return (
-                  <PositionSlot
-                    key={position.role}
-                    position={position}
-                    player={player}
+
+              {/* Bench - Row of 4 below pitch */}
+              <div className="w-full">
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-3 text-center">Bench</h3>
+                  
+                  <BenchAreaRow 
+                    players={benchPlayers}
+                    maxSlots={4}
                     readonly={readonly}
                     nameDisplay={nameDisplay}
                     playerTimeOnPitch={playerTimeOnPitch}
                     matchDuration={matchDuration}
                   />
-                );
-              })}
+                </div>
+              </div>
             </div>
-          </div>
-          
-          {/* Bench - 4 slots as requested */}
-          <div className="w-52">
-            <div className="bg-white rounded-lg p-4 shadow-sm h-full">
-              <h3 className="text-lg font-semibold mb-3">Bench</h3>
-              
-              <BenchArea 
-                players={benchPlayers}
-                maxSlots={4}
-                readonly={readonly}
-                nameDisplay={nameDisplay}
-                playerTimeOnPitch={playerTimeOnPitch}
-                matchDuration={matchDuration}
-              />
-            </div>
-          </div>
-        </div>
+          ) : (
+            /* Planning View Layout - Available players above, then pitch and bench */
+            <div className="space-y-4">
+              {/* Available Players - Above the tactics board */}
+              <div className="w-full">
+                <AvailablePlayersArea>
+                  <div 
+                    className="flex items-center justify-between cursor-pointer mb-3"
+                    onClick={() => setIsAvailablePlayersCollapsed(!isAvailablePlayersCollapsed)}
+                  >
+                    <h3 className="text-lg font-semibold">Available Players ({unassignedPlayers.length})</h3>
+                    <button className="flex items-center gap-1 text-gray-600 hover:text-gray-800 transition-colors">
+                      {isAvailablePlayersCollapsed ? (
+                        <>
+                          <span className="text-sm">Show</span>
+                          <ChevronDownIcon className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-sm">Hide</span>
+                          <ChevronUpIcon className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  
+                  <div 
+                    className={`transition-all duration-300 ease-in-out ${
+                      isAvailablePlayersCollapsed 
+                        ? 'max-h-0 opacity-0 overflow-hidden' 
+                        : 'max-h-96 opacity-100 overflow-visible'
+                    }`}
+                  >
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 py-2">
+                      {unassignedPlayers.map((player) => (
+                        <div key={player.id} className="flex justify-center">
+                          <PlayerPosition
+                            player={player}
+                            position="unassigned"
+                            isDraggable={!readonly}
+                            className="transform-none"
+                            nameDisplay={nameDisplay}
+                            timeOnPitch={playerTimeOnPitch[player.id] || 0}
+                            matchDuration={matchDuration}
+                          />
+                        </div>
+                      ))}
+                      {unassignedPlayers.length === 0 && (
+                        <div className="col-span-full text-center text-gray-500 py-4">
+                          <p className="text-sm">All players assigned</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </AvailablePlayersArea>
+              </div>
 
-        {/* Drag overlay */}
-        <DragOverlay>
-          {activePlayer ? (
-            <div className="opacity-80">
-              <PlayerPosition
-                player={activePlayer}
-                position="dragging"
-                isDraggable={false}
-                nameDisplay={nameDisplay}
-                timeOnPitch={playerTimeOnPitch[activePlayer.id] || 0}
-                matchDuration={matchDuration}
-              />
+              {/* Main Pitch and Bench container */}
+              <div className={`flex gap-6 ${isMobile ? 'flex-col gap-4' : ''}`}>
+                {/* Main Pitch */}
+                <div className={`${isMobile ? 'w-full' : 'flex-1'}`}>
+                  {/* Formation Selector */}
+                  {formations.length > 0 && onFormationChange && !readonly && (
+                    <div className="mb-4 p-3 bg-white rounded-lg shadow-sm border">
+                      <div className="flex items-center gap-3">
+                        <Squares2X2Icon className="h-5 w-5 text-gray-600" />
+                        <label htmlFor="formation-select" className="text-sm font-medium text-gray-700">
+                          Formation:
+                        </label>
+                        <select
+                          id="formation-select"
+                          value={selectedFormationId || ''}
+                          onChange={(e) => {
+                            console.log('Formation dropdown changed:', e.target.value);
+                            if (onFormationChange) {
+                              onFormationChange(e.target.value);
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="">Default (3-2-3)</option>
+                          {formations.map((formation) => (
+                            <option key={formation.id} value={formation.id}>
+                              {formation.name} ({formation.shapeJSON?.formation || 'Custom'})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div 
+                    className="pitch relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-green-600"
+                    style={{
+                      backgroundImage: `
+                        linear-gradient(white 2px, transparent 2px),
+                        linear-gradient(90deg, white 2px, transparent 2px),
+                        linear-gradient(white 1px, transparent 1px),
+                        linear-gradient(90deg, white 1px, transparent 1px)
+                      `,
+                      backgroundSize: '60px 40px, 60px 40px, 20px 20px, 20px 20px'
+                    }}
+                  >
+                    {/* Center circle */}
+                    <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                    
+                    {/* Goals */}
+                    <div className="absolute top-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-1/2 w-16 h-2 bg-white transform -translate-x-1/2"></div>
+                    
+                    {/* 18-yard boxes */}
+                    <div className="absolute top-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-1/2 w-32 h-16 border-2 border-white transform -translate-x-1/2"></div>
+                    
+                    {/* 6-yard boxes */}
+                    <div className="absolute top-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-1/2 w-16 h-6 border-2 border-white transform -translate-x-1/2"></div>
+                    
+                    {/* Formation Positions */}
+                    {currentPositions.map((position) => {
+                      const player = getPlayerAtPosition(position.role);
+                      return (
+                        <PositionSlot
+                          key={position.role}
+                          position={position}
+                          player={player}
+                          readonly={readonly}
+                          nameDisplay={nameDisplay}
+                          playerTimeOnPitch={playerTimeOnPitch}
+                          matchDuration={matchDuration}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Bench - Vertical layout for planning */}
+                <div className={`${isMobile ? 'w-full' : 'w-52'}`}>
+                  <div className="bg-white rounded-lg p-4 shadow-sm h-full">
+                    <h3 className="text-lg font-semibold mb-3">Bench</h3>
+                    
+                    <BenchArea 
+                      players={benchPlayers}
+                      maxSlots={4}
+                      readonly={readonly}
+                      nameDisplay={nameDisplay}
+                      playerTimeOnPitch={playerTimeOnPitch}
+                      matchDuration={matchDuration}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : null}
-        </DragOverlay>
+          )}
+
+          {/* Drag overlay */}
+          <DragOverlay>
+            {activePlayer ? (
+              <div className="opacity-80">
+                <PlayerPosition
+                  player={activePlayer}
+                  position="dragging"
+                  isDraggable={false}
+                  nameDisplay={nameDisplay}
+                  timeOnPitch={playerTimeOnPitch[activePlayer.id] || 0}
+                  matchDuration={matchDuration}
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
         </SortableContext>
       </DndContext>
     </div>
@@ -545,8 +677,6 @@ function PositionSlot({ position, player, readonly, nameDisplay = 'initials', pl
   const { isOver, setNodeRef } = useDroppable({
     id: dropId,
   });
-
-
 
   return (
     <div
@@ -586,7 +716,6 @@ function PositionSlot({ position, player, readonly, nameDisplay = 'initials', pl
   );
 }
 
-// Bench area component
 // Component for Available Players drop area
 interface AvailablePlayersAreaProps {
   children: React.ReactNode;
@@ -622,8 +751,6 @@ function BenchArea({ players, maxSlots, readonly, nameDisplay = 'initials', play
   const { isOver, setNodeRef } = useDroppable({
     id: 'bench',
   });
-
-
 
   return (
     <div
@@ -671,6 +798,74 @@ function BenchArea({ players, maxSlots, readonly, nameDisplay = 'initials', play
       
       {players.length === 0 && (
         <div className="text-center text-gray-500 mt-8">
+          <p className="text-sm">Drag players here</p>
+          <p className="text-xs mt-1">Maximum {maxSlots} bench slots</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface BenchAreaRowProps {
+  players: Player[];
+  maxSlots: number;
+  readonly: boolean;
+  nameDisplay?: 'initials' | 'first' | 'last';
+  playerTimeOnPitch: Record<string, number>;
+  matchDuration: number;
+}
+
+function BenchAreaRow({ players, maxSlots, readonly, nameDisplay = 'initials', playerTimeOnPitch, matchDuration }: BenchAreaRowProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: 'bench',
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`min-h-[80px] p-3 border-2 border-dashed rounded-lg transition-colors ${
+        isOver 
+          ? 'border-blue-400 bg-blue-50' 
+          : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+      }`}
+    >
+      <div className="flex justify-center gap-4">
+        {/* Show all bench players */}
+        {players.map((player, index) => (
+          <div key={`bench-${player.id}-${index}`} className="flex justify-center">
+            <PlayerPosition
+              player={player}
+              position="bench"
+              isDraggable={!readonly}
+              className="transform-none"
+              nameDisplay={nameDisplay}
+              timeOnPitch={playerTimeOnPitch[player.id] || 0}
+              matchDuration={matchDuration}
+            />
+          </div>
+        ))}
+        
+        {/* Show empty slots if there are fewer players than max slots */}
+        {Array.from({ length: Math.max(0, maxSlots - players.length) }).map((_, index) => (
+          <div 
+            key={`empty-${index}`} 
+            className="flex justify-center"
+          >
+            <div className="w-10 h-10 border-2 border-dashed border-gray-400 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-500 text-xs">?</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {players.length > maxSlots && (
+        <div className="mt-3 text-sm text-red-600 text-center">
+          Warning: {players.length - maxSlots} extra players on bench
+        </div>
+      )}
+      
+      {players.length === 0 && (
+        <div className="text-center text-gray-500 mt-4">
           <p className="text-sm">Drag players here</p>
           <p className="text-xs mt-1">Maximum {maxSlots} bench slots</p>
         </div>
